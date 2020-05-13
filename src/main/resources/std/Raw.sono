@@ -1,0 +1,5 @@
+package std
+
+// The return value from builtin functions and other sources where it's unknown whether Boolean or Number is more proper.
+// Methods should not be defined on this directly. Instead, this should be converted to Boolean or Number.
+raw struct Raw

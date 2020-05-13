@@ -1,0 +1,98 @@
+package std
+
+let LEVEL_MEMORY_BLOCK = 0
+let LEVEL_DATA_BLOCK = 1
+let LEVEL_OPTION_BLOCK = 2
+let LEVEL_TRANSFORM_BLOCK = 3
+let LEVEL_BACKGROUND_BLOCK = 4
+let LEVEL_UI_BLOCK = 5
+let ENTITY_INFO_ARRAY = 10
+let ENTITY_DATA_ARRAY = 11
+let ENTITY_SHARED_MEMORY_ARRAY = 12
+let ENTITY_INFO = 20
+let ENTITY_MEMORY = 21
+let ENTITY_DATA = 22
+let ENTITY_INPUT = 23
+let ENTITY_SHARED_MEMORY = 24
+let TEMPORARY_MEMORY = 100
+let TEMPORARY_DATA = 101
+
+func numref(block: Number, index: Number) = Number(memref(block, index))
+func boolref(block: Number, index: Number) = Boolean(memref(block, index))
+
+let time = numref(LEVEL_DATA_BLOCK, 0)
+let deltaTime = numref(LEVEL_DATA_BLOCK, 1)
+let aspectRatio = numref(LEVEL_DATA_BLOCK, 2)
+let audioOffset = numref(LEVEL_DATA_BLOCK, 3)
+let inputOffset = numref(LEVEL_DATA_BLOCK, 4)
+
+let levelTransform = Transform3d(
+    numref(LEVEL_TRANSFORM_BLOCK, 0), numref(LEVEL_TRANSFORM_BLOCK, 1), numref(LEVEL_TRANSFORM_BLOCK, 2), numref(LEVEL_TRANSFORM_BLOCK, 3),
+    numref(LEVEL_TRANSFORM_BLOCK, 4), numref(LEVEL_TRANSFORM_BLOCK, 5), numref(LEVEL_TRANSFORM_BLOCK, 6), numref(LEVEL_TRANSFORM_BLOCK, 7),
+    numref(LEVEL_TRANSFORM_BLOCK, 8), numref(LEVEL_TRANSFORM_BLOCK, 9), numref(LEVEL_TRANSFORM_BLOCK, 10), numref(LEVEL_TRANSFORM_BLOCK, 11),
+    numref(LEVEL_TRANSFORM_BLOCK, 12), numref(LEVEL_TRANSFORM_BLOCK, 13), numref(LEVEL_TRANSFORM_BLOCK, 14), numref(LEVEL_TRANSFORM_BLOCK, 15)
+)
+
+struct UIInfo(
+    anchorX: Number, anchorY: Number,
+    pivotX: Number, pivotY: Number,
+    width: Number, height: Number,
+    rotation: Number, alpha: Number,
+    horizontalAlign: Number, verticalAlign: Number,
+    background: Boolean,
+)
+
+private func uiBlock(offset: Number) = UIInfo(
+    numref(LEVEL_UI_BLOCK, offset + 0),
+    numref(LEVEL_UI_BLOCK, offset + 1),
+    numref(LEVEL_UI_BLOCK, offset + 2),
+    numref(LEVEL_UI_BLOCK, offset + 3),
+    numref(LEVEL_UI_BLOCK, offset + 4),
+    numref(LEVEL_UI_BLOCK, offset + 5),
+    numref(LEVEL_UI_BLOCK, offset + 6),
+    numref(LEVEL_UI_BLOCK, offset + 7),
+    numref(LEVEL_UI_BLOCK, offset + 8),
+    numref(LEVEL_UI_BLOCK, offset + 9),
+    boolref(LEVEL_UI_BLOCK, offset + 10),
+)
+
+let menuUI = uiBlock(0 * 11)
+let judgementUI = uiBlock(1 * 11)
+let comboValueUI = uiBlock(2 * 11)
+let comboTextUI = uiBlock(3 * 11)
+let scoreBarUI = uiBlock(4 * 11)
+let scoreValueUI = uiBlock(5 * 11)
+
+let entityIndex = numref(ENTITY_INFO, 0)
+let archetype = numref(ENTITY_INFO, 1)
+let state = numref(ENTITY_INFO, 2)
+
+struct EntityInfo(entityIndex: Number)
+func EntityInfo.index() = numref(ENTITY_INFO_ARRAY, this.entityIndex * 3)
+func EntityInfo.archetype() = numref(ENTITY_INFO_ARRAY, this.entityIndex * 3 + 1)
+func EntityInfo.state() = numref(ENTITY_INFO_ARRAY, this.entityIndex * 3 + 2)
+func EntityInfo.waiting() = this.state() == 0
+func EntityInfo.spawned() = this.state() == 1
+func EntityInfo.despawned() = this.state() == 2
+
+let entityJudgement = numref(ENTITY_INPUT, 0)
+let entityBucket = numref(ENTITY_INPUT, 1)
+let entityBucketValue = numref(ENTITY_INPUT, 2)
+
+let touchIdentifier = numref(TEMPORARY_DATA, 0)
+let touchStarted = boolref(TEMPORARY_DATA, 1)
+let touchEnded = boolref(TEMPORARY_DATA, 2)
+let touchT = numref(TEMPORARY_DATA, 3)
+let touchST = numref(TEMPORARY_DATA, 4)
+let touchX = numref(TEMPORARY_DATA, 5)
+let touchY = numref(TEMPORARY_DATA, 6)
+let touchSX = numref(TEMPORARY_DATA, 7)
+let touchSY = numref(TEMPORARY_DATA, 8)
+let touchDX = numref(TEMPORARY_DATA, 9)
+let touchDY = numref(TEMPORARY_DATA, 10)
+let touchVX = numref(TEMPORARY_DATA, 11)
+let touchVY = numref(TEMPORARY_DATA, 12)
+let touchVR = numref(TEMPORARY_DATA, 13)
+let touchVW = numref(TEMPORARY_DATA, 14)
+let touchPos = Point(touchX, touchY)
+let touchStartPos = Point(touchSX, touchSY)

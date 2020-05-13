@@ -1,0 +1,65 @@
+package std
+
+struct Transform3d(
+    _11, _12, _13, _14,
+    _21, _22, _23, _24,
+    _31, _32, _33, _34,
+    _41, _42, _43, _44,
+)
+
+operator func Transform3d.times(other: Transform3d) = Transform3d(
+    this._11 * other._11 + this._12 * other._12 + this._13 * other._13 + this._14 * other._14, this._11 * other._21 + this._12 * other._22 + this._13 * other._23 + this._14 * other._24, this._11 * other._31 + this._12 * other._32 + this._13 * other._33 + this._14 * other._34, this._11 * other._41 + this._12 * other._42 + this._13 * other._43 + this._14 * other._44,
+    this._21 * other._11 + this._22 * other._12 + this._23 * other._13 + this._24 * other._14, this._21 * other._21 + this._22 * other._22 + this._23 * other._23 + this._24 * other._24, this._21 * other._31 + this._22 * other._32 + this._23 * other._33 + this._24 * other._34, this._21 * other._41 + this._22 * other._42 + this._23 * other._43 + this._24 * other._44,
+    this._31 * other._11 + this._32 * other._12 + this._33 * other._13 + this._34 * other._14, this._31 * other._21 + this._32 * other._22 + this._33 * other._23 + this._34 * other._24, this._31 * other._31 + this._32 * other._32 + this._33 * other._33 + this._34 * other._34, this._31 * other._41 + this._32 * other._42 + this._33 * other._43 + this._34 * other._44,
+    this._41 * other._11 + this._42 * other._12 + this._43 * other._13 + this._44 * other._14, this._41 * other._21 + this._42 * other._22 + this._43 * other._23 + this._44 * other._24, this._41 * other._31 + this._42 * other._32 + this._43 * other._33 + this._44 * other._34, this._41 * other._41 + this._42 * other._42 + this._43 * other._43 + this._44 * other._44,
+)
+infix func Transform3d.then(other: Transform3d) = other * this
+
+let zero3d = Transform3d(
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+)
+
+let identity3d = Transform3d(
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+)
+
+func rotateX3d(theta: Number) = Transform3d(
+    1, 0, 0, 0,
+    0, cos(theta), -sin(theta), 0,
+    0, sin(theta), cos(theta), 0,
+    0, 0, 0, 1,
+)
+
+func rotateY3d(theta: Number) = Transform3d(
+    cos(theta), 0, sin(theta), 0,
+    0, 1, 0, 0,
+    -sin(theta), 0, cos(theta), 0,
+    0, 0, 0, 1,
+)
+
+func rotateZ3d(theta: Number) = Transform3d(
+    cos(theta), -sin(theta), 0, 0,
+    sin(theta), cos(theta), 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+)
+
+func scale3d(x: Number, y: Number, z: Number) = Transform3d(
+    x, 0, 0, 0,
+    0, y, 0, 0,
+    0, 0, z, 0,
+    0, 0, 0, 1,
+)
+
+func translate3d(x: Number, y: Number, z: Number) = Transform3d(
+    1, 0, 0, x,
+    0, 1, 0, y,
+    0, 0, 1, z,
+    0, 0, 0, 1,
+)

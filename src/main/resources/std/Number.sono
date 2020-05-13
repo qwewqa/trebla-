@@ -1,0 +1,95 @@
+package std
+
+// A floating point number
+raw struct Number
+
+operator func Number.unaryPlus() = this
+operator func Number.unaryMinus() = 0 - this
+
+operator func Number.preIncrement(): Number {
+    this = this + 1
+    this
+}
+operator func Number.preDecrement(): Number {
+   this = this - 1
+   this
+}
+operator func Number.postIncrement(): Number {
+    var ret = this
+    this = this + 1
+    ret
+}
+operator func Number.postDecrement(): Number {
+   var ret = this
+   this = this - 1
+   ret
+}
+
+operator func Number.plus(other: Number) = Number(builtins.Add(this, other))
+operator func Number.minus(other: Number) = Number(builtins.Subtract(this, other))
+operator func Number.times(other: Number) = Number(builtins.Multiply(this, other))
+operator func Number.div(other: Number) = Number(builtins.Divide(this, other))
+operator func Number.mod(other: Number) = Number(builtins.Mod(this, other))
+operator func Number.pow(other: Number) = Number(builtins.Power(this, other))
+
+operator func Number.plusAssign(other: Number) {
+    this = this + other
+}
+operator func Number.minusAssign(other: Number) {
+    this = this - other
+}
+operator func Number.timesAssign(other: Number) {
+    this = this * other
+}
+operator func Number.divAssign(other: Number) {
+    this = this / other
+}
+operator func Number.modAssign(other: Number) {
+    this = this % other
+}
+operator func Number.powAssign(other: Number) {
+    this = this ** other
+}
+
+func Number.radToDeg() = Number(builtins.Degree(this))
+func Number.degToRad() = Number(builtins.Radian(this))
+
+operator func Number.equals(other: Number) = Boolean(builtins.Equal(this, other))
+operator func Number.notEquals(other: Number) = Boolean(builtins.NotEqual(this, other))
+operator func Number.greater(other: Number) = Boolean(builtins.Greater(this, other))
+operator func Number.greaterOr(other: Number) = Boolean(builtins.GreaterOr(this, other))
+operator func Number.less(other: Number) = Boolean(builtins.Less(this, other))
+operator func Number.lessOr(other: Number) = Boolean(builtins.LessOr(this, other))
+
+func sin(x: Number) = Number(builtins.Sin(x))
+func cos(x: Number) = Number(builtins.Cos(x))
+func tan(x: Number) = Number(builtins.Tan(x))
+func sinh(x: Number) = Number(builtins.Sinh(x))
+func cosh(x: Number) = Number(builtins.Cosh(x))
+func tanh(x: Number) = Number(builtins.Tanh(x))
+func arcsin(x: Number) = Number(builtins.Arcsin(x))
+func arccos(x: Number) = Number(builtins.Arccos(x))
+func arctan(x: Number) = Number(builtins.Arctan(x))
+func arctan2(y: Number, x: Number) = Number(builtins.Arctan2(y, x))
+
+func frac(n: Number) = Number(builtins.Frac(n))
+func trunc(n: Number) = Number(builtins.Trunc(n))
+func round(n: Number) = Number(builtins.Round(n))
+
+func lerp(min: Number, max: Number, value: Number) = Number(builtins.Lerp(min, max, value))
+func lerpClamped(min: Number, max: Number, value: Number) = Number(builtins.LerpClamped(min, max, value))
+func unlerp(min: Number, max: Number, value: Number) = Number(builtins.Unlerp(min, max, value))
+func unlerpClamped(min: Number, max: Number, value: Number) = Number(builtins.UnlerpClamped(min, max, value))
+
+func Number.lerp(min: Number, max: Number) = lerp(min, max, this)
+func Number.lerpClamped(min: Number, max: Number) = lerpClamped(min, max, this)
+func Number.unlerp(min: Number, max: Number) = unlerp(min, max, this)
+func Number.unlerpClamped(min: Number, max: Number) = unlerpClamped(min, max, this)
+
+// It's important that these store their value in a variable (inside the copy function), rather than just directly returning,
+// because the function is a node, which may be evaluated more than once in some cases.
+// In cases where this is unnecessary, it will (once implemented) be optimized out.
+func random(min: Number, max: Number) = copy(Number(builtins.Random(min, max)))
+func randomInteger(min: Number, max: Number) = copy(Number(builtins.RandomInteger(min, max)))
+
+let PI = 3.14159265358979323846

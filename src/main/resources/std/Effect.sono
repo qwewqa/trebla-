@@ -1,0 +1,6 @@
+package std
+
+struct Clip(id: Number)
+func Clip.play(minEffectTime: Number) {
+    builtins.Play(this.id, minEffectTime)
+}

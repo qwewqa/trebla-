@@ -1,0 +1,25 @@
+package std
+
+struct Point(x: Number, y: Number)
+
+operator func Point.plus(other: Point) = Point(this.x + other.x, this.y + other.y)
+operator func Point.minus(other: Point) = Point(this.x - other.x, this.y - other.y)
+
+func Point.rotated(theta: Number) =
+    Point(
+        this.x * cos(theta) - this.y * sin(theta),
+        this.y * cos(theta) + this.x * sin(theta)
+    )
+func Point.rotate(theta: Number) {
+    this = this.rotated(theta)
+}
+
+func Point.scaled(coef: Number) = Point(this.x * coef, this.y * coef)
+func Point.scale(coef: Number) {
+    this = this.scaled(coef)
+}
+
+func Point.translated(x: Number, y: Number) = Point(this.x + x, this.y + y)
+func Point.translate(x: Number, y: Number) {
+    this = this.translated(x, y)
+}

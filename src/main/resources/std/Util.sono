@@ -1,0 +1,25 @@
+package std
+
+func copy(value): Any {
+    var ret = value
+    ret
+}
+
+func judge(
+    src: Number, dst: Number,
+    min1: Number, max1: Number,
+    min2: Number, max2: Number,
+    min3: Number, max3: Number,
+) = Number(builtins.Judge(
+    src, dst,
+    min1, max1,
+    min2, max2,
+    min3, max3,
+))
+
+func judgeSimple(
+    src: Number, dst: Number,
+    max1: Number,
+    max2: Number,
+    max3: Number,
+) = Number(builtins.JudgeSimple(src, dst, max1, max2, max3))

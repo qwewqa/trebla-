@@ -1,0 +1,12 @@
+package std
+
+// The standard boolean type. False if the underlying value is zero, true otherwise.
+// Literals default to 1/0 for True/False respectively.
+raw struct Boolean
+
+operator func Boolean.equals(other: Boolean) = (this && other) || !(this || other)
+operator func Boolean.notEquals(other: Boolean) = !(this && other) && (this || other)
+
+operator func Boolean.not() = Boolean(builtins.Not(this))
+operator func Boolean.and(other: Boolean) = Boolean(builtins.And(this, other))
+operator func Boolean.or(other: Boolean) = Boolean(builtins.Or(this, other))
