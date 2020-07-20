@@ -148,6 +148,9 @@ class BuiltinFunction(val function: BuiltinFunctionVariant) : Callable, Value {
             val rawType = callingContext.scope.getFullyQualified(listOf("std", "Raw")) as StructDeclaration
             RawStructValue(BuiltinCallValue(function, argumentValues), callingContext, rawType)
         } else {
+            // If a function does something like draw or play, we don't use the return value, instead
+            // we just add it as a statement and return unit.
+            // And of course, there's no meaningful way to do this in a context that does not allow execution.
             if (callingContext !is ExecutionContext) compileError("Builtin function $function requires an execution context.")
             callingContext.statements += BuiltinCallValue(function, argumentValues)
             UnitValue

@@ -72,3 +72,7 @@ fun literalBoolean(value: Boolean, context: Context) =
             (context.scope.getFullyQualified("std", "Boolean") as StructDeclaration)
         )
     )
+
+val Context.booleanType get() = scope.getFullyQualified("std", "Boolean") as StructDeclaration
+val Context.numberType get() = scope.getFullyQualified("std", "Number") as StructDeclaration
+val Context.rawType get() = scope.getFullyQualified("std", "Raw") as StructDeclaration

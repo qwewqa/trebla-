@@ -1,9 +1,14 @@
 package xyz.qwewqa.sono.frontend.expression
 
+import xyz.qwewqa.sono.backend.compile.FunctionIRNode
+import xyz.qwewqa.sono.backend.compile.FunctionIRNodeVariant
 import xyz.qwewqa.sono.frontend.compileError
 import xyz.qwewqa.sono.frontend.context.Context
 import xyz.qwewqa.sono.frontend.context.ExecutionContext
 import xyz.qwewqa.sono.frontend.context.MemberAccessor
+import xyz.qwewqa.sono.frontend.context.SimpleExecutionContext
+import xyz.qwewqa.sono.frontend.declaration.BuiltinFunctionVariant
+import xyz.qwewqa.sono.frontend.declaration.RawStructValue
 import xyz.qwewqa.sono.frontend.runWithErrorMessage
 import xyz.qwewqa.sono.grammar.sono.InfixFunctionNode
 import xyz.qwewqa.sono.grammar.sono.PostfixUnaryFunctionNode
@@ -33,12 +38,14 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
     private val isOperator = node.op in infixOperatorNames
 
     override fun applyTo(context: Context): Value = runWithErrorMessage("Error in infix expression.") {
+        when (functionName) {
+            "||" -> return doShortCircuitingBoolean(BuiltinFunctionVariant.Or, context)
+            "&&" -> return doShortCircuitingBoolean(BuiltinFunctionVariant.And, context)
+        }
         val lhs = node.lhs.parseAndApplyTo(context)
         val rhs = node.rhs.parseAndApplyTo(context)
         if (functionName == "=") {
-            if (lhs !is Mutable) compileError("Invalid assignment.")
-            if (context !is ExecutionContext) compileError("Invalid location for assignment.")
-            lhs.copyFrom(rhs, context)
+            doAssignment(lhs, rhs, context)
             return UnitValue
         }
         if (lhs !is MemberAccessor) compileError("Operator '${node.op}' not applicable.")
@@ -48,14 +55,47 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         if (!isOperator && !func.isInfix) compileError("$functionName is a function but is not marked as infix.")
         return func.callWith(listOf(ValueArgument(null, rhs)), context)
     }
+
+    private fun doAssignment(lhs: Value, rhs: Value, context: Context) {
+        if (lhs !is Mutable) compileError("Invalid assignment.")
+        if (context !is ExecutionContext) compileError("Invalid location for assignment.")
+        lhs.copyFrom(rhs, context)
+    }
+
+    private fun doShortCircuitingBoolean(
+        operation: BuiltinFunctionVariant,
+        context: Context,
+    ): Value {
+        val booleanType = context.booleanType
+        val lhsValue = node.lhs.parseAndApplyTo(context)
+        if (lhsValue !is RawStructValue || lhsValue.type != context.booleanType)
+            compileError("Short circuiting operators can only be applied to booleans.")
+        if (context !is ExecutionContext)
+            compileError("Short circuiting operators can only be used in execution contexts. Use the infix `and` or `or` instead.")
+
+        // We need to make a new block to place on the right side of the builtin short circuiting function
+        // such that it only executes if the first part evaluated to a relevant value.
+        val rhsBlock = SimpleExecutionContext(context)
+
+        val rhsValue = node.rhs.parseAndApplyTo(rhsBlock)
+        if (rhsValue !is RawStructValue || rhsValue.type != context.booleanType)
+            compileError("Short circuiting operators can only be applied to booleans.")
+        val resultValue = BuiltinCallValue(operation, listOf(
+            lhsValue.value.toIR(),
+            FunctionIRNode(FunctionIRNodeVariant.Execute, listOf(
+                rhsBlock.toIR(),
+                rhsValue.value.toIR()
+            ))
+        ))
+
+        // Since the right hand side might have done something (play, draw, etc.), the resulting value
+        // must be copied into a temporary variable.
+        // Otherwise, the action would be rerun each time the value was accessed (or not at all if never accessed).
+        // In simpler cases, it's up to the backend to optimize (at least once implemented).
+        return RawStructValue(resultValue, context, booleanType).copyOn(context.localAllocator, context)
+    }
 }
 
-
-// TODO: Maybe implement short circuiting operators
-// || and && should, in the end, not be overloadable operators and instead be boolean specific operators.
-// For now, they will be implemented the same way as other operators but
-// that would have to change to support short circuiting.
-// `and` and `or` likely would remain as infix functions if those are supported.
 val infixOperatorNames = mapOf(
     "+" to "plus",
     "-" to "minus",
@@ -75,8 +115,6 @@ val infixOperatorNames = mapOf(
     "<" to "less",
     ">=" to "greaterOr",
     "<=" to "lessOr",
-    "||" to "or",
-    "&&" to "and",
 )
 
 val prefixOperatorNames = mapOf(

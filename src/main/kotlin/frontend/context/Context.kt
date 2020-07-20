@@ -1,5 +1,8 @@
 package xyz.qwewqa.sono.frontend.context
 
+import xyz.qwewqa.sono.backend.compile.FunctionIRNode
+import xyz.qwewqa.sono.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.sono.backend.compile.IRNode
 import xyz.qwewqa.sono.frontend.expression.Statement
 
 /**
@@ -34,10 +37,14 @@ class SimpleContext(parent: Context) : Context {
     override val scope = Scope(parent.scope)
 }
 
-class SimpleExecutionContext(parent: ExecutionContext) : ExecutionContext {
+class SimpleExecutionContext(parent: ExecutionContext) : ExecutionContext, Statement {
     override val scope = Scope(parent.scope)
     override val localAllocator = parent.localAllocator
     override val statements = mutableListOf<Statement>()
+
+    override fun toIR(): IRNode {
+        return FunctionIRNode(FunctionIRNodeVariant.Execute, statements.map { it.toIR() })
+    }
 }
 
 

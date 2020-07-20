@@ -22,7 +22,7 @@ suspend fun build(buildConfig: BuildConfiguration): Boolean {
             .walk()
             .filter { it.isFile && it.extension.toLowerCase() == SONO_SOURCE_FILE_EXTENSION }
             .map { it.lastModified() }
-            .max() ?: Long.MIN_VALUE
+            .maxOrNull() ?: Long.MIN_VALUE
         val engineFile = outDirectory.resolve(ENGINE_OUT_FILENAME)
         if (engineFile.exists() && engineFile.lastModified() >= lastSrcTimestamp) {
             println("Engine already up-to-date. Skipping build.")

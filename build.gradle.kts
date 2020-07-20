@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4-M3"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("org.beryx.runtime") version "1.11.1"
     antlr
@@ -16,11 +16,13 @@ application {
 
 repositories {
     mavenCentral()
+    maven ("https://dl.bintray.com/kotlin/kotlin-eap")
+    maven ("https://kotlin.bintray.com/kotlinx")
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
+    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.3.7-1.4-M3")
     implementation("com.github.ajalt:clikt:2.7.1")
     implementation("org.snakeyaml:snakeyaml-engine:2.1")
     implementation("com.google.code.gson:gson:2.8.6")
@@ -39,6 +41,7 @@ tasks {
             jvmTarget = "1.8"
             freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
             freeCompilerArgs += "-XXLanguage:+NewInference"
+            apiVersion = "1.4"
             languageVersion = "1.4"
         }
         dependsOn += generateGrammarSource

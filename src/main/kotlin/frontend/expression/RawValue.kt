@@ -10,6 +10,8 @@ import xyz.qwewqa.sono.frontend.declaration.BuiltinFunctionVariant
 /**
  * Either a location in memory, or a literal. Should generally appear within a raw struct except
  * a builtin call, which may appear as a statement some of the time.
+ * The distinction between this and the [Statement] interface is that this goes inside raw structs,
+ * while statements go inside execution contexts from other sources with a bit of overlap for builtin calls.
  */
 sealed class RawValue {
     /**

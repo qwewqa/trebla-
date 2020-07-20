@@ -6,6 +6,6 @@ import xyz.qwewqa.sono.frontend.Entity
 /**
  * A statement which directly translates to code.
  */
-interface Statement : Entity {
+interface Statement {
     fun toIR(): IRNode
 }
