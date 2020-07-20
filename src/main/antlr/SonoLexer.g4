@@ -1,3 +1,9 @@
+/**
+ * This file was adapted and modified from the respective file in the https://github.com/shadrina/kotlin-grammar-antlr4 repository.
+ * This file was licensed under the Apache 2.0 license.
+ * A copy of the license can be found in the Apache-2.0.txt file in this directory.
+*/
+
 lexer grammar SonoLexer;
 
 @lexer::header {
