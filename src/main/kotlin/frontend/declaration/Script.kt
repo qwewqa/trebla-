@@ -31,9 +31,9 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
             .filterIsInstance<PropertyDeclaration>()
     }
 
-    val initProperties by lazy {
+    val spawnProperties by lazy {
         propertyDeclarations
-            .filter { it.variant == PropertyVariant.INIT }
+            .filter { it.variant == PropertyVariant.SPAWN }
             .associate { it.identifier to it.applyTo(initializationContext) }
     }
 
@@ -51,13 +51,13 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
 
     fun finalize(): ScriptData {
         // make sure lazy properties have fired
-        initProperties
+        spawnProperties
         dataProperties
         sharedProperties
 
         val callbacks = mutableListOf(initializeCallback)
         propertyDeclarations.forEach {
-            if (it.variant != PropertyVariant.INIT && it.variant != PropertyVariant.DATA && it.variant != PropertyVariant.SHARED) it.applyTo(
+            if (it.variant != PropertyVariant.SPAWN && it.variant != PropertyVariant.DATA && it.variant != PropertyVariant.SHARED) it.applyTo(
                 initializationContext
             )
         }
@@ -87,7 +87,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
         val cells = MutableList<RawValue?>(64) { null }
         arguments.forEach { (name, value) ->
             if (name == null) compileError("Unnamed arguments to script spawns are not allowed.")
-            val prop = initProperties[name] ?: compileError("Unknown property $name")
+            val prop = spawnProperties[name] ?: compileError("Unknown property $name")
             set(prop, value, cells)
         }
         cells.dropLastWhile { it == null }

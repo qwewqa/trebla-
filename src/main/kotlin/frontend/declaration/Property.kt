@@ -32,8 +32,8 @@ class PropertyDeclaration(
         val initializer = node.expression?.parse(context)
         val typeConstraint = typeConstraint // loads lazy delegate and allows smart casts
         val allocator = when (variant) {
-            PropertyVariant.INIT -> {
-                if (context !is ScriptContext) compileError("The init modifier is only allowed directly within a script.")
+            PropertyVariant.SPAWN -> {
+                if (context !is ScriptContext) compileError("The spawn modifier is only allowed directly within a script.")
                 context.memoryAllocator
             }
             PropertyVariant.DATA -> {
@@ -110,10 +110,10 @@ enum class PropertyVariant(val initialized: Boolean = false) {
 
     /**
      * Located in entity memory. Does not take an initializer.
-     * Does not take an initializer. May be initialized via spawning.
+     * May be initialized via spawning.
      * Declared directly in a script.
      */
-    INIT,
+    SPAWN,
 
     /**
      * Located in entity data. Immutable.
@@ -147,7 +147,7 @@ enum class PropertyVariant(val initialized: Boolean = false) {
 }
 
 val propertyVariants = mapOf(
-    "init" to PropertyVariant.INIT,
+    "spawn" to PropertyVariant.SPAWN,
     "data" to PropertyVariant.DATA,
     "shared" to PropertyVariant.SHARED,
     "level" to PropertyVariant.LEVEL,

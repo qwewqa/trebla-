@@ -276,6 +276,7 @@ modifier
     | STATIC
     | OPERATOR
     | INIT
+    | SPAWN
     | DATA
     | LEVEL
     | TEMP
@@ -299,6 +300,7 @@ simpleIdentifier
     | OPERATOR
     | INLINE
     | INIT
+    | SPAWN
     | DATA
     | LEVEL
     | RAW

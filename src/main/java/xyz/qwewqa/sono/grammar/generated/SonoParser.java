@@ -29,11 +29,11 @@ public class SonoParser extends Parser {
 		STRUCT=46, FUNC=47, LET=48, SCRIPT=49, CALLBACK=50, ARCHETYPE=51, VAR=52, 
 		VAL=53, IF=54, ELSE=55, WHILE=56, GETTER=57, SETTER=58, AS=59, PACKAGE=60, 
 		PUBLIC=61, PRIVATE=62, INTERNAL=63, PROTECTED=64, SHARED=65, STATIC=66, 
-		OPERATOR=67, INLINE=68, INIT=69, INFIX=70, DATA=71, LEVEL=72, TEMP=73, 
-		RAW=74, CONST=75, NOTE=76, FloatLiteral=77, IntegerLiteral=78, BooleanLiteral=79, 
-		Identifier=80, UNICODE_CLASS_LL=81, UNICODE_CLASS_LM=82, UNICODE_CLASS_LO=83, 
-		UNICODE_CLASS_LT=84, UNICODE_CLASS_LU=85, UNICODE_CLASS_ND=86, UNICODE_CLASS_NL=87, 
-		Inside_Comment=88, Inside_WS=89, Inside_NL=90;
+		OPERATOR=67, INLINE=68, INIT=69, SPAWN=70, INFIX=71, DATA=72, LEVEL=73, 
+		TEMP=74, RAW=75, CONST=76, NOTE=77, FloatLiteral=78, IntegerLiteral=79, 
+		BooleanLiteral=80, Identifier=81, UNICODE_CLASS_LL=82, UNICODE_CLASS_LM=83, 
+		UNICODE_CLASS_LO=84, UNICODE_CLASS_LT=85, UNICODE_CLASS_LU=86, UNICODE_CLASS_ND=87, 
+		UNICODE_CLASS_NL=88, Inside_Comment=89, Inside_WS=90, Inside_NL=91;
 	public static final int
 		RULE_sonoFile = 0, RULE_packageHeader = 1, RULE_importList = 2, RULE_importHeader = 3, 
 		RULE_topLevelObject = 4, RULE_functionDeclaration = 5, RULE_functionReceiver = 6, 
@@ -90,8 +90,8 @@ public class SonoParser extends Parser {
 			"'let'", "'script'", "'callback'", "'archetype'", "'var'", "'val'", "'if'", 
 			"'else'", "'while'", "'get'", "'set'", "'as'", "'package'", "'public'", 
 			"'private'", "'internal'", "'protected'", "'shared'", "'static'", "'operator'", 
-			"'inline'", "'init'", "'infix'", "'data'", "'level'", "'temp'", "'raw'", 
-			"'const'", "'note'"
+			"'inline'", "'init'", "'spawn'", "'infix'", "'data'", "'level'", "'temp'", 
+			"'raw'", "'const'", "'note'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -106,11 +106,11 @@ public class SonoParser extends Parser {
 			"ARROW", "DOUBLE_ARROW", "IMPORT", "STRUCT", "FUNC", "LET", "SCRIPT", 
 			"CALLBACK", "ARCHETYPE", "VAR", "VAL", "IF", "ELSE", "WHILE", "GETTER", 
 			"SETTER", "AS", "PACKAGE", "PUBLIC", "PRIVATE", "INTERNAL", "PROTECTED", 
-			"SHARED", "STATIC", "OPERATOR", "INLINE", "INIT", "INFIX", "DATA", "LEVEL", 
-			"TEMP", "RAW", "CONST", "NOTE", "FloatLiteral", "IntegerLiteral", "BooleanLiteral", 
-			"Identifier", "UNICODE_CLASS_LL", "UNICODE_CLASS_LM", "UNICODE_CLASS_LO", 
-			"UNICODE_CLASS_LT", "UNICODE_CLASS_LU", "UNICODE_CLASS_ND", "UNICODE_CLASS_NL", 
-			"Inside_Comment", "Inside_WS", "Inside_NL"
+			"SHARED", "STATIC", "OPERATOR", "INLINE", "INIT", "SPAWN", "INFIX", "DATA", 
+			"LEVEL", "TEMP", "RAW", "CONST", "NOTE", "FloatLiteral", "IntegerLiteral", 
+			"BooleanLiteral", "Identifier", "UNICODE_CLASS_LL", "UNICODE_CLASS_LM", 
+			"UNICODE_CLASS_LO", "UNICODE_CLASS_LT", "UNICODE_CLASS_LU", "UNICODE_CLASS_ND", 
+			"UNICODE_CLASS_NL", "Inside_Comment", "Inside_WS", "Inside_NL"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -282,7 +282,7 @@ public class SonoParser extends Parser {
 			setState(172);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((((_la - 46)) & ~0x3f) == 0 && ((1L << (_la - 46)) & ((1L << (STRUCT - 46)) | (1L << (FUNC - 46)) | (1L << (LET - 46)) | (1L << (SCRIPT - 46)) | (1L << (ARCHETYPE - 46)) | (1L << (VAR - 46)) | (1L << (PUBLIC - 46)) | (1L << (PRIVATE - 46)) | (1L << (SHARED - 46)) | (1L << (STATIC - 46)) | (1L << (OPERATOR - 46)) | (1L << (INIT - 46)) | (1L << (INFIX - 46)) | (1L << (DATA - 46)) | (1L << (LEVEL - 46)) | (1L << (TEMP - 46)) | (1L << (RAW - 46)) | (1L << (CONST - 46)) | (1L << (NOTE - 46)))) != 0)) {
+			if (((((_la - 46)) & ~0x3f) == 0 && ((1L << (_la - 46)) & ((1L << (STRUCT - 46)) | (1L << (FUNC - 46)) | (1L << (LET - 46)) | (1L << (SCRIPT - 46)) | (1L << (ARCHETYPE - 46)) | (1L << (VAR - 46)) | (1L << (PUBLIC - 46)) | (1L << (PRIVATE - 46)) | (1L << (SHARED - 46)) | (1L << (STATIC - 46)) | (1L << (OPERATOR - 46)) | (1L << (INIT - 46)) | (1L << (SPAWN - 46)) | (1L << (INFIX - 46)) | (1L << (DATA - 46)) | (1L << (LEVEL - 46)) | (1L << (TEMP - 46)) | (1L << (RAW - 46)) | (1L << (CONST - 46)) | (1L << (NOTE - 46)))) != 0)) {
 				{
 				setState(158);
 				topLevelObject();
@@ -315,7 +315,7 @@ public class SonoParser extends Parser {
 					setState(165);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if (((((_la - 46)) & ~0x3f) == 0 && ((1L << (_la - 46)) & ((1L << (STRUCT - 46)) | (1L << (FUNC - 46)) | (1L << (LET - 46)) | (1L << (SCRIPT - 46)) | (1L << (ARCHETYPE - 46)) | (1L << (VAR - 46)) | (1L << (PUBLIC - 46)) | (1L << (PRIVATE - 46)) | (1L << (SHARED - 46)) | (1L << (STATIC - 46)) | (1L << (OPERATOR - 46)) | (1L << (INIT - 46)) | (1L << (INFIX - 46)) | (1L << (DATA - 46)) | (1L << (LEVEL - 46)) | (1L << (TEMP - 46)) | (1L << (RAW - 46)) | (1L << (CONST - 46)) | (1L << (NOTE - 46)))) != 0)) {
+					if (((((_la - 46)) & ~0x3f) == 0 && ((1L << (_la - 46)) & ((1L << (STRUCT - 46)) | (1L << (FUNC - 46)) | (1L << (LET - 46)) | (1L << (SCRIPT - 46)) | (1L << (ARCHETYPE - 46)) | (1L << (VAR - 46)) | (1L << (PUBLIC - 46)) | (1L << (PRIVATE - 46)) | (1L << (SHARED - 46)) | (1L << (STATIC - 46)) | (1L << (OPERATOR - 46)) | (1L << (INIT - 46)) | (1L << (SPAWN - 46)) | (1L << (INFIX - 46)) | (1L << (DATA - 46)) | (1L << (LEVEL - 46)) | (1L << (TEMP - 46)) | (1L << (RAW - 46)) | (1L << (CONST - 46)) | (1L << (NOTE - 46)))) != 0)) {
 						{
 						setState(164);
 						topLevelObject();
@@ -938,7 +938,7 @@ public class SonoParser extends Parser {
 			setState(280);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
+			if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
 				{
 				setState(269);
 				functionValueParameter();
@@ -1378,7 +1378,7 @@ public class SonoParser extends Parser {
 				setState(346);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
+				if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
 					{
 					setState(335);
 					structField();
@@ -1621,7 +1621,7 @@ public class SonoParser extends Parser {
 			setState(379);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((((_la - 46)) & ~0x3f) == 0 && ((1L << (_la - 46)) & ((1L << (STRUCT - 46)) | (1L << (FUNC - 46)) | (1L << (LET - 46)) | (1L << (CALLBACK - 46)) | (1L << (VAR - 46)) | (1L << (PUBLIC - 46)) | (1L << (PRIVATE - 46)) | (1L << (SHARED - 46)) | (1L << (STATIC - 46)) | (1L << (OPERATOR - 46)) | (1L << (INIT - 46)) | (1L << (INFIX - 46)) | (1L << (DATA - 46)) | (1L << (LEVEL - 46)) | (1L << (TEMP - 46)) | (1L << (RAW - 46)) | (1L << (CONST - 46)))) != 0)) {
+			while (((((_la - 46)) & ~0x3f) == 0 && ((1L << (_la - 46)) & ((1L << (STRUCT - 46)) | (1L << (FUNC - 46)) | (1L << (LET - 46)) | (1L << (CALLBACK - 46)) | (1L << (VAR - 46)) | (1L << (PUBLIC - 46)) | (1L << (PRIVATE - 46)) | (1L << (SHARED - 46)) | (1L << (STATIC - 46)) | (1L << (OPERATOR - 46)) | (1L << (INIT - 46)) | (1L << (SPAWN - 46)) | (1L << (INFIX - 46)) | (1L << (DATA - 46)) | (1L << (LEVEL - 46)) | (1L << (TEMP - 46)) | (1L << (RAW - 46)) | (1L << (CONST - 46)))) != 0)) {
 				{
 				{
 				setState(376);
@@ -1987,7 +1987,7 @@ public class SonoParser extends Parser {
 			setState(442);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
+			if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
 				{
 				setState(434);
 				archetypeDefault();
@@ -2659,7 +2659,7 @@ public class SonoParser extends Parser {
 			setState(537);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE) | (1L << INTERNAL))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE) | (1L << INTERNAL))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 				{
 				setState(523);
 				statement();
@@ -2692,7 +2692,7 @@ public class SonoParser extends Parser {
 					setState(530);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE) | (1L << INTERNAL))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE) | (1L << INTERNAL))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 						{
 						setState(529);
 						statement();
@@ -3890,6 +3890,7 @@ public class SonoParser extends Parser {
 			case OPERATOR:
 			case INLINE:
 			case INIT:
+			case SPAWN:
 			case DATA:
 			case LEVEL:
 			case TEMP:
@@ -4055,7 +4056,7 @@ public class SonoParser extends Parser {
 			setState(726);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << ARCHETYPE) | (1L << IF) | (1L << WHILE) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE) | (1L << INTERNAL))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << ARCHETYPE) | (1L << IF) | (1L << WHILE) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE) | (1L << INTERNAL))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 				{
 				setState(715);
 				valueArgument();
@@ -4560,6 +4561,7 @@ public class SonoParser extends Parser {
 			case OPERATOR:
 			case INLINE:
 			case INIT:
+			case SPAWN:
 			case DATA:
 			case LEVEL:
 			case TEMP:
@@ -4625,7 +4627,7 @@ public class SonoParser extends Parser {
 			setState(803);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((((_la - 61)) & ~0x3f) == 0 && ((1L << (_la - 61)) & ((1L << (PUBLIC - 61)) | (1L << (PRIVATE - 61)) | (1L << (SHARED - 61)) | (1L << (STATIC - 61)) | (1L << (OPERATOR - 61)) | (1L << (INIT - 61)) | (1L << (INFIX - 61)) | (1L << (DATA - 61)) | (1L << (LEVEL - 61)) | (1L << (TEMP - 61)) | (1L << (RAW - 61)) | (1L << (CONST - 61)))) != 0)) {
+			while (((((_la - 61)) & ~0x3f) == 0 && ((1L << (_la - 61)) & ((1L << (PUBLIC - 61)) | (1L << (PRIVATE - 61)) | (1L << (SHARED - 61)) | (1L << (STATIC - 61)) | (1L << (OPERATOR - 61)) | (1L << (INIT - 61)) | (1L << (SPAWN - 61)) | (1L << (INFIX - 61)) | (1L << (DATA - 61)) | (1L << (LEVEL - 61)) | (1L << (TEMP - 61)) | (1L << (RAW - 61)) | (1L << (CONST - 61)))) != 0)) {
 				{
 				{
 				setState(800);
@@ -4656,6 +4658,7 @@ public class SonoParser extends Parser {
 		public TerminalNode STATIC() { return getToken(SonoParser.STATIC, 0); }
 		public TerminalNode OPERATOR() { return getToken(SonoParser.OPERATOR, 0); }
 		public TerminalNode INIT() { return getToken(SonoParser.INIT, 0); }
+		public TerminalNode SPAWN() { return getToken(SonoParser.SPAWN, 0); }
 		public TerminalNode DATA() { return getToken(SonoParser.DATA, 0); }
 		public TerminalNode LEVEL() { return getToken(SonoParser.LEVEL, 0); }
 		public TerminalNode TEMP() { return getToken(SonoParser.TEMP, 0); }
@@ -4694,7 +4697,7 @@ public class SonoParser extends Parser {
 			{
 			setState(806);
 			_la = _input.LA(1);
-			if ( !(((((_la - 61)) & ~0x3f) == 0 && ((1L << (_la - 61)) & ((1L << (PUBLIC - 61)) | (1L << (PRIVATE - 61)) | (1L << (SHARED - 61)) | (1L << (STATIC - 61)) | (1L << (OPERATOR - 61)) | (1L << (INIT - 61)) | (1L << (INFIX - 61)) | (1L << (DATA - 61)) | (1L << (LEVEL - 61)) | (1L << (TEMP - 61)) | (1L << (RAW - 61)) | (1L << (CONST - 61)))) != 0)) ) {
+			if ( !(((((_la - 61)) & ~0x3f) == 0 && ((1L << (_la - 61)) & ((1L << (PUBLIC - 61)) | (1L << (PRIVATE - 61)) | (1L << (SHARED - 61)) | (1L << (STATIC - 61)) | (1L << (OPERATOR - 61)) | (1L << (INIT - 61)) | (1L << (SPAWN - 61)) | (1L << (INFIX - 61)) | (1L << (DATA - 61)) | (1L << (LEVEL - 61)) | (1L << (TEMP - 61)) | (1L << (RAW - 61)) | (1L << (CONST - 61)))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -4829,6 +4832,7 @@ public class SonoParser extends Parser {
 		public TerminalNode OPERATOR() { return getToken(SonoParser.OPERATOR, 0); }
 		public TerminalNode INLINE() { return getToken(SonoParser.INLINE, 0); }
 		public TerminalNode INIT() { return getToken(SonoParser.INIT, 0); }
+		public TerminalNode SPAWN() { return getToken(SonoParser.SPAWN, 0); }
 		public TerminalNode DATA() { return getToken(SonoParser.DATA, 0); }
 		public TerminalNode LEVEL() { return getToken(SonoParser.LEVEL, 0); }
 		public TerminalNode RAW() { return getToken(SonoParser.RAW, 0); }
@@ -4863,7 +4867,7 @@ public class SonoParser extends Parser {
 			{
 			setState(827);
 			_la = _input.LA(1);
-			if ( !(((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) ) {
+			if ( !(((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -4916,7 +4920,7 @@ public class SonoParser extends Parser {
 			{
 			setState(829);
 			_la = _input.LA(1);
-			if ( !(((((_la - 77)) & ~0x3f) == 0 && ((1L << (_la - 77)) & ((1L << (FloatLiteral - 77)) | (1L << (IntegerLiteral - 77)) | (1L << (BooleanLiteral - 77)))) != 0)) ) {
+			if ( !(((((_la - 78)) & ~0x3f) == 0 && ((1L << (_la - 78)) & ((1L << (FloatLiteral - 78)) | (1L << (IntegerLiteral - 78)) | (1L << (BooleanLiteral - 78)))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -5579,7 +5583,7 @@ public class SonoParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\\\u0376\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3]\u0376\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -5650,8 +5654,8 @@ public class SonoParser extends Parser {
 		"A\3B\3B\3C\3C\3D\6D\u0361\nD\rD\16D\u0362\3D\7D\u0366\nD\fD\16D\u0369"+
 		"\13D\3D\3D\7D\u036d\nD\fD\16D\u0370\13D\5D\u0372\nD\3E\3E\3E\2\2F\2\4"+
 		"\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDFHJLNP"+
-		"RTVXZ\\^`bdfhjlnprtvxz|~\u0080\u0082\u0084\u0086\u0088\2\f\5\2?@CEGM\6"+
-		"\2\65\65>GILRR\3\2OQ\3\2\23\24\3\2\20\22\4\2\23\26\31\31\3\2\35\"\3\2"+
+		"RTVXZ\\^`bdfhjlnprtvxz|~\u0080\u0082\u0084\u0086\u0088\2\f\5\2?@CEGN\6"+
+		"\2\65\65>HJMSS\3\2PR\3\2\23\24\3\2\20\22\4\2\23\26\31\31\3\2\35\"\3\2"+
 		"*+\3\2&)\4\2\6\6\34\34\2\u03af\2\u008d\3\2\2\2\4\u00b2\3\2\2\2\6\u00b9"+
 		"\3\2\2\2\b\u00bc\3\2\2\2\n\u00ca\3\2\2\2\f\u00cc\3\2\2\2\16\u010c\3\2"+
 		"\2\2\20\u010e\3\2\2\2\22\u011e\3\2\2\2\24\u012c\3\2\2\2\26\u012e\3\2\2"+
@@ -5757,7 +5761,7 @@ public class SonoParser extends Parser {
 		"\u0189\3\2\2\2\u018e\u018a\3\2\2\2\u018e\u018b\3\2\2\2\u018e\u018c\3\2"+
 		"\2\2\u018e\u018d\3\2\2\2\u018f\u0193\3\2\2\2\u0190\u0192\5\u0088E\2\u0191"+
 		"\u0190\3\2\2\2\u0192\u0195\3\2\2\2\u0193\u0191\3\2\2\2\u0193\u0194\3\2"+
-		"\2\2\u0194#\3\2\2\2\u0195\u0193\3\2\2\2\u0196\u0198\7N\2\2\u0197\u0196"+
+		"\2\2\u0194#\3\2\2\2\u0195\u0193\3\2\2\2\u0196\u0198\7O\2\2\u0197\u0196"+
 		"\3\2\2\2\u0197\u0198\3\2\2\2\u0198\u0199\3\2\2\2\u0199\u019d\7\65\2\2"+
 		"\u019a\u019c\7\6\2\2\u019b\u019a\3\2\2\2\u019c\u019f\3\2\2\2\u019d\u019b"+
 		"\3\2\2\2\u019d\u019e\3\2\2\2\u019e\u01a0\3\2\2\2\u019f\u019d\3\2\2\2\u01a0"+
