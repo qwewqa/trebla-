@@ -1,4 +1,4 @@
-package xyz.qwewqa.sono.backend.compile
+package xyz.qwewqa.trebla.backend.compile
 
 import com.google.gson.Gson
 import java.io.Reader

@@ -1,28 +1,28 @@
-package xyz.qwewqa.sono.frontend.context
+package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.sono.backend.compile.Archetype
-import xyz.qwewqa.sono.frontend.CompilerConfiguration
-import xyz.qwewqa.sono.frontend.SonoFile
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.declaration.*
-import xyz.qwewqa.sono.frontend.expression.Expression
-import xyz.qwewqa.sono.frontend.expression.UnitValue
-import xyz.qwewqa.sono.frontend.expression.Value
-import xyz.qwewqa.sono.grammar.sono.SonoFileNode
+import xyz.qwewqa.trebla.backend.compile.Archetype
+import xyz.qwewqa.trebla.frontend.CompilerConfiguration
+import xyz.qwewqa.trebla.frontend.TreblaFile
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.expression.Expression
+import xyz.qwewqa.trebla.frontend.expression.UnitValue
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 
 class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAllocatorContext {
     override val scope = Scope(null)
     override val levelAllocator = StandardAllocator(0, 256)
     override val tempAllocator = StandardAllocator(100, 16)
 
-    private val files = mutableListOf<SonoFile>()
+    private val files = mutableListOf<TreblaFile>()
     var scriptIndex = 0
 
     fun process(): CompileData {
         with(files) {
-            forEach(SonoFile::loadInitial)
-            forEach(SonoFile::loadNormal)
-            forEach(SonoFile::loadFinal)
+            forEach(TreblaFile::loadInitial)
+            forEach(TreblaFile::loadNormal)
+            forEach(TreblaFile::loadFinal)
         }
         return CompileData(
             files.flatMap { it.scripts }.map { it.finalize() },
@@ -30,8 +30,8 @@ class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAll
         )
     }
 
-    fun add(fileNode: SonoFileNode) {
-        files += SonoFile(fileNode, this)
+    fun add(fileNode: TreblaFileNode) {
+        files += TreblaFile(fileNode, this)
     }
 
     /**

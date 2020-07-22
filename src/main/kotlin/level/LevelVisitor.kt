@@ -1,8 +1,8 @@
-package xyz.qwewqa.sono.level
+package xyz.qwewqa.trebla.level
 
 import org.antlr.v4.runtime.tree.ParseTree
-import xyz.qwewqa.sono.grammar.generated.LevelBaseVisitor
-import xyz.qwewqa.sono.grammar.generated.LevelParser
+import xyz.qwewqa.trebla.grammar.generated.LevelBaseVisitor
+import xyz.qwewqa.trebla.grammar.generated.LevelParser
 
 class LevelVisitor : LevelBaseVisitor<Any>() {
     override fun visitLevelFile(ctx: LevelParser.LevelFileContext): List<LevelEntity> {

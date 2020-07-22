@@ -1,3 +1,3 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-// TODO: This and the relevant SonoNode
+// TODO: This and the relevant TreblaNode

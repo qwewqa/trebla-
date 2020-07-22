@@ -1,6 +1,6 @@
-package xyz.qwewqa.sono.frontend
+package xyz.qwewqa.trebla.frontend
 
-import xyz.qwewqa.sono.grammar.sono.SonoNode
+import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -13,7 +13,7 @@ interface Entity {
      * The original node this entity was derived from, if it exists.
      * Useful for identifying the code causing an error.
      */
-    val node: SonoNode? get() = null
+    val node: TreblaNode? get() = null
 }
 
 /**
@@ -42,7 +42,7 @@ inline fun <T> Entity.runWithErrorMessage(message: String, block: () -> T): T {
  * Otherwise, is equivalent to [run].
  */
 @OptIn(ExperimentalContracts::class)
-inline fun <T> SonoNode.runWithErrorMessage(message: String, block: () -> T): T {
+inline fun <T> TreblaNode.runWithErrorMessage(message: String, block: () -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }

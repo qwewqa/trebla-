@@ -1,6 +1,6 @@
-// Generated from SonoParser.g4 by ANTLR 4.8
+// Generated from TreblaParser.g4 by ANTLR 4.8
 
-    package xyz.qwewqa.sono.grammar.generated;
+    package xyz.qwewqa.trebla.grammar.generated;
 
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class SonoParser extends Parser {
+public class TreblaParser extends Parser {
 	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -35,7 +35,7 @@ public class SonoParser extends Parser {
 		UNICODE_CLASS_LO=84, UNICODE_CLASS_LT=85, UNICODE_CLASS_LU=86, UNICODE_CLASS_ND=87, 
 		UNICODE_CLASS_NL=88, Inside_Comment=89, Inside_WS=90, Inside_NL=91;
 	public static final int
-		RULE_sonoFile = 0, RULE_packageHeader = 1, RULE_importList = 2, RULE_importHeader = 3, 
+		RULE_treblaFile = 0, RULE_packageHeader = 1, RULE_importList = 2, RULE_importHeader = 3, 
 		RULE_topLevelObject = 4, RULE_functionDeclaration = 5, RULE_functionReceiver = 6, 
 		RULE_functionValueParameters = 7, RULE_functionValueParameter = 8, RULE_functionBody = 9, 
 		RULE_propertyDeclaration = 10, RULE_structDeclaration = 11, RULE_structFields = 12, 
@@ -59,7 +59,7 @@ public class SonoParser extends Parser {
 		RULE_semi = 66, RULE_anysemi = 67;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"sonoFile", "packageHeader", "importList", "importHeader", "topLevelObject", 
+			"treblaFile", "packageHeader", "importList", "importHeader", "topLevelObject", 
 			"functionDeclaration", "functionReceiver", "functionValueParameters", 
 			"functionValueParameter", "functionBody", "propertyDeclaration", "structDeclaration", 
 			"structFields", "structField", "scriptDeclaration", "scriptBody", "scriptMemberDeclaration", 
@@ -148,7 +148,7 @@ public class SonoParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "SonoParser.g4"; }
+	public String getGrammarFileName() { return "TreblaParser.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -159,19 +159,19 @@ public class SonoParser extends Parser {
 	@Override
 	public ATN getATN() { return _ATN; }
 
-	public SonoParser(TokenStream input) {
+	public TreblaParser(TokenStream input) {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
-	public static class SonoFileContext extends ParserRuleContext {
+	public static class TreblaFileContext extends ParserRuleContext {
 		public ImportListContext importList() {
 			return getRuleContext(ImportListContext.class,0);
 		}
-		public TerminalNode EOF() { return getToken(SonoParser.EOF, 0); }
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public TerminalNode EOF() { return getToken(TreblaParser.EOF, 0); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public PackageHeaderContext packageHeader() {
 			return getRuleContext(PackageHeaderContext.class,0);
@@ -194,28 +194,28 @@ public class SonoParser extends Parser {
 		public SemiContext semi(int i) {
 			return getRuleContext(SemiContext.class,i);
 		}
-		public SonoFileContext(ParserRuleContext parent, int invokingState) {
+		public TreblaFileContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_sonoFile; }
+		@Override public int getRuleIndex() { return RULE_treblaFile; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterSonoFile(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterTreblaFile(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitSonoFile(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitTreblaFile(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitSonoFile(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitTreblaFile(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final SonoFileContext sonoFile() throws RecognitionException {
-		SonoFileContext _localctx = new SonoFileContext(_ctx, getState());
-		enterRule(_localctx, 0, RULE_sonoFile);
+	public final TreblaFileContext treblaFile() throws RecognitionException {
+		TreblaFileContext _localctx = new TreblaFileContext(_ctx, getState());
+		enterRule(_localctx, 0, RULE_treblaFile);
 		int _la;
 		try {
 			int _alt;
@@ -347,7 +347,7 @@ public class SonoParser extends Parser {
 	}
 
 	public static class PackageHeaderContext extends ParserRuleContext {
-		public TerminalNode PACKAGE() { return getToken(SonoParser.PACKAGE, 0); }
+		public TerminalNode PACKAGE() { return getToken(TreblaParser.PACKAGE, 0); }
 		public IdentifierContext identifier() {
 			return getRuleContext(IdentifierContext.class,0);
 		}
@@ -360,15 +360,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_packageHeader; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterPackageHeader(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterPackageHeader(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitPackageHeader(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitPackageHeader(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitPackageHeader(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitPackageHeader(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -411,15 +411,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_importList; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterImportList(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterImportList(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitImportList(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitImportList(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitImportList(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitImportList(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -459,30 +459,30 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ImportHeaderContext extends ParserRuleContext {
-		public TerminalNode IMPORT() { return getToken(SonoParser.IMPORT, 0); }
+		public TerminalNode IMPORT() { return getToken(TreblaParser.IMPORT, 0); }
 		public IdentifierContext identifier() {
 			return getRuleContext(IdentifierContext.class,0);
 		}
 		public SemiContext semi() {
 			return getRuleContext(SemiContext.class,0);
 		}
-		public TerminalNode DOT() { return getToken(SonoParser.DOT, 0); }
-		public TerminalNode MULT() { return getToken(SonoParser.MULT, 0); }
+		public TerminalNode DOT() { return getToken(TreblaParser.DOT, 0); }
+		public TerminalNode MULT() { return getToken(TreblaParser.MULT, 0); }
 		public ImportHeaderContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_importHeader; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterImportHeader(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterImportHeader(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitImportHeader(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitImportHeader(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitImportHeader(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitImportHeader(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -550,15 +550,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_topLevelObject; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterTopLevelObject(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterTopLevelObject(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitTopLevelObject(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitTopLevelObject(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitTopLevelObject(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitTopLevelObject(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -629,7 +629,7 @@ public class SonoParser extends Parser {
 		public ModifierListContext modifierList() {
 			return getRuleContext(ModifierListContext.class,0);
 		}
-		public TerminalNode FUNC() { return getToken(SonoParser.FUNC, 0); }
+		public TerminalNode FUNC() { return getToken(TreblaParser.FUNC, 0); }
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
@@ -642,12 +642,12 @@ public class SonoParser extends Parser {
 		public FunctionReceiverContext functionReceiver() {
 			return getRuleContext(FunctionReceiverContext.class,0);
 		}
-		public TerminalNode DOT() { return getToken(SonoParser.DOT, 0); }
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public TerminalNode DOT() { return getToken(TreblaParser.DOT, 0); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
-		public TerminalNode COLON() { return getToken(SonoParser.COLON, 0); }
+		public TerminalNode COLON() { return getToken(TreblaParser.COLON, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -657,15 +657,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_functionDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterFunctionDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterFunctionDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitFunctionDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitFunctionDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitFunctionDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitFunctionDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -823,30 +823,30 @@ public class SonoParser extends Parser {
 	}
 
 	public static class FunctionReceiverContext extends ParserRuleContext {
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
-		public TerminalNode COLON() { return getToken(SonoParser.COLON, 0); }
+		public TerminalNode COLON() { return getToken(TreblaParser.COLON, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
 		public FunctionReceiverContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_functionReceiver; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterFunctionReceiver(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterFunctionReceiver(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitFunctionReceiver(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitFunctionReceiver(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitFunctionReceiver(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitFunctionReceiver(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -894,17 +894,17 @@ public class SonoParser extends Parser {
 	}
 
 	public static class FunctionValueParametersContext extends ParserRuleContext {
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
 		public List<FunctionValueParameterContext> functionValueParameter() {
 			return getRuleContexts(FunctionValueParameterContext.class);
 		}
 		public FunctionValueParameterContext functionValueParameter(int i) {
 			return getRuleContext(FunctionValueParameterContext.class,i);
 		}
-		public List<TerminalNode> COMMA() { return getTokens(SonoParser.COMMA); }
+		public List<TerminalNode> COMMA() { return getTokens(TreblaParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(SonoParser.COMMA, i);
+			return getToken(TreblaParser.COMMA, i);
 		}
 		public FunctionValueParametersContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -912,15 +912,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_functionValueParameters; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterFunctionValueParameters(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterFunctionValueParameters(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitFunctionValueParameters(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitFunctionValueParameters(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitFunctionValueParameters(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitFunctionValueParameters(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -992,7 +992,7 @@ public class SonoParser extends Parser {
 		public ParameterContext parameter() {
 			return getRuleContext(ParameterContext.class,0);
 		}
-		public TerminalNode ASSIGNMENT() { return getToken(SonoParser.ASSIGNMENT, 0); }
+		public TerminalNode ASSIGNMENT() { return getToken(TreblaParser.ASSIGNMENT, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
@@ -1002,15 +1002,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_functionValueParameter; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterFunctionValueParameter(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterFunctionValueParameter(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitFunctionValueParameter(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitFunctionValueParameter(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitFunctionValueParameter(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitFunctionValueParameter(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1053,13 +1053,13 @@ public class SonoParser extends Parser {
 		public BlockContext block() {
 			return getRuleContext(BlockContext.class,0);
 		}
-		public TerminalNode ASSIGNMENT() { return getToken(SonoParser.ASSIGNMENT, 0); }
+		public TerminalNode ASSIGNMENT() { return getToken(TreblaParser.ASSIGNMENT, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public FunctionBodyContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1067,15 +1067,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_functionBody; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterFunctionBody(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterFunctionBody(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitFunctionBody(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitFunctionBody(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitFunctionBody(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitFunctionBody(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1137,21 +1137,21 @@ public class SonoParser extends Parser {
 		public ModifierListContext modifierList() {
 			return getRuleContext(ModifierListContext.class,0);
 		}
-		public TerminalNode VAR() { return getToken(SonoParser.VAR, 0); }
+		public TerminalNode VAR() { return getToken(TreblaParser.VAR, 0); }
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
-		public TerminalNode COLON() { return getToken(SonoParser.COLON, 0); }
+		public TerminalNode COLON() { return getToken(TreblaParser.COLON, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public TerminalNode ASSIGNMENT() { return getToken(SonoParser.ASSIGNMENT, 0); }
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public TerminalNode ASSIGNMENT() { return getToken(TreblaParser.ASSIGNMENT, 0); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public PropertyDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1159,15 +1159,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_propertyDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterPropertyDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterPropertyDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitPropertyDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitPropertyDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitPropertyDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitPropertyDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1256,16 +1256,16 @@ public class SonoParser extends Parser {
 		public ModifierListContext modifierList() {
 			return getRuleContext(ModifierListContext.class,0);
 		}
-		public TerminalNode STRUCT() { return getToken(SonoParser.STRUCT, 0); }
+		public TerminalNode STRUCT() { return getToken(TreblaParser.STRUCT, 0); }
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
 		public StructFieldsContext structFields() {
 			return getRuleContext(StructFieldsContext.class,0);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public StructDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1273,15 +1273,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_structDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterStructDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterStructDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitStructDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitStructDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitStructDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitStructDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1329,17 +1329,17 @@ public class SonoParser extends Parser {
 	}
 
 	public static class StructFieldsContext extends ParserRuleContext {
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
 		public List<StructFieldContext> structField() {
 			return getRuleContexts(StructFieldContext.class);
 		}
 		public StructFieldContext structField(int i) {
 			return getRuleContext(StructFieldContext.class,i);
 		}
-		public List<TerminalNode> COMMA() { return getTokens(SonoParser.COMMA); }
+		public List<TerminalNode> COMMA() { return getTokens(TreblaParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(SonoParser.COMMA, i);
+			return getToken(TreblaParser.COMMA, i);
 		}
 		public StructFieldsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1347,15 +1347,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_structFields; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterStructFields(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterStructFields(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitStructFields(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitStructFields(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitStructFields(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitStructFields(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1441,15 +1441,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_structField; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterStructField(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterStructField(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitStructField(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitStructField(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitStructField(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitStructField(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1476,16 +1476,16 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ScriptDeclarationContext extends ParserRuleContext {
-		public TerminalNode SCRIPT() { return getToken(SonoParser.SCRIPT, 0); }
+		public TerminalNode SCRIPT() { return getToken(TreblaParser.SCRIPT, 0); }
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
 		public ScriptBodyContext scriptBody() {
 			return getRuleContext(ScriptBodyContext.class,0);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public ScriptDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1493,15 +1493,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_scriptDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterScriptDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterScriptDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitScriptDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitScriptDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitScriptDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitScriptDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1561,11 +1561,11 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ScriptBodyContext extends ParserRuleContext {
-		public TerminalNode LCURL() { return getToken(SonoParser.LCURL, 0); }
-		public TerminalNode RCURL() { return getToken(SonoParser.RCURL, 0); }
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public TerminalNode LCURL() { return getToken(TreblaParser.LCURL, 0); }
+		public TerminalNode RCURL() { return getToken(TreblaParser.RCURL, 0); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public List<ScriptMemberDeclarationContext> scriptMemberDeclaration() {
 			return getRuleContexts(ScriptMemberDeclarationContext.class);
@@ -1579,15 +1579,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_scriptBody; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterScriptBody(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterScriptBody(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitScriptBody(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitScriptBody(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitScriptBody(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitScriptBody(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1692,15 +1692,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_scriptMemberDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterScriptMemberDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterScriptMemberDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitScriptMemberDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitScriptMemberDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitScriptMemberDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitScriptMemberDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1782,21 +1782,21 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ArchetypeDeclarationContext extends ParserRuleContext {
-		public TerminalNode ARCHETYPE() { return getToken(SonoParser.ARCHETYPE, 0); }
+		public TerminalNode ARCHETYPE() { return getToken(TreblaParser.ARCHETYPE, 0); }
 		public ArchetypeNameContext archetypeName() {
 			return getRuleContext(ArchetypeNameContext.class,0);
 		}
-		public TerminalNode ARROW() { return getToken(SonoParser.ARROW, 0); }
+		public TerminalNode ARROW() { return getToken(TreblaParser.ARROW, 0); }
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
 		public ArchetypeDefaultsContext archetypeDefaults() {
 			return getRuleContext(ArchetypeDefaultsContext.class,0);
 		}
-		public TerminalNode NOTE() { return getToken(SonoParser.NOTE, 0); }
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public TerminalNode NOTE() { return getToken(TreblaParser.NOTE, 0); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public ArchetypeDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1804,15 +1804,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_archetypeDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterArchetypeDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterArchetypeDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitArchetypeDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitArchetypeDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitArchetypeDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitArchetypeDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1909,15 +1909,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_archetypeName; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterArchetypeName(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterArchetypeName(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitArchetypeName(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitArchetypeName(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitArchetypeName(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitArchetypeName(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1944,17 +1944,17 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ArchetypeDefaultsContext extends ParserRuleContext {
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
 		public List<ArchetypeDefaultContext> archetypeDefault() {
 			return getRuleContexts(ArchetypeDefaultContext.class);
 		}
 		public ArchetypeDefaultContext archetypeDefault(int i) {
 			return getRuleContext(ArchetypeDefaultContext.class,i);
 		}
-		public List<TerminalNode> COMMA() { return getTokens(SonoParser.COMMA); }
+		public List<TerminalNode> COMMA() { return getTokens(TreblaParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(SonoParser.COMMA, i);
+			return getToken(TreblaParser.COMMA, i);
 		}
 		public ArchetypeDefaultsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1962,15 +1962,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_archetypeDefaults; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterArchetypeDefaults(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterArchetypeDefaults(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitArchetypeDefaults(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitArchetypeDefaults(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitArchetypeDefaults(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitArchetypeDefaults(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2029,7 +2029,7 @@ public class SonoParser extends Parser {
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
-		public TerminalNode ASSIGNMENT() { return getToken(SonoParser.ASSIGNMENT, 0); }
+		public TerminalNode ASSIGNMENT() { return getToken(TreblaParser.ASSIGNMENT, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
@@ -2039,15 +2039,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_archetypeDefault; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterArchetypeDefault(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterArchetypeDefault(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitArchetypeDefault(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitArchetypeDefault(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitArchetypeDefault(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitArchetypeDefault(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2078,20 +2078,20 @@ public class SonoParser extends Parser {
 	}
 
 	public static class CallbackDeclarationContext extends ParserRuleContext {
-		public TerminalNode CALLBACK() { return getToken(SonoParser.CALLBACK, 0); }
+		public TerminalNode CALLBACK() { return getToken(TreblaParser.CALLBACK, 0); }
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
 		public FunctionBodyContext functionBody() {
 			return getRuleContext(FunctionBodyContext.class,0);
 		}
-		public TerminalNode AT() { return getToken(SonoParser.AT, 0); }
+		public TerminalNode AT() { return getToken(TreblaParser.AT, 0); }
 		public CallbackOrderContext callbackOrder() {
 			return getRuleContext(CallbackOrderContext.class,0);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public CallbackDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2099,15 +2099,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_callbackDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterCallbackDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterCallbackDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitCallbackDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitCallbackDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitCallbackDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitCallbackDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2188,15 +2188,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_callbackOrder; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterCallbackOrder(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterCallbackOrder(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitCallbackOrder(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitCallbackOrder(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitCallbackOrder(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitCallbackOrder(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2226,21 +2226,21 @@ public class SonoParser extends Parser {
 		public ModifierListContext modifierList() {
 			return getRuleContext(ModifierListContext.class,0);
 		}
-		public TerminalNode LET() { return getToken(SonoParser.LET, 0); }
+		public TerminalNode LET() { return getToken(TreblaParser.LET, 0); }
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public TerminalNode ASSIGNMENT() { return getToken(SonoParser.ASSIGNMENT, 0); }
-		public TerminalNode COLON() { return getToken(SonoParser.COLON, 0); }
+		public TerminalNode ASSIGNMENT() { return getToken(TreblaParser.ASSIGNMENT, 0); }
+		public TerminalNode COLON() { return getToken(TreblaParser.COLON, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public LetDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2248,15 +2248,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_letDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterLetDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterLetDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitLetDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitLetDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitLetDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitLetDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2334,13 +2334,13 @@ public class SonoParser extends Parser {
 	}
 
 	public static class InitBlockContext extends ParserRuleContext {
-		public TerminalNode INIT() { return getToken(SonoParser.INIT, 0); }
+		public TerminalNode INIT() { return getToken(TreblaParser.INIT, 0); }
 		public BlockContext block() {
 			return getRuleContext(BlockContext.class,0);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public InitBlockContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2348,15 +2348,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_initBlock; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterInitBlock(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterInitBlock(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitInitBlock(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitInitBlock(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitInitBlock(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitInitBlock(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2403,7 +2403,7 @@ public class SonoParser extends Parser {
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
-		public TerminalNode COLON() { return getToken(SonoParser.COLON, 0); }
+		public TerminalNode COLON() { return getToken(TreblaParser.COLON, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -2413,15 +2413,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_parameter; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterParameter(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterParameter(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitParameter(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitParameter(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitParameter(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitParameter(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2470,15 +2470,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_type; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterType(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterType(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitType(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitType(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitType(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitType(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2505,26 +2505,26 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ParenthesizedTypeContext extends ParserRuleContext {
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
 		public ParenthesizedTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_parenthesizedType; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterParenthesizedType(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterParenthesizedType(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitParenthesizedType(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitParenthesizedType(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitParenthesizedType(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitParenthesizedType(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2564,15 +2564,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_simpleUserType; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterSimpleUserType(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterSimpleUserType(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitSimpleUserType(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitSimpleUserType(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitSimpleUserType(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitSimpleUserType(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2599,8 +2599,8 @@ public class SonoParser extends Parser {
 	}
 
 	public static class BlockContext extends ParserRuleContext {
-		public TerminalNode LCURL() { return getToken(SonoParser.LCURL, 0); }
-		public TerminalNode RCURL() { return getToken(SonoParser.RCURL, 0); }
+		public TerminalNode LCURL() { return getToken(TreblaParser.LCURL, 0); }
+		public TerminalNode RCURL() { return getToken(TreblaParser.RCURL, 0); }
 		public List<AnysemiContext> anysemi() {
 			return getRuleContexts(AnysemiContext.class);
 		}
@@ -2619,15 +2619,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_block; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterBlock(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterBlock(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitBlock(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitBlock(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitBlock(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitBlock(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2736,15 +2736,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_statement; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterStatement(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterStatement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitStatement(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitStatement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitStatement(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitStatement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2802,15 +2802,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_declaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitDeclaration(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitDeclaration(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2882,15 +2882,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_expression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2942,13 +2942,13 @@ public class SonoParser extends Parser {
 		public ConjunctionContext conjunction(int i) {
 			return getRuleContext(ConjunctionContext.class,i);
 		}
-		public List<TerminalNode> DISJ() { return getTokens(SonoParser.DISJ); }
+		public List<TerminalNode> DISJ() { return getTokens(TreblaParser.DISJ); }
 		public TerminalNode DISJ(int i) {
-			return getToken(SonoParser.DISJ, i);
+			return getToken(TreblaParser.DISJ, i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public DisjunctionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2956,15 +2956,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_disjunction; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterDisjunction(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterDisjunction(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitDisjunction(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitDisjunction(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitDisjunction(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitDisjunction(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3045,13 +3045,13 @@ public class SonoParser extends Parser {
 		public EqualityComparisonContext equalityComparison(int i) {
 			return getRuleContext(EqualityComparisonContext.class,i);
 		}
-		public List<TerminalNode> CONJ() { return getTokens(SonoParser.CONJ); }
+		public List<TerminalNode> CONJ() { return getTokens(TreblaParser.CONJ); }
 		public TerminalNode CONJ(int i) {
-			return getToken(SonoParser.CONJ, i);
+			return getToken(TreblaParser.CONJ, i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public ConjunctionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3059,15 +3059,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_conjunction; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterConjunction(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterConjunction(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitConjunction(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitConjunction(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitConjunction(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitConjunction(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3154,9 +3154,9 @@ public class SonoParser extends Parser {
 		public EqualityOperationContext equalityOperation(int i) {
 			return getRuleContext(EqualityOperationContext.class,i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public EqualityComparisonContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3164,15 +3164,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_equalityComparison; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterEqualityComparison(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterEqualityComparison(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitEqualityComparison(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitEqualityComparison(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitEqualityComparison(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitEqualityComparison(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3242,9 +3242,9 @@ public class SonoParser extends Parser {
 		public ComparisonOperatorContext comparisonOperator() {
 			return getRuleContext(ComparisonOperatorContext.class,0);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public ComparisonContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3252,15 +3252,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_comparison; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterComparison(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterComparison(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitComparison(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitComparison(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitComparison(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitComparison(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3326,9 +3326,9 @@ public class SonoParser extends Parser {
 		public SimpleIdentifierContext simpleIdentifier(int i) {
 			return getRuleContext(SimpleIdentifierContext.class,i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public InfixFunctionCallContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3336,15 +3336,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_infixFunctionCall; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterInfixFunctionCall(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterInfixFunctionCall(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitInfixFunctionCall(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitInfixFunctionCall(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitInfixFunctionCall(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitInfixFunctionCall(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3417,9 +3417,9 @@ public class SonoParser extends Parser {
 		public AdditiveOperatorContext additiveOperator(int i) {
 			return getRuleContext(AdditiveOperatorContext.class,i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public AdditiveExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3427,15 +3427,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_additiveExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterAdditiveExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterAdditiveExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitAdditiveExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitAdditiveExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitAdditiveExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitAdditiveExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3508,9 +3508,9 @@ public class SonoParser extends Parser {
 		public MultiplicativeOperationContext multiplicativeOperation(int i) {
 			return getRuleContext(MultiplicativeOperationContext.class,i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public MultiplicativeExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3518,15 +3518,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_multiplicativeExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterMultiplicativeExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterMultiplicativeExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitMultiplicativeExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitMultiplicativeExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitMultiplicativeExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitMultiplicativeExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3593,13 +3593,13 @@ public class SonoParser extends Parser {
 		public PrefixUnaryExpressionContext prefixUnaryExpression(int i) {
 			return getRuleContext(PrefixUnaryExpressionContext.class,i);
 		}
-		public List<TerminalNode> POW() { return getTokens(SonoParser.POW); }
+		public List<TerminalNode> POW() { return getTokens(TreblaParser.POW); }
 		public TerminalNode POW(int i) {
-			return getToken(SonoParser.POW, i);
+			return getToken(TreblaParser.POW, i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public ExponentiationExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3607,15 +3607,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_exponentiationExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterExponentiationExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterExponentiationExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitExponentiationExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitExponentiationExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitExponentiationExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitExponentiationExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3691,15 +3691,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_prefixUnaryExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterPrefixUnaryExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterPrefixUnaryExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitPrefixUnaryExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitPrefixUnaryExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitPrefixUnaryExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitPrefixUnaryExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3756,15 +3756,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_postfixUnaryExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterPostfixUnaryExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterPostfixUnaryExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitPostfixUnaryExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitPostfixUnaryExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitPostfixUnaryExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitPostfixUnaryExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3829,15 +3829,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_atomicExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterAtomicExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterAtomicExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitAtomicExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitAtomicExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitAtomicExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitAtomicExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3918,26 +3918,26 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ParenthesizedExpressionContext extends ParserRuleContext {
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
 		public ParenthesizedExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_parenthesizedExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterParenthesizedExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterParenthesizedExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitParenthesizedExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitParenthesizedExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitParenthesizedExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitParenthesizedExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3977,15 +3977,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_callSuffix; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterCallSuffix(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterCallSuffix(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitCallSuffix(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitCallSuffix(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitCallSuffix(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitCallSuffix(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4012,17 +4012,17 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ValueArgumentsContext extends ParserRuleContext {
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
 		public List<ValueArgumentContext> valueArgument() {
 			return getRuleContexts(ValueArgumentContext.class);
 		}
 		public ValueArgumentContext valueArgument(int i) {
 			return getRuleContext(ValueArgumentContext.class,i);
 		}
-		public List<TerminalNode> COMMA() { return getTokens(SonoParser.COMMA); }
+		public List<TerminalNode> COMMA() { return getTokens(TreblaParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(SonoParser.COMMA, i);
+			return getToken(TreblaParser.COMMA, i);
 		}
 		public ValueArgumentsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4030,15 +4030,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_valueArguments; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterValueArguments(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterValueArguments(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitValueArguments(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitValueArguments(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitValueArguments(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitValueArguments(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4113,22 +4113,22 @@ public class SonoParser extends Parser {
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
-		public TerminalNode ASSIGNMENT() { return getToken(SonoParser.ASSIGNMENT, 0); }
+		public TerminalNode ASSIGNMENT() { return getToken(TreblaParser.ASSIGNMENT, 0); }
 		public ValueArgumentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_valueArgument; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterValueArgument(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterValueArgument(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitValueArgument(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitValueArgument(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitValueArgument(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitValueArgument(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4176,15 +4176,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_conditionalExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterConditionalExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterConditionalExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitConditionalExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitConditionalExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitConditionalExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitConditionalExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4211,39 +4211,39 @@ public class SonoParser extends Parser {
 	}
 
 	public static class IfExpressionContext extends ParserRuleContext {
-		public TerminalNode IF() { return getToken(SonoParser.IF, 0); }
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
+		public TerminalNode IF() { return getToken(TreblaParser.IF, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
 		public List<ControlStructureBodyContext> controlStructureBody() {
 			return getRuleContexts(ControlStructureBodyContext.class);
 		}
 		public ControlStructureBodyContext controlStructureBody(int i) {
 			return getRuleContext(ControlStructureBodyContext.class,i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
-		public TerminalNode SEMICOLON() { return getToken(SonoParser.SEMICOLON, 0); }
-		public TerminalNode ELSE() { return getToken(SonoParser.ELSE, 0); }
+		public TerminalNode SEMICOLON() { return getToken(TreblaParser.SEMICOLON, 0); }
+		public TerminalNode ELSE() { return getToken(TreblaParser.ELSE, 0); }
 		public IfExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_ifExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterIfExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterIfExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitIfExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitIfExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitIfExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitIfExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4366,15 +4366,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_loopExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterLoopExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterLoopExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitLoopExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitLoopExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitLoopExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitLoopExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4401,15 +4401,15 @@ public class SonoParser extends Parser {
 	}
 
 	public static class WhileExpressionContext extends ParserRuleContext {
-		public TerminalNode WHILE() { return getToken(SonoParser.WHILE, 0); }
-		public TerminalNode LPAREN() { return getToken(SonoParser.LPAREN, 0); }
+		public TerminalNode WHILE() { return getToken(TreblaParser.WHILE, 0); }
+		public TerminalNode LPAREN() { return getToken(TreblaParser.LPAREN, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public TerminalNode RPAREN() { return getToken(SonoParser.RPAREN, 0); }
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public TerminalNode RPAREN() { return getToken(TreblaParser.RPAREN, 0); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public ControlStructureBodyContext controlStructureBody() {
 			return getRuleContext(ControlStructureBodyContext.class,0);
@@ -4420,15 +4420,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_whileExpression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterWhileExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterWhileExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitWhileExpression(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitWhileExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitWhileExpression(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitWhileExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4515,15 +4515,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_controlStructureBody; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterControlStructureBody(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterControlStructureBody(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitControlStructureBody(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitControlStructureBody(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitControlStructureBody(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitControlStructureBody(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4604,15 +4604,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_modifierList; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterModifierList(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterModifierList(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitModifierList(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitModifierList(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitModifierList(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitModifierList(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4652,22 +4652,22 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ModifierContext extends ParserRuleContext {
-		public TerminalNode PUBLIC() { return getToken(SonoParser.PUBLIC, 0); }
-		public TerminalNode PRIVATE() { return getToken(SonoParser.PRIVATE, 0); }
-		public TerminalNode SHARED() { return getToken(SonoParser.SHARED, 0); }
-		public TerminalNode STATIC() { return getToken(SonoParser.STATIC, 0); }
-		public TerminalNode OPERATOR() { return getToken(SonoParser.OPERATOR, 0); }
-		public TerminalNode INIT() { return getToken(SonoParser.INIT, 0); }
-		public TerminalNode SPAWN() { return getToken(SonoParser.SPAWN, 0); }
-		public TerminalNode DATA() { return getToken(SonoParser.DATA, 0); }
-		public TerminalNode LEVEL() { return getToken(SonoParser.LEVEL, 0); }
-		public TerminalNode TEMP() { return getToken(SonoParser.TEMP, 0); }
-		public TerminalNode RAW() { return getToken(SonoParser.RAW, 0); }
-		public TerminalNode CONST() { return getToken(SonoParser.CONST, 0); }
-		public TerminalNode INFIX() { return getToken(SonoParser.INFIX, 0); }
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public TerminalNode PUBLIC() { return getToken(TreblaParser.PUBLIC, 0); }
+		public TerminalNode PRIVATE() { return getToken(TreblaParser.PRIVATE, 0); }
+		public TerminalNode SHARED() { return getToken(TreblaParser.SHARED, 0); }
+		public TerminalNode STATIC() { return getToken(TreblaParser.STATIC, 0); }
+		public TerminalNode OPERATOR() { return getToken(TreblaParser.OPERATOR, 0); }
+		public TerminalNode INIT() { return getToken(TreblaParser.INIT, 0); }
+		public TerminalNode SPAWN() { return getToken(TreblaParser.SPAWN, 0); }
+		public TerminalNode DATA() { return getToken(TreblaParser.DATA, 0); }
+		public TerminalNode LEVEL() { return getToken(TreblaParser.LEVEL, 0); }
+		public TerminalNode TEMP() { return getToken(TreblaParser.TEMP, 0); }
+		public TerminalNode RAW() { return getToken(TreblaParser.RAW, 0); }
+		public TerminalNode CONST() { return getToken(TreblaParser.CONST, 0); }
+		public TerminalNode INFIX() { return getToken(TreblaParser.INFIX, 0); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public ModifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4675,15 +4675,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_modifier; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterModifier(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterModifier(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitModifier(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitModifier(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitModifier(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitModifier(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4739,13 +4739,13 @@ public class SonoParser extends Parser {
 		public SimpleIdentifierContext simpleIdentifier(int i) {
 			return getRuleContext(SimpleIdentifierContext.class,i);
 		}
-		public List<TerminalNode> DOT() { return getTokens(SonoParser.DOT); }
+		public List<TerminalNode> DOT() { return getTokens(TreblaParser.DOT); }
 		public TerminalNode DOT(int i) {
-			return getToken(SonoParser.DOT, i);
+			return getToken(TreblaParser.DOT, i);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public IdentifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4753,15 +4753,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_identifier; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterIdentifier(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterIdentifier(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitIdentifier(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitIdentifier(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitIdentifier(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitIdentifier(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4822,38 +4822,38 @@ public class SonoParser extends Parser {
 	}
 
 	public static class SimpleIdentifierContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(SonoParser.Identifier, 0); }
-		public TerminalNode PUBLIC() { return getToken(SonoParser.PUBLIC, 0); }
-		public TerminalNode PRIVATE() { return getToken(SonoParser.PRIVATE, 0); }
-		public TerminalNode INTERNAL() { return getToken(SonoParser.INTERNAL, 0); }
-		public TerminalNode PROTECTED() { return getToken(SonoParser.PROTECTED, 0); }
-		public TerminalNode SHARED() { return getToken(SonoParser.SHARED, 0); }
-		public TerminalNode STATIC() { return getToken(SonoParser.STATIC, 0); }
-		public TerminalNode OPERATOR() { return getToken(SonoParser.OPERATOR, 0); }
-		public TerminalNode INLINE() { return getToken(SonoParser.INLINE, 0); }
-		public TerminalNode INIT() { return getToken(SonoParser.INIT, 0); }
-		public TerminalNode SPAWN() { return getToken(SonoParser.SPAWN, 0); }
-		public TerminalNode DATA() { return getToken(SonoParser.DATA, 0); }
-		public TerminalNode LEVEL() { return getToken(SonoParser.LEVEL, 0); }
-		public TerminalNode RAW() { return getToken(SonoParser.RAW, 0); }
-		public TerminalNode PACKAGE() { return getToken(SonoParser.PACKAGE, 0); }
-		public TerminalNode TEMP() { return getToken(SonoParser.TEMP, 0); }
-		public TerminalNode ARCHETYPE() { return getToken(SonoParser.ARCHETYPE, 0); }
+		public TerminalNode Identifier() { return getToken(TreblaParser.Identifier, 0); }
+		public TerminalNode PUBLIC() { return getToken(TreblaParser.PUBLIC, 0); }
+		public TerminalNode PRIVATE() { return getToken(TreblaParser.PRIVATE, 0); }
+		public TerminalNode INTERNAL() { return getToken(TreblaParser.INTERNAL, 0); }
+		public TerminalNode PROTECTED() { return getToken(TreblaParser.PROTECTED, 0); }
+		public TerminalNode SHARED() { return getToken(TreblaParser.SHARED, 0); }
+		public TerminalNode STATIC() { return getToken(TreblaParser.STATIC, 0); }
+		public TerminalNode OPERATOR() { return getToken(TreblaParser.OPERATOR, 0); }
+		public TerminalNode INLINE() { return getToken(TreblaParser.INLINE, 0); }
+		public TerminalNode INIT() { return getToken(TreblaParser.INIT, 0); }
+		public TerminalNode SPAWN() { return getToken(TreblaParser.SPAWN, 0); }
+		public TerminalNode DATA() { return getToken(TreblaParser.DATA, 0); }
+		public TerminalNode LEVEL() { return getToken(TreblaParser.LEVEL, 0); }
+		public TerminalNode RAW() { return getToken(TreblaParser.RAW, 0); }
+		public TerminalNode PACKAGE() { return getToken(TreblaParser.PACKAGE, 0); }
+		public TerminalNode TEMP() { return getToken(TreblaParser.TEMP, 0); }
+		public TerminalNode ARCHETYPE() { return getToken(TreblaParser.ARCHETYPE, 0); }
 		public SimpleIdentifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_simpleIdentifier; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterSimpleIdentifier(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterSimpleIdentifier(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitSimpleIdentifier(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitSimpleIdentifier(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitSimpleIdentifier(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitSimpleIdentifier(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4889,24 +4889,24 @@ public class SonoParser extends Parser {
 	}
 
 	public static class LiteralConstantContext extends ParserRuleContext {
-		public TerminalNode BooleanLiteral() { return getToken(SonoParser.BooleanLiteral, 0); }
-		public TerminalNode IntegerLiteral() { return getToken(SonoParser.IntegerLiteral, 0); }
-		public TerminalNode FloatLiteral() { return getToken(SonoParser.FloatLiteral, 0); }
+		public TerminalNode BooleanLiteral() { return getToken(TreblaParser.BooleanLiteral, 0); }
+		public TerminalNode IntegerLiteral() { return getToken(TreblaParser.IntegerLiteral, 0); }
+		public TerminalNode FloatLiteral() { return getToken(TreblaParser.FloatLiteral, 0); }
 		public LiteralConstantContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_literalConstant; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterLiteralConstant(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterLiteralConstant(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitLiteralConstant(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitLiteralConstant(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitLiteralConstant(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitLiteralConstant(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4942,23 +4942,23 @@ public class SonoParser extends Parser {
 	}
 
 	public static class AdditiveOperatorContext extends ParserRuleContext {
-		public TerminalNode ADD() { return getToken(SonoParser.ADD, 0); }
-		public TerminalNode SUB() { return getToken(SonoParser.SUB, 0); }
+		public TerminalNode ADD() { return getToken(TreblaParser.ADD, 0); }
+		public TerminalNode SUB() { return getToken(TreblaParser.SUB, 0); }
 		public AdditiveOperatorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_additiveOperator; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterAdditiveOperator(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterAdditiveOperator(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitAdditiveOperator(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitAdditiveOperator(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitAdditiveOperator(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitAdditiveOperator(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -4994,24 +4994,24 @@ public class SonoParser extends Parser {
 	}
 
 	public static class MultiplicativeOperationContext extends ParserRuleContext {
-		public TerminalNode MULT() { return getToken(SonoParser.MULT, 0); }
-		public TerminalNode DIV() { return getToken(SonoParser.DIV, 0); }
-		public TerminalNode MOD() { return getToken(SonoParser.MOD, 0); }
+		public TerminalNode MULT() { return getToken(TreblaParser.MULT, 0); }
+		public TerminalNode DIV() { return getToken(TreblaParser.DIV, 0); }
+		public TerminalNode MOD() { return getToken(TreblaParser.MOD, 0); }
 		public MultiplicativeOperationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_multiplicativeOperation; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterMultiplicativeOperation(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterMultiplicativeOperation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitMultiplicativeOperation(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitMultiplicativeOperation(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitMultiplicativeOperation(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitMultiplicativeOperation(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5047,26 +5047,26 @@ public class SonoParser extends Parser {
 	}
 
 	public static class PrefixUnaryOperationContext extends ParserRuleContext {
-		public TerminalNode INCR() { return getToken(SonoParser.INCR, 0); }
-		public TerminalNode DECR() { return getToken(SonoParser.DECR, 0); }
-		public TerminalNode ADD() { return getToken(SonoParser.ADD, 0); }
-		public TerminalNode SUB() { return getToken(SonoParser.SUB, 0); }
-		public TerminalNode EXCL() { return getToken(SonoParser.EXCL, 0); }
+		public TerminalNode INCR() { return getToken(TreblaParser.INCR, 0); }
+		public TerminalNode DECR() { return getToken(TreblaParser.DECR, 0); }
+		public TerminalNode ADD() { return getToken(TreblaParser.ADD, 0); }
+		public TerminalNode SUB() { return getToken(TreblaParser.SUB, 0); }
+		public TerminalNode EXCL() { return getToken(TreblaParser.EXCL, 0); }
 		public PrefixUnaryOperationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_prefixUnaryOperation; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterPrefixUnaryOperation(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterPrefixUnaryOperation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitPrefixUnaryOperation(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitPrefixUnaryOperation(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitPrefixUnaryOperation(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitPrefixUnaryOperation(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5102,11 +5102,11 @@ public class SonoParser extends Parser {
 	}
 
 	public static class PostfixUnaryOperationContext extends ParserRuleContext {
-		public TerminalNode INCR() { return getToken(SonoParser.INCR, 0); }
-		public TerminalNode DECR() { return getToken(SonoParser.DECR, 0); }
-		public List<TerminalNode> EXCL() { return getTokens(SonoParser.EXCL); }
+		public TerminalNode INCR() { return getToken(TreblaParser.INCR, 0); }
+		public TerminalNode DECR() { return getToken(TreblaParser.DECR, 0); }
+		public List<TerminalNode> EXCL() { return getTokens(TreblaParser.EXCL); }
 		public TerminalNode EXCL(int i) {
-			return getToken(SonoParser.EXCL, i);
+			return getToken(TreblaParser.EXCL, i);
 		}
 		public CallSuffixContext callSuffix() {
 			return getRuleContext(CallSuffixContext.class,0);
@@ -5117,9 +5117,9 @@ public class SonoParser extends Parser {
 		public SimpleIdentifierContext simpleIdentifier() {
 			return getRuleContext(SimpleIdentifierContext.class,0);
 		}
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
 		public PostfixUnaryOperationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5127,15 +5127,15 @@ public class SonoParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_postfixUnaryOperation; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterPostfixUnaryOperation(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterPostfixUnaryOperation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitPostfixUnaryOperation(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitPostfixUnaryOperation(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitPostfixUnaryOperation(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitPostfixUnaryOperation(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5218,22 +5218,22 @@ public class SonoParser extends Parser {
 	}
 
 	public static class MemberAccessOperatorContext extends ParserRuleContext {
-		public TerminalNode DOT() { return getToken(SonoParser.DOT, 0); }
+		public TerminalNode DOT() { return getToken(TreblaParser.DOT, 0); }
 		public MemberAccessOperatorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_memberAccessOperator; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterMemberAccessOperator(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterMemberAccessOperator(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitMemberAccessOperator(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitMemberAccessOperator(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitMemberAccessOperator(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitMemberAccessOperator(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5260,27 +5260,27 @@ public class SonoParser extends Parser {
 	}
 
 	public static class AssignmentOperatorContext extends ParserRuleContext {
-		public TerminalNode ASSIGNMENT() { return getToken(SonoParser.ASSIGNMENT, 0); }
-		public TerminalNode ADD_ASSIGNMENT() { return getToken(SonoParser.ADD_ASSIGNMENT, 0); }
-		public TerminalNode SUB_ASSIGNMENT() { return getToken(SonoParser.SUB_ASSIGNMENT, 0); }
-		public TerminalNode MULT_ASSIGNMENT() { return getToken(SonoParser.MULT_ASSIGNMENT, 0); }
-		public TerminalNode DIV_ASSIGNMENT() { return getToken(SonoParser.DIV_ASSIGNMENT, 0); }
-		public TerminalNode MOD_ASSIGNMENT() { return getToken(SonoParser.MOD_ASSIGNMENT, 0); }
+		public TerminalNode ASSIGNMENT() { return getToken(TreblaParser.ASSIGNMENT, 0); }
+		public TerminalNode ADD_ASSIGNMENT() { return getToken(TreblaParser.ADD_ASSIGNMENT, 0); }
+		public TerminalNode SUB_ASSIGNMENT() { return getToken(TreblaParser.SUB_ASSIGNMENT, 0); }
+		public TerminalNode MULT_ASSIGNMENT() { return getToken(TreblaParser.MULT_ASSIGNMENT, 0); }
+		public TerminalNode DIV_ASSIGNMENT() { return getToken(TreblaParser.DIV_ASSIGNMENT, 0); }
+		public TerminalNode MOD_ASSIGNMENT() { return getToken(TreblaParser.MOD_ASSIGNMENT, 0); }
 		public AssignmentOperatorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assignmentOperator; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterAssignmentOperator(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterAssignmentOperator(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitAssignmentOperator(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitAssignmentOperator(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitAssignmentOperator(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitAssignmentOperator(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5316,23 +5316,23 @@ public class SonoParser extends Parser {
 	}
 
 	public static class EqualityOperationContext extends ParserRuleContext {
-		public TerminalNode EXCL_EQ() { return getToken(SonoParser.EXCL_EQ, 0); }
-		public TerminalNode EQEQ() { return getToken(SonoParser.EQEQ, 0); }
+		public TerminalNode EXCL_EQ() { return getToken(TreblaParser.EXCL_EQ, 0); }
+		public TerminalNode EQEQ() { return getToken(TreblaParser.EQEQ, 0); }
 		public EqualityOperationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_equalityOperation; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterEqualityOperation(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterEqualityOperation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitEqualityOperation(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitEqualityOperation(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitEqualityOperation(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitEqualityOperation(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5368,25 +5368,25 @@ public class SonoParser extends Parser {
 	}
 
 	public static class ComparisonOperatorContext extends ParserRuleContext {
-		public TerminalNode LANGLE() { return getToken(SonoParser.LANGLE, 0); }
-		public TerminalNode RANGLE() { return getToken(SonoParser.RANGLE, 0); }
-		public TerminalNode LE() { return getToken(SonoParser.LE, 0); }
-		public TerminalNode GE() { return getToken(SonoParser.GE, 0); }
+		public TerminalNode LANGLE() { return getToken(TreblaParser.LANGLE, 0); }
+		public TerminalNode RANGLE() { return getToken(TreblaParser.RANGLE, 0); }
+		public TerminalNode LE() { return getToken(TreblaParser.LE, 0); }
+		public TerminalNode GE() { return getToken(TreblaParser.GE, 0); }
 		public ComparisonOperatorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_comparisonOperator; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterComparisonOperator(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterComparisonOperator(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitComparisonOperator(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitComparisonOperator(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitComparisonOperator(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitComparisonOperator(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5422,26 +5422,26 @@ public class SonoParser extends Parser {
 	}
 
 	public static class SemiContext extends ParserRuleContext {
-		public List<TerminalNode> NL() { return getTokens(SonoParser.NL); }
+		public List<TerminalNode> NL() { return getTokens(TreblaParser.NL); }
 		public TerminalNode NL(int i) {
-			return getToken(SonoParser.NL, i);
+			return getToken(TreblaParser.NL, i);
 		}
-		public TerminalNode SEMICOLON() { return getToken(SonoParser.SEMICOLON, 0); }
+		public TerminalNode SEMICOLON() { return getToken(TreblaParser.SEMICOLON, 0); }
 		public SemiContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_semi; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterSemi(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterSemi(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitSemi(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitSemi(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitSemi(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitSemi(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5531,23 +5531,23 @@ public class SonoParser extends Parser {
 	}
 
 	public static class AnysemiContext extends ParserRuleContext {
-		public TerminalNode NL() { return getToken(SonoParser.NL, 0); }
-		public TerminalNode SEMICOLON() { return getToken(SonoParser.SEMICOLON, 0); }
+		public TerminalNode NL() { return getToken(TreblaParser.NL, 0); }
+		public TerminalNode SEMICOLON() { return getToken(TreblaParser.SEMICOLON, 0); }
 		public AnysemiContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_anysemi; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).enterAnysemi(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).enterAnysemi(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SonoParserListener ) ((SonoParserListener)listener).exitAnysemi(this);
+			if ( listener instanceof TreblaParserListener ) ((TreblaParserListener)listener).exitAnysemi(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SonoParserVisitor ) return ((SonoParserVisitor<? extends T>)visitor).visitAnysemi(this);
+			if ( visitor instanceof TreblaParserVisitor ) return ((TreblaParserVisitor<? extends T>)visitor).visitAnysemi(this);
 			else return visitor.visitChildren(this);
 		}
 	}

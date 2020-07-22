@@ -1,14 +1,14 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.backend.compile.Archetype
-import xyz.qwewqa.sono.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.ReadOnlyContext
-import xyz.qwewqa.sono.frontend.context.Visibility
-import xyz.qwewqa.sono.frontend.expression.parseAndApplyTo
-import xyz.qwewqa.sono.frontend.runWithErrorMessage
-import xyz.qwewqa.sono.grammar.sono.ArchetypeDeclarationNode
+import xyz.qwewqa.trebla.backend.compile.Archetype
+import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ReadOnlyContext
+import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
+import xyz.qwewqa.trebla.frontend.runWithErrorMessage
+import xyz.qwewqa.trebla.grammar.trebla.ArchetypeDeclarationNode
 
 class ArchetypeDeclaration(override val node: ArchetypeDeclarationNode, override val declaringContext: Context) :
     Declaration {

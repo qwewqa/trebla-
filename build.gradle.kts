@@ -6,12 +6,12 @@ plugins {
     application
 }
 
-group = "xyz.qwewqa.sono"
+group = "xyz.qwewqa.trebla"
 version = "0.1.0"
 
 application {
-    applicationName = "sono"
-    mainClassName = "xyz.qwewqa.sono.MainKt"
+    applicationName = "trebla"
+    mainClassName = "xyz.qwewqa.trebla.MainKt"
 }
 
 repositories {
@@ -32,8 +32,8 @@ dependencies {
 tasks {
     generateGrammarSource {
         maxHeapSize = "64m"
-        arguments = arguments + listOf("-visitor", "-lib", "src/main/java/xyz/qwewqa/sono/grammar/generated")
-        outputDirectory = File("src/main/java/xyz/qwewqa/sono/grammar/generated")
+        arguments = arguments + listOf("-visitor", "-lib", "src/main/java/xyz/qwewqa/trebla/grammar/generated")
+        outputDirectory = File("src/main/java/xyz/qwewqa/trebla/grammar/generated")
     }
 
     compileKotlin {

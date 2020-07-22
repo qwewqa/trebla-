@@ -3,7 +3,7 @@ grammar Level;
 import UnicodeClasses;
 
 @header {
-    package xyz.qwewqa.sono.grammar.generated;
+    package xyz.qwewqa.trebla.grammar.generated;
 }
 
 LineComment

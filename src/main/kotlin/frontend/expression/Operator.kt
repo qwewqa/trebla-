@@ -1,19 +1,19 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.sono.backend.compile.FunctionIRNode
-import xyz.qwewqa.sono.backend.compile.FunctionIRNodeVariant
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.ExecutionContext
-import xyz.qwewqa.sono.frontend.context.MemberAccessor
-import xyz.qwewqa.sono.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.sono.frontend.declaration.BuiltinFunctionVariant
-import xyz.qwewqa.sono.frontend.declaration.RawStructValue
-import xyz.qwewqa.sono.frontend.runWithErrorMessage
-import xyz.qwewqa.sono.grammar.sono.InfixFunctionNode
-import xyz.qwewqa.sono.grammar.sono.PostfixUnaryFunctionNode
-import xyz.qwewqa.sono.grammar.sono.PrefixUnaryFunctionNode
-import xyz.qwewqa.sono.grammar.sono.UnaryFunctionNode
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ExecutionContext
+import xyz.qwewqa.trebla.frontend.context.MemberAccessor
+import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
+import xyz.qwewqa.trebla.frontend.declaration.BuiltinFunctionVariant
+import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.frontend.runWithErrorMessage
+import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
+import xyz.qwewqa.trebla.grammar.trebla.PostfixUnaryFunctionNode
+import xyz.qwewqa.trebla.grammar.trebla.PrefixUnaryFunctionNode
+import xyz.qwewqa.trebla.grammar.trebla.UnaryFunctionNode
 
 class UnaryFunctionExpression(override val node: UnaryFunctionNode) : Expression {
     private val functionName = when (val op = node.op) {

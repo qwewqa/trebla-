@@ -1,14 +1,14 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.backend.constexpr.ConstexprEvaluationException
-import xyz.qwewqa.sono.backend.constexpr.constexprEvaluate
-import xyz.qwewqa.sono.frontend.CompilerConfiguration
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.ConcreteAllocation
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.Visibility
-import xyz.qwewqa.sono.frontend.context.getFullyQualified
-import xyz.qwewqa.sono.frontend.expression.*
+import xyz.qwewqa.trebla.backend.constexpr.ConstexprEvaluationException
+import xyz.qwewqa.trebla.backend.constexpr.constexprEvaluate
+import xyz.qwewqa.trebla.frontend.CompilerConfiguration
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.context.getFullyQualified
+import xyz.qwewqa.trebla.frontend.expression.*
 
 class Memref(override val declaringContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration, Callable {
     override val identifier = "memref"

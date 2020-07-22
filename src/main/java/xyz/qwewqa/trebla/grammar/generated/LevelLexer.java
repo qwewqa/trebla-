@@ -1,6 +1,6 @@
 // Generated from Level.g4 by ANTLR 4.8
 
-    package xyz.qwewqa.sono.grammar.generated;
+    package xyz.qwewqa.trebla.grammar.generated;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

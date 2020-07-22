@@ -1,6 +1,6 @@
-package xyz.qwewqa.sono.backend.compile
+package xyz.qwewqa.trebla.backend.compile
 
-import xyz.qwewqa.sono.backend.BackendConfig
+import xyz.qwewqa.trebla.backend.BackendConfig
 
 fun compileEngine(
     scripts: List<IRScript>,

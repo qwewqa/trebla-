@@ -1,4 +1,4 @@
-package xyz.qwewqa.sono.backend.compile
+package xyz.qwewqa.trebla.backend.compile
 
 sealed class CompiledNode {
     abstract fun finalize(indexes: Map<CompiledNode, Int>): Map<String, Any>

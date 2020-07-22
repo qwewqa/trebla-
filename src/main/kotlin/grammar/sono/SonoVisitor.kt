@@ -1,16 +1,16 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package xyz.qwewqa.sono.grammar.sono
+package xyz.qwewqa.trebla.grammar.trebla
 
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
-import xyz.qwewqa.sono.grammar.generated.SonoParser
-import xyz.qwewqa.sono.grammar.generated.SonoParserBaseVisitor
+import xyz.qwewqa.trebla.grammar.generated.TreblaParser
+import xyz.qwewqa.trebla.grammar.generated.TreblaParserBaseVisitor
 import java.util.*
 
-class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<SonoNode>() {
-    override fun visitSonoFile(ctx: SonoParser.SonoFileContext): SonoFileNode {
-        return SonoFileNode(
+class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<TreblaNode>() {
+    override fun visitTreblaFile(ctx: TreblaParser.TreblaFileContext): TreblaFileNode {
+        return TreblaFileNode(
             ctx, filename,
             ctx.packageHeader()?.visit() as PackageHeaderNode?,
             ctx.importList().visit() as ImportListNode,
@@ -18,26 +18,26 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitPackageHeader(ctx: SonoParser.PackageHeaderContext): SonoNode {
+    override fun visitPackageHeader(ctx: TreblaParser.PackageHeaderContext): TreblaNode {
         return PackageHeaderNode(ctx, filename, ctx.identifier().visit() as IdentifierNode)
     }
 
-    override fun visitImportList(ctx: SonoParser.ImportListContext): SonoNode {
+    override fun visitImportList(ctx: TreblaParser.ImportListContext): TreblaNode {
         return ImportListNode(ctx, filename, ctx.importHeader().visit() as List<ImportHeaderNode>)
     }
 
-    override fun visitImportHeader(ctx: SonoParser.ImportHeaderContext): SonoNode {
+    override fun visitImportHeader(ctx: TreblaParser.ImportHeaderContext): TreblaNode {
         return ImportHeaderNode(ctx, filename, ctx.identifier().visit() as IdentifierNode, ctx.MULT().exist)
     }
 
-    override fun visitFunctionValueParameters(ctx: SonoParser.FunctionValueParametersContext): SonoNode {
+    override fun visitFunctionValueParameters(ctx: TreblaParser.FunctionValueParametersContext): TreblaNode {
         return FunctionValueParametersNode(
             ctx, filename,
             ctx.functionValueParameter().visit() as List<FunctionValueParameterNode>
         )
     }
 
-    override fun visitFunctionValueParameter(ctx: SonoParser.FunctionValueParameterContext): SonoNode {
+    override fun visitFunctionValueParameter(ctx: TreblaParser.FunctionValueParameterContext): TreblaNode {
         return FunctionValueParameterNode(
             ctx, filename,
             ctx.parameter().visit() as ParameterNode,
@@ -45,7 +45,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitFunctionBody(ctx: SonoParser.FunctionBodyContext): SonoNode {
+    override fun visitFunctionBody(ctx: TreblaParser.FunctionBodyContext): TreblaNode {
         return if (ctx.block().exist) {
             ctx.block().visit()
         } else {
@@ -53,7 +53,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         }
     }
 
-    override fun visitPropertyDeclaration(ctx: SonoParser.PropertyDeclarationContext): SonoNode {
+    override fun visitPropertyDeclaration(ctx: TreblaParser.PropertyDeclarationContext): TreblaNode {
         return PropertyDeclarationNode(
             ctx, filename,
             ctx.modifierList().visit() as ModifierListNode,
@@ -68,7 +68,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitLetDeclaration(ctx: SonoParser.LetDeclarationContext): SonoNode {
+    override fun visitLetDeclaration(ctx: TreblaParser.LetDeclarationContext): TreblaNode {
         return LetDeclarationNode(
             ctx, filename,
             ctx.modifierList().visit() as ModifierListNode,
@@ -78,7 +78,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitStructDeclaration(ctx: SonoParser.StructDeclarationContext): SonoNode {
+    override fun visitStructDeclaration(ctx: TreblaParser.StructDeclarationContext): TreblaNode {
         return StructDeclarationNode(
             ctx, filename,
             ctx.modifierList().visit() as ModifierListNode,
@@ -87,11 +87,11 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitStructFields(ctx: SonoParser.StructFieldsContext): SonoNode {
+    override fun visitStructFields(ctx: TreblaParser.StructFieldsContext): TreblaNode {
         return StructFieldsNode(ctx, filename, ctx.structField().visit() as List<ParameterNode>)
     }
 
-    override fun visitScriptDeclaration(ctx: SonoParser.ScriptDeclarationContext): SonoNode {
+    override fun visitScriptDeclaration(ctx: TreblaParser.ScriptDeclarationContext): TreblaNode {
         return ScriptDeclarationNode(
             ctx, filename,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
@@ -99,11 +99,11 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitScriptBody(ctx: SonoParser.ScriptBodyContext): SonoNode {
+    override fun visitScriptBody(ctx: TreblaParser.ScriptBodyContext): TreblaNode {
         return ScriptBodyNode(ctx, filename, ctx.scriptMemberDeclaration().map { it.visit() as ScriptMemberNode })
     }
 
-    override fun visitFunctionDeclaration(ctx: SonoParser.FunctionDeclarationContext): SonoNode {
+    override fun visitFunctionDeclaration(ctx: TreblaParser.FunctionDeclarationContext): TreblaNode {
         return FunctionDeclarationNode(
             ctx,
             filename,
@@ -117,7 +117,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitFunctionReceiver(ctx: SonoParser.FunctionReceiverContext): SonoNode {
+    override fun visitFunctionReceiver(ctx: TreblaParser.FunctionReceiverContext): TreblaNode {
         return FunctionReceiverNode(
             ctx,
             filename,
@@ -126,7 +126,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitArchetypeDeclaration(ctx: SonoParser.ArchetypeDeclarationContext): SonoNode {
+    override fun visitArchetypeDeclaration(ctx: TreblaParser.ArchetypeDeclarationContext): TreblaNode {
         return ArchetypeDeclarationNode(
             ctx, filename,
             ctx.archetypeName().visit() as SimpleIdentifierNode,
@@ -136,15 +136,15 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitArchetypeName(ctx: SonoParser.ArchetypeNameContext): SonoNode {
+    override fun visitArchetypeName(ctx: TreblaParser.ArchetypeNameContext): TreblaNode {
         return ctx.simpleIdentifier().visit()
     }
 
-    override fun visitArchetypeDefaults(ctx: SonoParser.ArchetypeDefaultsContext): SonoNode {
+    override fun visitArchetypeDefaults(ctx: TreblaParser.ArchetypeDefaultsContext): TreblaNode {
         return ArchetypeDefaultsNode(ctx, filename, ctx.archetypeDefault().visit() as List<ArchetypeDefaultNode>)
     }
 
-    override fun visitArchetypeDefault(ctx: SonoParser.ArchetypeDefaultContext): SonoNode {
+    override fun visitArchetypeDefault(ctx: TreblaParser.ArchetypeDefaultContext): TreblaNode {
         return ArchetypeDefaultNode(
             ctx, filename,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
@@ -152,7 +152,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitCallbackDeclaration(ctx: SonoParser.CallbackDeclarationContext): SonoNode {
+    override fun visitCallbackDeclaration(ctx: TreblaParser.CallbackDeclarationContext): TreblaNode {
         return CallbackDeclarationNode(
             ctx, filename,
             ctx.callbackOrder()?.visit() as ExpressionNode?,
@@ -161,38 +161,38 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitInitBlock(ctx: SonoParser.InitBlockContext): SonoNode {
+    override fun visitInitBlock(ctx: TreblaParser.InitBlockContext): TreblaNode {
         return InitBlockNode(ctx, filename, ctx.block().visit() as BlockNode)
     }
 
-    override fun visitBlock(ctx: SonoParser.BlockContext): SonoNode {
+    override fun visitBlock(ctx: TreblaParser.BlockContext): TreblaNode {
         return BlockNode(ctx, filename, ctx.statement().visit() as List<StatementNode>)
     }
 
-    override fun visitStatement(ctx: SonoParser.StatementContext): SonoNode {
+    override fun visitStatement(ctx: TreblaParser.StatementContext): TreblaNode {
         return when {
             ctx.expression().exist -> ctx.expression().visit()
             else -> ctx.declaration().visit()
         }
     }
 
-    override fun visitType(ctx: SonoParser.TypeContext): SonoNode {
+    override fun visitType(ctx: TreblaParser.TypeContext): TreblaNode {
         return TypeNode(ctx, filename, ctx.expression().visit() as ExpressionNode)
     }
 
-    override fun visitSimpleUserType(ctx: SonoParser.SimpleUserTypeContext): SonoNode {
+    override fun visitSimpleUserType(ctx: TreblaParser.SimpleUserTypeContext): TreblaNode {
         return SimpleUserTypeNode(ctx, filename, ctx.simpleIdentifier().visit() as SimpleIdentifierNode)
     }
 
-    override fun visitModifierList(ctx: SonoParser.ModifierListContext): SonoNode {
+    override fun visitModifierList(ctx: TreblaParser.ModifierListContext): TreblaNode {
         return ModifierListNode(ctx, filename, ctx.modifier().visit().map { (it as ModifierNode).value })
     }
 
-    override fun visitModifier(ctx: SonoParser.ModifierContext): SonoNode {
+    override fun visitModifier(ctx: TreblaParser.ModifierContext): TreblaNode {
         return ModifierNode(ctx, filename, ctx.text)
     }
 
-    override fun visitParameter(ctx: SonoParser.ParameterContext): SonoNode {
+    override fun visitParameter(ctx: TreblaParser.ParameterContext): TreblaNode {
         return ParameterNode(
             ctx, filename,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
@@ -200,15 +200,15 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitSimpleIdentifier(ctx: SonoParser.SimpleIdentifierContext): SonoNode {
+    override fun visitSimpleIdentifier(ctx: TreblaParser.SimpleIdentifierContext): TreblaNode {
         return SimpleIdentifierNode(ctx, filename, ctx.text.filter { it != '`' }) // identifiers can be wrapped in ticks
     }
 
-    override fun visitIdentifier(ctx: SonoParser.IdentifierContext): SonoNode {
+    override fun visitIdentifier(ctx: TreblaParser.IdentifierContext): TreblaNode {
         return IdentifierNode(ctx, filename, ctx.simpleIdentifier().visit().map { (it as SimpleIdentifierNode).value })
     }
 
-    override fun visitLiteralConstant(ctx: SonoParser.LiteralConstantContext): SonoNode {
+    override fun visitLiteralConstant(ctx: TreblaParser.LiteralConstantContext): TreblaNode {
         return when {
             ctx.BooleanLiteral().exist -> BooleanLiteralNode(ctx, filename, ctx.text!!.filter { it != '_' }.toBoolean())
             ctx.IntegerLiteral().exist -> NumberLiteralNode(ctx, filename, ctx.text!!.filter { it != '_' }.toDouble())
@@ -217,43 +217,43 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         }
     }
 
-    override fun visitExpression(ctx: SonoParser.ExpressionContext): SonoNode {
+    override fun visitExpression(ctx: TreblaParser.ExpressionContext): TreblaNode {
         return visitGenericInfixFunction(ctx, true)
     }
 
-    override fun visitDisjunction(ctx: SonoParser.DisjunctionContext): SonoNode {
+    override fun visitDisjunction(ctx: TreblaParser.DisjunctionContext): TreblaNode {
         return visitGenericInfixFunction(ctx)
     }
 
-    override fun visitConjunction(ctx: SonoParser.ConjunctionContext): SonoNode {
+    override fun visitConjunction(ctx: TreblaParser.ConjunctionContext): TreblaNode {
         return visitGenericInfixFunction(ctx)
     }
 
-    override fun visitEqualityComparison(ctx: SonoParser.EqualityComparisonContext): SonoNode {
+    override fun visitEqualityComparison(ctx: TreblaParser.EqualityComparisonContext): TreblaNode {
         return visitGenericInfixFunction(ctx)
     }
 
-    override fun visitComparison(ctx: SonoParser.ComparisonContext): SonoNode {
+    override fun visitComparison(ctx: TreblaParser.ComparisonContext): TreblaNode {
         return visitGenericInfixFunction(ctx)
     }
 
-    override fun visitInfixFunctionCall(ctx: SonoParser.InfixFunctionCallContext): SonoNode {
+    override fun visitInfixFunctionCall(ctx: TreblaParser.InfixFunctionCallContext): TreblaNode {
         return visitGenericInfixFunction(ctx)
     }
 
-    override fun visitAdditiveExpression(ctx: SonoParser.AdditiveExpressionContext): SonoNode {
+    override fun visitAdditiveExpression(ctx: TreblaParser.AdditiveExpressionContext): TreblaNode {
         return visitGenericInfixFunction(ctx)
     }
 
-    override fun visitMultiplicativeExpression(ctx: SonoParser.MultiplicativeExpressionContext): SonoNode {
+    override fun visitMultiplicativeExpression(ctx: TreblaParser.MultiplicativeExpressionContext): TreblaNode {
         return visitGenericInfixFunction(ctx)
     }
 
-    override fun visitExponentiationExpression(ctx: SonoParser.ExponentiationExpressionContext): SonoNode {
+    override fun visitExponentiationExpression(ctx: TreblaParser.ExponentiationExpressionContext): TreblaNode {
         return visitGenericInfixFunction(ctx)
     }
 
-    override fun visitPrefixUnaryExpression(ctx: SonoParser.PrefixUnaryExpressionContext): SonoNode {
+    override fun visitPrefixUnaryExpression(ctx: TreblaParser.PrefixUnaryExpressionContext): TreblaNode {
         val children = ArrayDeque(ctx.children)
         var expr = children.removeLast().visit() as ExpressionNode
         while (children.isNotEmpty()) {
@@ -267,14 +267,14 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         return expr
     }
 
-    override fun visitPostfixUnaryExpression(ctx: SonoParser.PostfixUnaryExpressionContext): SonoNode {
+    override fun visitPostfixUnaryExpression(ctx: TreblaParser.PostfixUnaryExpressionContext): TreblaNode {
         val children = ArrayDeque(ctx.children)
         var expr = children.removeFirst().visit() as ExpressionNode
         while (children.isNotEmpty()) {
             expr = UnaryFunctionNode(
                 ctx, filename,
                 expr,
-                (children.removeFirst() as SonoParser.PostfixUnaryOperationContext).let {
+                (children.removeFirst() as TreblaParser.PostfixUnaryOperationContext).let {
                     when {
                         it.callSuffix().exist -> it.callSuffix().visit() as FunctionCallNode
                         it.simpleIdentifier().exist -> MemberAccessNode(ctx,
@@ -288,7 +288,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         return expr
     }
 
-    override fun visitIfExpression(ctx: SonoParser.IfExpressionContext): SonoNode {
+    override fun visitIfExpression(ctx: TreblaParser.IfExpressionContext): TreblaNode {
         val body = ctx.controlStructureBody()
         return IfExpressionNode(
             ctx, filename,
@@ -298,20 +298,20 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    override fun visitControlStructureBody(ctx: SonoParser.ControlStructureBodyContext): SonoNode {
+    override fun visitControlStructureBody(ctx: TreblaParser.ControlStructureBodyContext): TreblaNode {
         return if (ctx.expression().exist) BlockNode(ctx, filename, listOf(ctx.expression().visit() as StatementNode)) else
             ctx.block().visit()
     }
 
-    override fun visitCallSuffix(ctx: SonoParser.CallSuffixContext): SonoNode {
+    override fun visitCallSuffix(ctx: TreblaParser.CallSuffixContext): TreblaNode {
         return FunctionCallNode(ctx, filename, ctx.valueArguments().visit() as ValueArgumentsNode)
     }
 
-    override fun visitValueArguments(ctx: SonoParser.ValueArgumentsContext): SonoNode {
+    override fun visitValueArguments(ctx: TreblaParser.ValueArgumentsContext): TreblaNode {
         return ValueArgumentsNode(ctx, filename, ctx.valueArgument().visit() as List<ValueArgumentNode>)
     }
 
-    override fun visitValueArgument(ctx: SonoParser.ValueArgumentContext): SonoNode {
+    override fun visitValueArgument(ctx: TreblaParser.ValueArgumentContext): TreblaNode {
         return ValueArgumentNode(
             ctx, filename,
             ctx.simpleIdentifier()?.visit() as SimpleIdentifierNode?,
@@ -319,7 +319,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         )
     }
 
-    private fun visitGenericInfixFunction(ctx: ParserRuleContext, rightAssociative: Boolean = false): SonoNode {
+    private fun visitGenericInfixFunction(ctx: ParserRuleContext, rightAssociative: Boolean = false): TreblaNode {
         val children = ArrayDeque(ctx.children)
         return if (rightAssociative) {
             var expr = children.removeLast().visit() as ExpressionNode
@@ -340,7 +340,7 @@ class SonoFileVisitor(private val filename: String) : SonoParserBaseVisitor<Sono
         }
     }
 
-    override fun aggregateResult(aggregate: SonoNode?, nextResult: SonoNode?): SonoNode? {
+    override fun aggregateResult(aggregate: TreblaNode?, nextResult: TreblaNode?): TreblaNode? {
         return nextResult ?: aggregate
     }
 

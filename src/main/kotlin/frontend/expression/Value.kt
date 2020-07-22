@@ -1,11 +1,11 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.sono.frontend.Entity
-import xyz.qwewqa.sono.frontend.context.Allocator
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.ExecutionContext
-import xyz.qwewqa.sono.frontend.declaration.BuiltinType
-import xyz.qwewqa.sono.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.Entity
+import xyz.qwewqa.trebla.frontend.context.Allocator
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ExecutionContext
+import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
+import xyz.qwewqa.trebla.frontend.declaration.Type
 
 /**
  * Represents a value that results from an frontend.expression.

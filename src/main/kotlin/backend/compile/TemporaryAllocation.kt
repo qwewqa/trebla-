@@ -1,6 +1,6 @@
-package xyz.qwewqa.sono.backend.compile
+package xyz.qwewqa.trebla.backend.compile
 
-import xyz.qwewqa.sono.backend.BackendConfig
+import xyz.qwewqa.trebla.backend.BackendConfig
 
 const val TEMPORARY_MEMORY_BLOCK = 21
 

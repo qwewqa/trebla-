@@ -1,9 +1,9 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.*
-import xyz.qwewqa.sono.frontend.expression.*
-import xyz.qwewqa.sono.grammar.sono.StructDeclarationNode
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.grammar.trebla.StructDeclarationNode
 
 class StructDeclaration(
     override val node: StructDeclarationNode,

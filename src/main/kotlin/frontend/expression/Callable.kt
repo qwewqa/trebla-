@@ -1,13 +1,13 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.sono.frontend.Entity
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.declaration.AnyType
-import xyz.qwewqa.sono.frontend.declaration.Type
-import xyz.qwewqa.sono.frontend.declaration.applyIn
-import xyz.qwewqa.sono.frontend.runWithErrorMessage
-import xyz.qwewqa.sono.grammar.sono.*
+import xyz.qwewqa.trebla.frontend.Entity
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.declaration.AnyType
+import xyz.qwewqa.trebla.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.declaration.applyIn
+import xyz.qwewqa.trebla.frontend.runWithErrorMessage
+import xyz.qwewqa.trebla.grammar.trebla.*
 
 interface Callable {
     val isOperator: Boolean get() = false
@@ -42,7 +42,7 @@ fun List<ValueArgumentNode>.applyAllIn(context: Context) = map { it.applyIn(cont
 /**
  * A parameter which is often, but not always, derived from a [ParameterNode].
  */
-class Parameter(val name: String, val type: Type, override val node: SonoNode? = null) : Entity {
+class Parameter(val name: String, val type: Type, override val node: TreblaNode? = null) : Entity {
     constructor(node: ParameterNode, context: Context) : this(
         node.identifier.value,
         node.type?.applyIn(context) ?: AnyType,

@@ -4,10 +4,10 @@
  * A copy of the license can be found in the Apache-2.0.txt file in this directory.
 */
 
-lexer grammar SonoLexer;
+lexer grammar TreblaLexer;
 
 @lexer::header {
-    package xyz.qwewqa.sono.grammar.generated;
+    package xyz.qwewqa.trebla.grammar.generated;
 }
 
 import UnicodeClasses;

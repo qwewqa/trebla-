@@ -1,23 +1,23 @@
-package xyz.qwewqa.sono.frontend
+package xyz.qwewqa.trebla.frontend
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.toList
 import org.antlr.v4.runtime.*
-import xyz.qwewqa.sono.backend.BackendConfig
-import xyz.qwewqa.sono.backend.compile.*
-import xyz.qwewqa.sono.frontend.context.GlobalContext
-import xyz.qwewqa.sono.frontend.declaration.ScriptData
-import xyz.qwewqa.sono.grammar.generated.SonoLexer
-import xyz.qwewqa.sono.grammar.generated.SonoParser
-import xyz.qwewqa.sono.grammar.sono.SonoFileNode
-import xyz.qwewqa.sono.grammar.sono.SonoFileVisitor
+import xyz.qwewqa.trebla.backend.BackendConfig
+import xyz.qwewqa.trebla.backend.compile.*
+import xyz.qwewqa.trebla.frontend.context.GlobalContext
+import xyz.qwewqa.trebla.frontend.declaration.ScriptData
+import xyz.qwewqa.trebla.grammar.generated.TreblaLexer
+import xyz.qwewqa.trebla.grammar.generated.TreblaParser
+import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
+import xyz.qwewqa.trebla.grammar.trebla.TreblaFileVisitor
 import java.io.File
 import java.io.InputStream
 
-class SonoCompiler(val configuration: CompilerConfiguration) : CoroutineScope by CoroutineScope(Dispatchers.Default) {
+class TreblaCompiler(val configuration: CompilerConfiguration) : CoroutineScope by CoroutineScope(Dispatchers.Default) {
     private val context = GlobalContext(configuration)
-    private val loadChannel = Channel<SonoFileNode>(Channel.BUFFERED)
+    private val loadChannel = Channel<TreblaFileNode>(Channel.BUFFERED)
     private val errorChannel = Channel<LogErrorListener.SyntaxError>(Channel.UNLIMITED)
     private val fileLoadJob = Job()
     private val loadJob = launch {
@@ -33,20 +33,20 @@ class SonoCompiler(val configuration: CompilerConfiguration) : CoroutineScope by
             // which it then considers improper again.
             // Haven't bothered filing this as a bug yet.
             @Suppress("BlockingMethodInNonBlockingContext")
-            val lexer = withContext(Dispatchers.IO) { SonoLexer(CharStreams.fromStream(stream)) }
+            val lexer = withContext(Dispatchers.IO) { TreblaLexer(CharStreams.fromStream(stream)) }
             val tokenStream = CommonTokenStream(lexer)
             val errorListener = LogErrorListener(name)
-            val parser = SonoParser(tokenStream).apply {
+            val parser = TreblaParser(tokenStream).apply {
                 removeErrorListeners()
                 addErrorListener(errorListener)
             }
-            val visitor = SonoFileVisitor(name)
-            val fileContext = parser.sonoFile()
+            val visitor = TreblaFileVisitor(name)
+            val fileContext = parser.treblaFile()
             if (errorListener.errors.isNotEmpty()) {
                 errorListener.errors.forEach { errorChannel.send(it) }
                 return@launch
             }
-            val fileNode = visitor.visit(fileContext) as SonoFileNode
+            val fileNode = visitor.visit(fileContext) as TreblaFileNode
             loadChannel.send(fileNode)
         }
     }
@@ -113,15 +113,15 @@ class SonoCompiler(val configuration: CompilerConfiguration) : CoroutineScope by
 
 const val stdPrefix = "/std/"
 val stdFilenames = listOf(
-    "Boolean.sono",
-    "BlockData.sono",
-    "Effect.sono",
-    "Draw.sono",
-    "Number.sono",
-    "Point.sono",
-    "Raw.sono",
-    "Transform.sono",
-    "Util.sono",
+    "Boolean.trb",
+    "BlockData.trb",
+    "Effect.trb",
+    "Draw.trb",
+    "Number.trb",
+    "Point.trb",
+    "Raw.trb",
+    "Transform.trb",
+    "Util.trb",
 )
 
 class LogErrorListener(private val filename: String) : BaseErrorListener() {

@@ -1,4 +1,4 @@
-package xyz.qwewqa.sono.backend.compile
+package xyz.qwewqa.trebla.backend.compile
 
 enum class FunctionIRNodeVariant {
     Execute,

@@ -1,14 +1,14 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.backend.compile.CallbackName
-import xyz.qwewqa.sono.backend.compile.ValueIRNode
-import xyz.qwewqa.sono.frontend.SonoFile
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.*
-import xyz.qwewqa.sono.frontend.expression.*
-import xyz.qwewqa.sono.grammar.sono.*
+import xyz.qwewqa.trebla.backend.compile.CallbackName
+import xyz.qwewqa.trebla.backend.compile.ValueIRNode
+import xyz.qwewqa.trebla.frontend.TreblaFile
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.grammar.trebla.*
 
-class ScriptDeclaration(override val node: ScriptDeclarationNode, override val declaringContext: SonoFile) :
+class ScriptDeclaration(override val node: ScriptDeclarationNode, override val declaringContext: TreblaFile) :
     Declaration, ScriptContext, Callable {
     override val identifier = node.identifier.value
     override val signature = Signature.Default

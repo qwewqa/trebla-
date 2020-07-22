@@ -1,4 +1,4 @@
-package xyz.qwewqa.sono.grammar.sono
+package xyz.qwewqa.trebla.grammar.trebla
 
 import org.antlr.v4.runtime.tree.ParseTree
 
@@ -6,34 +6,34 @@ import org.antlr.v4.runtime.tree.ParseTree
  * This contains the original context for use in error messages as well as the original filename,
  * since it can't be obtained from the context itself.
  */
-interface SonoNode {
+interface TreblaNode {
     val context: ParseTree
     val filename: String
 }
 
-data class SonoFileNode(
+data class TreblaFileNode(
     override val context: ParseTree,
     override val filename: String,
     val packageHeader: PackageHeaderNode?,
     val imports: ImportListNode,
     val topLevelObjects: List<TopLevelObjectNode>,
-) : SonoNode
+) : TreblaNode
 
 data class PackageHeaderNode(
     override val context: ParseTree,
     override val filename: String, val identifier: IdentifierNode?,
-) : SonoNode
+) : TreblaNode
 
 data class ImportListNode(
     override val context: ParseTree,
     override val filename: String, val imports: List<ImportHeaderNode>,
-) : SonoNode
+) : TreblaNode
 
 data class ImportHeaderNode(
     override val context: ParseTree,
     override val filename: String, val identifier: IdentifierNode, val isWildcard: Boolean,
 ) :
-    SonoNode
+    TreblaNode
 
 interface TopLevelObjectNode : StatementNode
 
@@ -47,27 +47,27 @@ data class FunctionDeclarationNode(
     val type: TypeNode?,
     val body: BlockNode,
     val assigmentBody: Boolean,
-) : SonoNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
 
 data class FunctionReceiverNode(
     override val context: ParseTree,
     override val filename: String,
     val identifier: SimpleIdentifierNode?,
     val type: TypeNode,
-) : SonoNode
+) : TreblaNode
 
 data class FunctionValueParametersNode(
     override val context: ParseTree,
     override val filename: String, val values: List<FunctionValueParameterNode>,
 ) :
-    SonoNode
+    TreblaNode
 
 data class FunctionValueParameterNode(
     override val context: ParseTree,
     override val filename: String,
     val value: ParameterNode,
     val default: ExpressionNode?,
-) : SonoNode
+) : TreblaNode
 
 data class PropertyDeclarationNode(
     override val context: ParseTree,
@@ -77,7 +77,7 @@ data class PropertyDeclarationNode(
     val identifier: SimpleIdentifierNode,
     val expression: ExpressionNode?,
     val type: TypeNode?,
-) : SonoNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
 
 data class LetDeclarationNode(
     override val context: ParseTree,
@@ -86,7 +86,7 @@ data class LetDeclarationNode(
     val identifier: SimpleIdentifierNode,
     val expression: ExpressionNode,
     val type: TypeNode?,
-) : SonoNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
 
 data class StructDeclarationNode(
     override val context: ParseTree,
@@ -94,25 +94,25 @@ data class StructDeclarationNode(
     val modifiers: ModifierListNode,
     val identifier: SimpleIdentifierNode,
     val fields: StructFieldsNode,
-) : SonoNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
 
 data class StructFieldsNode(
     override val context: ParseTree,
     override val filename: String,
     val value: List<ParameterNode>,
-) : SonoNode
+) : TreblaNode
 
 data class ScriptDeclarationNode(
     override val context: ParseTree,
     override val filename: String,
     val identifier: SimpleIdentifierNode,
     val body: ScriptBodyNode,
-) : SonoNode, TopLevelObjectNode
+) : TreblaNode, TopLevelObjectNode
 
 data class ScriptBodyNode(
     override val context: ParseTree,
     override val filename: String, val value: List<ScriptMemberNode>,
-) : SonoNode
+) : TreblaNode
 
 interface ScriptMemberNode
 
@@ -123,19 +123,19 @@ data class ArchetypeDeclarationNode(
     val isInput: Boolean,
     val script: SimpleIdentifierNode,
     val defaults: ArchetypeDefaultsNode,
-) : SonoNode, TopLevelObjectNode
+) : TreblaNode, TopLevelObjectNode
 
 data class ArchetypeDefaultsNode(
     override val context: ParseTree,
     override val filename: String, val value: List<ArchetypeDefaultNode>,
-) : SonoNode
+) : TreblaNode
 
 data class ArchetypeDefaultNode(
     override val context: ParseTree,
     override val filename: String,
     val identifier: SimpleIdentifierNode,
     val value: ExpressionNode,
-) : SonoNode
+) : TreblaNode
 
 data class CallbackDeclarationNode(
     override val context: ParseTree,
@@ -143,26 +143,26 @@ data class CallbackDeclarationNode(
     val order: ExpressionNode?,
     val identifier: SimpleIdentifierNode,
     val body: BlockNode,
-) : SonoNode, ScriptMemberNode
+) : TreblaNode, ScriptMemberNode
 
 data class InitBlockNode(
     override val context: ParseTree,
     override val filename: String,
     val body: BlockNode,
-) : SonoNode, ScriptMemberNode
+) : TreblaNode, ScriptMemberNode
 
 data class ParameterNode(
     override val context: ParseTree,
     override val filename: String, val identifier: SimpleIdentifierNode, val type: TypeNode?,
 ) :
-    SonoNode
+    TreblaNode
 
 data class BlockNode(
     override val context: ParseTree,
     override val filename: String, val value: List<StatementNode>,
-) : SonoNode
+) : TreblaNode
 
-interface StatementNode : SonoNode
+interface StatementNode : TreblaNode
 interface DeclarationNode : StatementNode
 interface ExpressionNode : StatementNode
 
@@ -180,7 +180,7 @@ data class UnaryFunctionNode(
 ) :
     ExpressionNode
 
-sealed class UnaryOperation : SonoNode
+sealed class UnaryOperation : TreblaNode
 data class PrefixUnaryFunctionNode(
     override val context: ParseTree,
     override val filename: String, val value: String,
@@ -204,14 +204,14 @@ data class MemberAccessNode(
 data class ValueArgumentsNode(
     override val context: ParseTree,
     override val filename: String, val arguments: List<ValueArgumentNode>,
-) : SonoNode
+) : TreblaNode
 
 data class ValueArgumentNode(
     override val context: ParseTree,
     override val filename: String,
     val name: SimpleIdentifierNode?,
     val expression: ExpressionNode,
-) : SonoNode
+) : TreblaNode
 
 data class IfExpressionNode(
     override val context: ParseTree,
@@ -224,22 +224,22 @@ data class IfExpressionNode(
 data class ModifierListNode(
     override val context: ParseTree,
     override val filename: String, val value: List<String>,
-) : SonoNode
+) : TreblaNode
 
 data class ModifierNode(
     override val context: ParseTree,
     override val filename: String, val value: String,
-) : SonoNode
+) : TreblaNode
 
 data class TypeNode(
     override val context: ParseTree,
     override val filename: String, val value: ExpressionNode,
-) : SonoNode
+) : TreblaNode
 
 data class SimpleUserTypeNode(
     override val context: ParseTree,
     override val filename: String, val value: SimpleIdentifierNode,
-) : SonoNode
+) : TreblaNode
 
 interface AtomicLiteralNode : ExpressionNode
 interface LiteralConstantNode : AtomicLiteralNode

@@ -1,14 +1,14 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.sono.backend.compile.FunctionIRNodeVariant
-import xyz.qwewqa.sono.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.ExecutionContext
-import xyz.qwewqa.sono.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.sono.frontend.context.getFullyQualified
-import xyz.qwewqa.sono.frontend.declaration.RawStructValue
-import xyz.qwewqa.sono.grammar.sono.IfExpressionNode
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ExecutionContext
+import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
+import xyz.qwewqa.trebla.frontend.context.getFullyQualified
+import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.grammar.trebla.IfExpressionNode
 
 class IfExpression(override val node: IfExpressionNode) : Expression {
     override fun applyTo(context: Context): Value {

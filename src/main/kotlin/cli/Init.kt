@@ -1,4 +1,4 @@
-package xyz.qwewqa.sono.cli
+package xyz.qwewqa.trebla.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument

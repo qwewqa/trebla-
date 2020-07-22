@@ -1,5 +1,5 @@
-package xyz.qwewqa.sono
+package xyz.qwewqa.trebla
 
-import xyz.qwewqa.sono.cli.SonoCli
+import xyz.qwewqa.trebla.cli.TreblaCli
 
-fun main(args: Array<String>) = SonoCli().main(args)
+fun main(args: Array<String>) = TreblaCli().main(args)

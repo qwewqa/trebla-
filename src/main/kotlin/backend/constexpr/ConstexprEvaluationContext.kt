@@ -1,4 +1,4 @@
-package xyz.qwewqa.sono.backend.constexpr
+package xyz.qwewqa.trebla.backend.constexpr
 
 class ConstexprEvaluationContext(val allowTemporary: Boolean = false, val allowMemory: Boolean = false) {
     val memory = mutableMapOf<Pair<Int, Int>, Double>()

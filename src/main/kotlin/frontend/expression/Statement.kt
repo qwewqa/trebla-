@@ -1,7 +1,7 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.sono.backend.compile.IRNode
-import xyz.qwewqa.sono.frontend.Entity
+import xyz.qwewqa.trebla.backend.compile.IRNode
+import xyz.qwewqa.trebla.frontend.Entity
 
 /**
  * A statement which directly translates to code.

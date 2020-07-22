@@ -1,10 +1,10 @@
-package xyz.qwewqa.sono.cli
+package xyz.qwewqa.trebla.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
-import xyz.qwewqa.sono.project.generateLevels
+import xyz.qwewqa.trebla.project.generateLevels
 
 class Levels : CliktCommand(
     "Generates levels based the levels directory"

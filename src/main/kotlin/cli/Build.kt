@@ -1,4 +1,4 @@
-package xyz.qwewqa.sono.cli
+package xyz.qwewqa.trebla.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -6,11 +6,11 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
-import xyz.qwewqa.sono.project.BuildConfiguration
-import xyz.qwewqa.sono.project.build
-import xyz.qwewqa.sono.project.generateLevels
+import xyz.qwewqa.trebla.project.BuildConfiguration
+import xyz.qwewqa.trebla.project.build
+import xyz.qwewqa.trebla.project.generateLevels
 
-const val PROJECT_CONFIGURATION_FILENAME = "sonoproj.yaml"
+const val PROJECT_CONFIGURATION_FILENAME = "treblaproj.yaml"
 
 class Build : CliktCommand(
     "Builds the project in the given directory"

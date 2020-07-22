@@ -1,11 +1,11 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.Visibility
-import xyz.qwewqa.sono.frontend.expression.Expression
-import xyz.qwewqa.sono.frontend.expression.Value
-import xyz.qwewqa.sono.grammar.sono.ModifierListNode
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.expression.Expression
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.grammar.trebla.ModifierListNode
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -13,7 +13,6 @@ import kotlin.contracts.contract
 /**
  * Declarations alter the environment and will add things to the scope.
  * A declaration does not necessarily add itself to the scope, though this is the default.
- * If referenced back by a value as its [sourceExpression], it can provide some additional metadata for error reporting and such.
  */
 interface Declaration : Value, Expression {
     /**

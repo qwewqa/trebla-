@@ -1,19 +1,19 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.backend.compile.CallbackName
-import xyz.qwewqa.sono.backend.compile.FunctionIRNode
-import xyz.qwewqa.sono.backend.compile.FunctionIRNodeVariant
-import xyz.qwewqa.sono.backend.compile.ValueIRNode
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.ExecutionContext
-import xyz.qwewqa.sono.frontend.context.Scope
-import xyz.qwewqa.sono.frontend.context.TemporaryAllocator
-import xyz.qwewqa.sono.frontend.context.Visibility
-import xyz.qwewqa.sono.frontend.expression.Statement
-import xyz.qwewqa.sono.frontend.expression.Value
-import xyz.qwewqa.sono.frontend.expression.parseAndApplyTo
-import xyz.qwewqa.sono.frontend.expression.tryConstexprEval
-import xyz.qwewqa.sono.grammar.sono.CallbackDeclarationNode
+import xyz.qwewqa.trebla.backend.compile.CallbackName
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.backend.compile.ValueIRNode
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.ExecutionContext
+import xyz.qwewqa.trebla.frontend.context.Scope
+import xyz.qwewqa.trebla.frontend.context.TemporaryAllocator
+import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.expression.Statement
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
+import xyz.qwewqa.trebla.frontend.expression.tryConstexprEval
+import xyz.qwewqa.trebla.grammar.trebla.CallbackDeclarationNode
 import kotlin.math.roundToInt
 
 class CallbackDeclaration(

@@ -1,14 +1,14 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.backend.compile.FunctionIRNode
-import xyz.qwewqa.sono.backend.compile.FunctionIRNodeVariant
-import xyz.qwewqa.sono.backend.compile.IRNode
-import xyz.qwewqa.sono.frontend.Entity
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.*
-import xyz.qwewqa.sono.frontend.expression.*
-import xyz.qwewqa.sono.frontend.runWithErrorMessage
-import xyz.qwewqa.sono.grammar.sono.FunctionDeclarationNode
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.backend.compile.IRNode
+import xyz.qwewqa.trebla.frontend.Entity
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.frontend.runWithErrorMessage
+import xyz.qwewqa.trebla.grammar.trebla.FunctionDeclarationNode
 
 class FunctionDeclaration(
     override val node: FunctionDeclarationNode,

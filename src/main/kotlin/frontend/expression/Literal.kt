@@ -1,10 +1,10 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.declaration.RawStructValue
-import xyz.qwewqa.sono.frontend.declaration.StructDeclaration
-import xyz.qwewqa.sono.grammar.sono.BooleanLiteralNode
-import xyz.qwewqa.sono.grammar.sono.NumberLiteralNode
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.frontend.declaration.StructDeclaration
+import xyz.qwewqa.trebla.grammar.trebla.BooleanLiteralNode
+import xyz.qwewqa.trebla.grammar.trebla.NumberLiteralNode
 
 class NumberLiteral(override val node: NumberLiteralNode) : Expression {
     override fun applyTo(context: Context): Value = RawStructValue(

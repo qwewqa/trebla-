@@ -1,7 +1,7 @@
-package xyz.qwewqa.sono.frontend
+package xyz.qwewqa.trebla.frontend
 
-import xyz.qwewqa.sono.project.BuildConfiguration
-import xyz.qwewqa.sono.project.ProjectConfiguration
+import xyz.qwewqa.trebla.project.BuildConfiguration
+import xyz.qwewqa.trebla.project.ProjectConfiguration
 
 data class CompilerConfiguration(
     val projectConfig: ProjectConfiguration,

@@ -1,6 +1,6 @@
-package xyz.qwewqa.sono.frontend.context
+package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.sono.frontend.compileError
+import xyz.qwewqa.trebla.frontend.compileError
 
 sealed class Allocator {
     abstract fun allocate(): Allocation

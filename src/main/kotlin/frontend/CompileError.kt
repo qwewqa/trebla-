@@ -1,16 +1,16 @@
-package xyz.qwewqa.sono.frontend
+package xyz.qwewqa.trebla.frontend
 
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.misc.Interval
 import org.antlr.v4.runtime.tree.TerminalNode
-import xyz.qwewqa.sono.grammar.sono.SonoNode
+import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 
 /**
  * Represents an error during compilation due to some error in the code being compiled.
  * This does not represent a bug in the compiler itself
  * (unless, of course, it's being thrown when compiling valid code).
  */
-class CompileError(message: String, val node: SonoNode? = null, cause: CompileError? = null) :
+class CompileError(message: String, val node: TreblaNode? = null, cause: CompileError? = null) :
     IllegalStateException(message, cause) {
     val filename = node?.filename
     val startLineIndex = when (val ctx = node?.context) {
@@ -101,5 +101,5 @@ class CompileError(message: String, val node: SonoNode? = null, cause: CompileEr
 
 private operator fun <E> List<E>.get(intRange: IntRange) = this.subList(intRange.first, intRange.last + 1)
 
-fun compileError(message: String, node: SonoNode? = null): Nothing = throw CompileError(message, node)
-fun SonoNode.compileError(message: String): Nothing = compileError(message, this)
+fun compileError(message: String, node: TreblaNode? = null): Nothing = throw CompileError(message, node)
+fun TreblaNode.compileError(message: String): Nothing = compileError(message, this)

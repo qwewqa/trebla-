@@ -1,12 +1,12 @@
-package xyz.qwewqa.sono.cli
+package xyz.qwewqa.trebla.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
-import xyz.qwewqa.sono.project.BuildConfiguration
-import xyz.qwewqa.sono.project.build
-import xyz.qwewqa.sono.project.generateLevels
+import xyz.qwewqa.trebla.project.BuildConfiguration
+import xyz.qwewqa.trebla.project.build
+import xyz.qwewqa.trebla.project.generateLevels
 
 class CompileAll : CliktCommand(
     name = "compileAll",

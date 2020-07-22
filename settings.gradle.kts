@@ -1,4 +1,4 @@
-rootProject.name = "sono"
+rootProject.name = "trebla"
 pluginManagement {
     repositories {
         mavenCentral()

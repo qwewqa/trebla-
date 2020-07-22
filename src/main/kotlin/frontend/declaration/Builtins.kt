@@ -1,12 +1,12 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.backend.compile.FunctionIRNodeVariant
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.ExecutionContext
-import xyz.qwewqa.sono.frontend.context.MemberAccessor
-import xyz.qwewqa.sono.frontend.context.Visibility
-import xyz.qwewqa.sono.frontend.expression.*
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ExecutionContext
+import xyz.qwewqa.trebla.frontend.context.MemberAccessor
+import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.expression.*
 
 /**
  * A special entity which provides access to builtin functions (Sonolus node function).

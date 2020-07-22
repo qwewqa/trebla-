@@ -1,13 +1,13 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.Visibility
-import xyz.qwewqa.sono.frontend.context.visibilityModifiers
-import xyz.qwewqa.sono.frontend.expression.UnitValue
-import xyz.qwewqa.sono.frontend.expression.Value
-import xyz.qwewqa.sono.frontend.expression.parseAndApplyTo
-import xyz.qwewqa.sono.grammar.sono.LetDeclarationNode
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.context.visibilityModifiers
+import xyz.qwewqa.trebla.frontend.expression.UnitValue
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
+import xyz.qwewqa.trebla.grammar.trebla.LetDeclarationNode
 
 class LetDeclaration(
     override val node: LetDeclarationNode,

@@ -1,12 +1,12 @@
-package xyz.qwewqa.sono.frontend
+package xyz.qwewqa.trebla.frontend
 
-import xyz.qwewqa.sono.frontend.context.*
-import xyz.qwewqa.sono.frontend.declaration.*
-import xyz.qwewqa.sono.grammar.sono.*
+import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.grammar.trebla.*
 
 val defaultPackage = listOf("engine")
 
-class SonoFile(override val node: SonoFileNode, val globalContext: GlobalContext) : Context, Entity,
+class TreblaFile(override val node: TreblaFileNode, val globalContext: GlobalContext) : Context, Entity,
     GlobalAllocatorContext, DeferrableContext {
     private val pkg = globalContext.getPackage(node.packageHeader?.identifier?.value ?: defaultPackage)
     override val levelAllocator = globalContext.levelAllocator

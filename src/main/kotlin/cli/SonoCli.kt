@@ -1,9 +1,9 @@
-package xyz.qwewqa.sono.cli
+package xyz.qwewqa.trebla.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 
-class SonoCli : CliktCommand(name = "sono") {
+class TreblaCli : CliktCommand(name = "trebla") {
     override fun run() {
 
     }

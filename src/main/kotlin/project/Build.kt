@@ -1,26 +1,25 @@
-package xyz.qwewqa.sono.project
+package xyz.qwewqa.trebla.project
 
-import xyz.qwewqa.sono.backend.compile.CompileBackendError
-import xyz.qwewqa.sono.cli.PROJECT_CONFIGURATION_FILENAME
-import xyz.qwewqa.sono.frontend.CompileError
-import xyz.qwewqa.sono.frontend.CompilerConfiguration
-import xyz.qwewqa.sono.frontend.SonoCompiler
+import xyz.qwewqa.trebla.backend.compile.CompileBackendError
+import xyz.qwewqa.trebla.cli.PROJECT_CONFIGURATION_FILENAME
+import xyz.qwewqa.trebla.frontend.CompileError
+import xyz.qwewqa.trebla.frontend.CompilerConfiguration
+import xyz.qwewqa.trebla.frontend.TreblaCompiler
 import java.io.File
-import kotlin.system.exitProcess
 
-const val SONO_SOURCE_FILE_EXTENSION = "sono"
+val sourceExtensions = setOf("trb", "treb")
 const val ENGINE_OUT_FILENAME = "engine.json"
 
 suspend fun build(buildConfig: BuildConfiguration): Boolean {
     val path = buildConfig.path
     val projectConfig = loadConfig(path.resolve(PROJECT_CONFIGURATION_FILENAME))
-    val compiler = SonoCompiler(CompilerConfiguration(projectConfig, buildConfig))
+    val compiler = TreblaCompiler(CompilerConfiguration(projectConfig, buildConfig))
     val srcDirectory = path.resolve(projectConfig.src)
     val outDirectory = path.resolve(projectConfig.out)
     if (buildConfig.allowSkip) {
         val lastSrcTimestamp = srcDirectory
             .walk()
-            .filter { it.isFile && it.extension.toLowerCase() == SONO_SOURCE_FILE_EXTENSION }
+            .filter { it.isFile && it.extension.toLowerCase() in sourceExtensions }
             .map { it.lastModified() }
             .maxOrNull() ?: Long.MIN_VALUE
         val engineFile = outDirectory.resolve(ENGINE_OUT_FILENAME)
@@ -32,7 +31,7 @@ suspend fun build(buildConfig: BuildConfiguration): Boolean {
     try {
         srcDirectory
             .walk()
-            .filter { it.isFile && it.extension.toLowerCase() == SONO_SOURCE_FILE_EXTENSION }
+            .filter { it.isFile && it.extension.toLowerCase() in sourceExtensions }
             .toList()
             .also { println("Building ${it.size} source file(s).") }
             .forEach { compiler.loadFile(it) }

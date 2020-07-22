@@ -1,11 +1,13 @@
-package xyz.qwewqa.sono.project
+package xyz.qwewqa.trebla.project
 
 import org.snakeyaml.engine.v2.api.Load
 import org.snakeyaml.engine.v2.api.LoadSettings
+import xyz.qwewqa.trebla.cli.PROJECT_CONFIGURATION_FILENAME
 import java.io.File
 
 @Suppress("UNCHECKED_CAST")
 fun loadConfig(file: File): ProjectConfiguration {
+    if (!file.isFile) error("$PROJECT_CONFIGURATION_FILENAME does not exist or is not a file.")
     val loadSettings = LoadSettings.builder().build()
     val load = Load(loadSettings)
     val config = file.inputStream().use { load.loadFromInputStream(it) } as Map<String, Any>

@@ -1,6 +1,6 @@
-// Generated from SonoLexer.g4 by ANTLR 4.8
+// Generated from C:/Users/qwewqa/IdeaProjects/trebla/src/main/antlr\TreblaLexer.g4 by ANTLR 4.8
 
-    package xyz.qwewqa.sono.grammar.generated;
+    package xyz.qwewqa.trebla.grammar.generated;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -12,7 +12,7 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class SonoLexer extends Lexer {
+public class TreblaLexer extends Lexer {
 	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -148,13 +148,13 @@ public class SonoLexer extends Lexer {
 	}
 
 
-	public SonoLexer(CharStream input) {
+	public TreblaLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
-	public String getGrammarFileName() { return "SonoLexer.g4"; }
+	public String getGrammarFileName() { return "TreblaLexer.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

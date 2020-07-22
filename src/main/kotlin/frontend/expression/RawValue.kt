@@ -1,11 +1,11 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.sono.backend.compile.*
-import xyz.qwewqa.sono.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.sono.frontend.context.Allocation
-import xyz.qwewqa.sono.frontend.context.ConcreteAllocation
-import xyz.qwewqa.sono.frontend.context.TemporaryAllocation
-import xyz.qwewqa.sono.frontend.declaration.BuiltinFunctionVariant
+import xyz.qwewqa.trebla.backend.compile.*
+import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.frontend.context.Allocation
+import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
+import xyz.qwewqa.trebla.frontend.context.TemporaryAllocation
+import xyz.qwewqa.trebla.frontend.declaration.BuiltinFunctionVariant
 
 /**
  * Either a location in memory, or a literal. Should generally appear within a raw struct except

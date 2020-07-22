@@ -1,9 +1,9 @@
-package xyz.qwewqa.sono.frontend.context
+package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.sono.backend.compile.FunctionIRNode
-import xyz.qwewqa.sono.backend.compile.FunctionIRNodeVariant
-import xyz.qwewqa.sono.backend.compile.IRNode
-import xyz.qwewqa.sono.frontend.expression.Statement
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
+import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.backend.compile.IRNode
+import xyz.qwewqa.trebla.frontend.expression.Statement
 
 /**
  * A context contains declarations, which are stored in its scope.

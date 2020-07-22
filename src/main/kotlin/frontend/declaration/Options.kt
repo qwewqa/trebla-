@@ -1,12 +1,12 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.backend.constexpr.ConstexprEvaluationException
-import xyz.qwewqa.sono.backend.constexpr.constexprEvaluate
-import xyz.qwewqa.sono.frontend.CompilerConfiguration
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.*
-import xyz.qwewqa.sono.frontend.expression.*
-import xyz.qwewqa.sono.project.ProjectConfiguration
+import xyz.qwewqa.trebla.backend.constexpr.ConstexprEvaluationException
+import xyz.qwewqa.trebla.backend.constexpr.constexprEvaluate
+import xyz.qwewqa.trebla.frontend.CompilerConfiguration
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.project.ProjectConfiguration
 
 class OptionsAccessor(override val declaringContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration, MemberAccessor {
     override val identifier = "options"

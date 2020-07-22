@@ -1,12 +1,12 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.ReadOnlyContext
-import xyz.qwewqa.sono.frontend.context.Visibility
-import xyz.qwewqa.sono.frontend.expression.Value
-import xyz.qwewqa.sono.frontend.expression.parseAndApplyTo
-import xyz.qwewqa.sono.grammar.sono.TypeNode
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ReadOnlyContext
+import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
+import xyz.qwewqa.trebla.grammar.trebla.TypeNode
 
 /**
  * A type, as used here, is a constraint for a struct member or a function argument or return type.

@@ -1,12 +1,12 @@
-package xyz.qwewqa.sono.frontend.expression
+package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.sono.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.sono.frontend.Entity
-import xyz.qwewqa.sono.frontend.context.Context
-import xyz.qwewqa.sono.frontend.context.ReadOnlyContext
-import xyz.qwewqa.sono.frontend.context.getFullyQualified
-import xyz.qwewqa.sono.frontend.declaration.*
-import xyz.qwewqa.sono.grammar.sono.*
+import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.frontend.Entity
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ReadOnlyContext
+import xyz.qwewqa.trebla.frontend.context.getFullyQualified
+import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.grammar.trebla.*
 
 /**
  * Expressions are evaluated to compute their value.

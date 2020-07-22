@@ -4,15 +4,15 @@
  * A copy of the license can be found in the Apache-2.0.txt file in this directory.
 */
 
-parser grammar SonoParser;
+parser grammar TreblaParser;
 
-options { tokenVocab = SonoLexer; }
+options { tokenVocab = TreblaLexer; }
 
 @parser::header {
-    package xyz.qwewqa.sono.grammar.generated;
+    package xyz.qwewqa.trebla.grammar.generated;
 }
 
-sonoFile
+treblaFile
     : NL* packageHeader?
     NL* importList
     anysemi* (topLevelObject (semi+ topLevelObject?)*)? EOF

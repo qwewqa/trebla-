@@ -1,12 +1,12 @@
-package xyz.qwewqa.sono.frontend.context
+package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.sono.frontend.CompileError
-import xyz.qwewqa.sono.frontend.Entity
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.declaration.AnyType
-import xyz.qwewqa.sono.frontend.declaration.Declaration
-import xyz.qwewqa.sono.frontend.declaration.Signature
-import xyz.qwewqa.sono.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.CompileError
+import xyz.qwewqa.trebla.frontend.Entity
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.declaration.AnyType
+import xyz.qwewqa.trebla.frontend.declaration.Declaration
+import xyz.qwewqa.trebla.frontend.declaration.Signature
+import xyz.qwewqa.trebla.frontend.expression.Value
 
 open class Scope(
     private val parent: Scope?,

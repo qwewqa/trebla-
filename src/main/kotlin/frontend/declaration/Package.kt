@@ -1,8 +1,8 @@
-package xyz.qwewqa.sono.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.sono.frontend.compileError
-import xyz.qwewqa.sono.frontend.context.*
-import xyz.qwewqa.sono.grammar.sono.SonoNode
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 
 /**
  * Packages are the main method of scoping.
@@ -10,7 +10,7 @@ import xyz.qwewqa.sono.grammar.sono.SonoNode
 class Package(
     override val identifier: String,
     override val declaringContext: GlobalAllocatorContext,
-    override val node: SonoNode? = null,
+    override val node: TreblaNode? = null,
 ) : GlobalAllocatorContext, MemberAccessor, Declaration {
     override val type = PackageType
     override val visibility = Visibility.PUBLIC
