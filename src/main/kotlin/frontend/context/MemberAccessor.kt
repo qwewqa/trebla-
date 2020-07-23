@@ -7,4 +7,5 @@ import xyz.qwewqa.trebla.frontend.expression.Value
  */
 interface MemberAccessor : Value {
     fun getMember(name: String, accessingContext: Context?): Value
+    fun hasMember(name: String, accessingContext: Context?): Boolean
 }

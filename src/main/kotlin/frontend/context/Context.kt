@@ -34,11 +34,11 @@ fun Context.addDeferredOrRun(block: () -> Unit) {
 }
 
 class SimpleContext(parent: Context) : Context {
-    override val scope = Scope(parent.scope)
+    override val scope = Scope(this, parent.scope)
 }
 
 class SimpleExecutionContext(parent: ExecutionContext) : ExecutionContext, Statement {
-    override val scope = Scope(parent.scope)
+    override val scope = Scope(this, parent.scope)
     override val localAllocator = parent.localAllocator
     override val statements = mutableListOf<Statement>()
 
@@ -49,9 +49,9 @@ class SimpleExecutionContext(parent: ExecutionContext) : ExecutionContext, State
 
 
 class ReadOnlyContext(parent: Context) : Context {
-    override val scope = ReadOnlyScope(parent.scope)
+    override val scope = ReadOnlyScope(this, parent.scope)
 }
 
 class EmptyContext : Context {
-    override val scope = ReadOnlyScope()
+    override val scope = ReadOnlyScope(this)
 }

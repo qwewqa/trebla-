@@ -9,7 +9,8 @@ import xyz.qwewqa.trebla.frontend.declaration.Signature
 import xyz.qwewqa.trebla.frontend.expression.Value
 
 open class Scope(
-    private val parent: Scope?,
+    val context: Context,
+    val parent: Scope?,
 ) {
     private val symbols = SymbolTable()
 
@@ -57,7 +58,7 @@ open class Scope(
     }
 }
 
-class ReadOnlyScope(parent: Scope? = null) : Scope(parent) {
+class ReadOnlyScope(context: Context, parent: Scope? = null) : Scope(context, parent) {
     override fun add(declaration: Declaration) {
         compileError("Scope is read only.")
     }

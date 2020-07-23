@@ -16,7 +16,7 @@ class TreblaFile(override val node: TreblaFileNode, val globalContext: GlobalCon
     A file has its own set of imports and private declarations that are local to the file.
     Non-private declarations are added to the package scope in addition to the local file scope.
      */
-    override val scope = Scope(pkg.scope)
+    override val scope = Scope(this, pkg.scope)
 
     val scripts = mutableListOf<ScriptDeclaration>()
     val archetypes = mutableListOf<ArchetypeDeclaration>()

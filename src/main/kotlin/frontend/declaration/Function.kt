@@ -26,6 +26,7 @@ class FunctionDeclaration(
             )
         }
     }
+
     val receiverParameter by lazy {
         node.receiver?.let {
             it.runWithErrorMessage("Receiver parameter type does not exist or is not a struct.") {
@@ -44,6 +45,13 @@ class FunctionDeclaration(
 
     override val parameters by lazy {
         receiverParameter?.let { listOf(it) + valueParameters } ?: valueParameters
+    }
+
+    /**
+     * Whether the function scope when calling this function has a receiver.
+     */
+    val usesReceiverScope by lazy {
+        node.receiver != null && node.receiver.identifier == null
     }
 
     /*
@@ -67,12 +75,13 @@ class FunctionDeclaration(
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val statements = node.body.value
         val pairedArguments = parameters.pairedWithAndValidated(arguments)
+        val receiverValue = if (usesReceiverScope) pairedArguments[receiverParameter!!] else null
 
         if (callingContext !is ExecutionContext) {
             // we allow single or zero expressions even in non-execution contexts
             val returnValue = when (statements.size) {
                 0 -> UnitValue
-                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(declaringContext, pairedArguments))
+                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(declaringContext, pairedArguments, receiverValue))
                 else -> compileError("Invalid location for multi-statement function call.")
             }
             if (returnType == UnitValue) compileError("Invalid location for call to this function.")
@@ -84,7 +93,8 @@ class FunctionDeclaration(
         val functionContext = FunctionExecutionContext(
             callingContext,
             declaringContext,
-            pairedArguments
+            pairedArguments,
+            receiverValue
         )
 
         statements.dropLast(1).forEach {
@@ -134,16 +144,27 @@ class BoundFunction(
 fun FunctionDeclaration.boundTo(receiver: Value) =
     BoundFunction(receiver, this)
 
+class FunctionScope(
+    context: Context,
+    parent: Scope,
+    argumentValues: Map<Parameter, Value>,
+    val receiver: Value?,
+) : Scope(context, parent) {
+    init {
+        argumentValues.forEach { (param, value) -> add(value, param.name) }
+    }
+}
+
 class FunctionExecutionContext(
     callingContext: ExecutionContext,
     declarationContext: Context,
-    argumentValues: List<Pair<Parameter, Value>>,
+    argumentValues: Map<Parameter, Value>,
+    receiver: Value?
 ) : ExecutionContext,
     Statement {
     // the parent of the scope comes from the context where the function was declared, not where it was called
-    override val scope = Scope(declarationContext.scope).apply {
-        argumentValues.forEach { add(it.second, it.first.name) }
-    }
+    override val scope = FunctionScope(this, declarationContext.scope, argumentValues, receiver)
+
     override val localAllocator = callingContext.localAllocator
     override val statements = mutableListOf<Statement>()
 
@@ -154,10 +175,9 @@ class FunctionExecutionContext(
 
 class FunctionSimpleContext(
     declarationContext: Context,
-    argumentValues: List<Pair<Parameter, Value>>,
+    argumentValues: Map<Parameter, Value>,
+    receiver: Value?
 ) : Context {
     // the parent of the scope comes from the context where the function was declared, not where it was called
-    override val scope = Scope(declarationContext.scope).apply {
-        argumentValues.forEach { add(it.second, it.first.name) }
-    }
+    override val scope = FunctionScope(this, declarationContext.scope, argumentValues, receiver)
 }

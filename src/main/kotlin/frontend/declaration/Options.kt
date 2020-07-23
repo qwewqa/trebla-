@@ -8,7 +8,7 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.project.ProjectConfiguration
 
-class OptionsAccessor(override val declaringContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration, MemberAccessor {
+class OptionsAccessor(override val declaringContext: Context, projectConfiguration: CompilerConfiguration) : Declaration, MemberAccessor {
     override val identifier = "options"
     override val type = AnyType
     override val signature = Signature.Default
@@ -36,6 +36,10 @@ class OptionsAccessor(override val declaringContext: Context, val projectConfigu
             accessingContext,
             declaringContext.scope.getFullyQualified("std", option.type.structName) as StructDeclaration
         )
+    }
+
+    override fun hasMember(name: String, accessingContext: Context?): Boolean {
+        return name in options.keys
     }
 }
 

@@ -25,8 +25,7 @@ class Memref(override val declaringContext: Context, val projectConfiguration: C
     }
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
-        val argumentValues =
-            parameters.pairedWithAndValidated(arguments).associate { (param, arg) -> param.name to arg }
+        val argumentValues = parameters.pairedWithAndValidated(arguments).byParameterName()
         val blockArg = argumentValues.getValue("block")
         val indexArg = argumentValues.getValue("index")
         if (blockArg !is RawStructValue || indexArg !is RawStructValue) compileError("memref arguments should be raw values.")

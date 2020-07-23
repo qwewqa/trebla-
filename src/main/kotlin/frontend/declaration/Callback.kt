@@ -46,7 +46,7 @@ class CallbackDeclaration(
 }
 
 class Callback(val order: Int, val name: CallbackName, script: ScriptDeclaration) : ExecutionContext {
-    override val scope = Scope(script.scope)
+    override val scope = Scope(this, script.scope)
     override val localAllocator = TemporaryAllocator()
     override val statements = mutableListOf<Statement>()
 

@@ -60,7 +60,7 @@ fun List<ParameterNode>.parse(context: Context) = map {
 fun List<Parameter>.pairedWithAndValidated(arguments: List<ValueArgument>) =
     pairArguments(arguments).also { it.validateTyping() }
 
-fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): List<Pair<Parameter, Value>> {
+fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): Map<Parameter, Value> {
     // This can still contain named arguments. However, they must match the place in their order.
     // That is, the call would remain equivalent if the name was removed.
     // This is merely a convenience for reading the function call.
@@ -82,14 +82,14 @@ fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): List<Pair<Par
     if (allPairedParameters.size != this.size) {
         compileError("Wrong number of parameters supplied.")
     }
-    return allPairedParameters.map { (param, arg) -> param to arg.value }
+    return allPairedParameters.associate { (param, arg) -> param to arg.value }
 }
 
-fun List<Pair<Parameter, Value>>.associateByParameterName() = associate { (param, value) -> param.name to value }
+fun Map<Parameter, Value>.byParameterName() = entries.associate { (param, value) -> param.name to value }
 
 /*
 Want some more specific error reporting at some point. This can do for now.
  */
-fun List<Pair<Parameter, Value>>.validateTyping() = forEach { (param, arg) ->
+fun Map<Parameter, Value>.validateTyping() = forEach { (param, arg) ->
     if (!param.type.accepts(arg)) compileError("Argument does not satisfy type constraint.")
 }

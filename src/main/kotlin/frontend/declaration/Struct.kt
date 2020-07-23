@@ -28,7 +28,7 @@ class StructDeclaration(
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         if (!isRaw) {
-            return NormalStructValue(fields.pairedWithAndValidated(arguments).associateByParameterName(),
+            return NormalStructValue(fields.pairedWithAndValidated(arguments).byParameterName(),
                 callingContext,
                 this)
         } else {
@@ -70,6 +70,13 @@ class StructDeclaration(
         compileError("No receiver function with name $name found.")
     }
 
+    override fun hasMember(name: String, accessingContext: Context?): Boolean {
+        return accessingContext?.scope?.find(
+            name,
+            Signature.TypedReceiver(type)
+        ) != null
+    }
+
     init {
         node.modifiers.parse {
             visibility = selectFromMap(visibilityModifiers) ?: Visibility.PUBLIC
@@ -108,6 +115,16 @@ sealed class StructValue(
         }
         compileError("Struct has no member or method with name $name.")
     }
+
+    override fun hasMember(name: String, accessingContext: Context?): Boolean {
+        return (searchContext?.scope?.find(
+            name,
+            Signature.TypedReceiver(type)
+        ) ?: accessingContext?.scope?.find(
+            name,
+            Signature.TypedReceiver(type)
+        )) != null
+    }
 }
 
 class NormalStructValue(
@@ -136,6 +153,10 @@ class NormalStructValue(
     override fun getMember(name: String, accessingContext: Context?): Value {
         fields[name]?.let { return it }
         return super.getMember(name, accessingContext)
+    }
+
+    override fun hasMember(name: String, accessingContext: Context?): Boolean {
+        return fields[name] != null || super.hasMember(name, accessingContext)
     }
 }
 

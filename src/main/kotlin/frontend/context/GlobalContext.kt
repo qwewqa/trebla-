@@ -11,7 +11,7 @@ import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 
 class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAllocatorContext {
-    override val scope = Scope(null)
+    override val scope = Scope(this, null)
     override val levelAllocator = StandardAllocator(0, 256)
     override val tempAllocator = StandardAllocator(100, 16)
 

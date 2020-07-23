@@ -26,7 +26,13 @@ object Builtins : MemberAccessor, Declaration {
     } catch (e: IllegalArgumentException) {
         compileError("Unknown builtin function $name.")
     }
+
+    override fun hasMember(name: String, accessingContext: Context?): Boolean {
+        return name in builtinFunctionsByName.keys
+    }
 }
+
+val builtinFunctionsByName = BuiltinFunctionVariant.values().associateBy { it.name }
 
 /**
  * All supported types of builtin functions.
