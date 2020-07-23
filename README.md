@@ -4,6 +4,7 @@ A programming language and compiler for creating rhythm game engines on [Sonolus
 ## Quick Start
 1. Download the corresponding image for your operating system from [releases](https://github.com/qwewqa/trebla/releases).
 2. Extract the contents of the archive and add the bin folder to your PATH if desired.
+3. Check the documentation at https://trebla.qwewqa.xyz for more information.
 
 ## Building from Source
 Trebla was built and tested with JDK 14, but JDK 8 or higher should suffice.

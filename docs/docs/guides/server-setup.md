@@ -27,6 +27,6 @@ Download `server.zip` under assets from the latest version.
 opening the run menu with ++win+r++ and typing in `cmd`.
 6. Type in `ipconfig` and hit enter. Find the IPv4 address under Ethernet or Wireless LAN
 depending on which type of connection is in use and keep note of it.
-7. Open sonolus on a mobile device and ensure that it is connected to the same network as the server.
+7. Open Sonolus on a mobile device and ensure that it is connected to the same network as the server.
 Add a server with address `http://[IP from step 6]/sonolus` and connect to it.
 Ensure both example levels are playable.
