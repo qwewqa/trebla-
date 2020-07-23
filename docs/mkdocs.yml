@@ -1,0 +1,26 @@
+site_name: Trebla Documentation
+theme:
+  name: material
+  icon:
+    logo: material/script-text
+  palette:
+    primary: blue
+    accent: teal
+    scheme: preference
+  features:
+    - instant
+    - tabs
+nav:
+  - Home: index.md
+  - Guides:
+      - Server Setup: guides/server-setup.md
+  - Reference:
+      - Quick Reference: resources/quick-reference.md
+markdown_extensions:
+  - pymdownx.keys
+  - admonition
+  - def_list
+  - tables
+  - pymdownx.superfences
+  - pymdownx.tabbed
+repo_url: https://github.com/qwewqa/trebla
