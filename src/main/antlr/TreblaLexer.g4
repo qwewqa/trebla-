@@ -86,6 +86,7 @@ VAL: 'val' ;
 IF: 'if' ;
 ELSE: 'else' ;
 WHILE: 'while' ;
+FOR: 'for' ;
 GETTER: 'get' ;
 SETTER: 'set' ;
 AS: 'as' ;
@@ -199,6 +200,7 @@ Inside_VAR: VAR -> type(VAR) ;
 Inside_IF: IF -> type(IF) ;
 Inside_ELSE: ELSE -> type(ELSE) ;
 Inside_WHILE: WHILE -> type(WHILE) ;
+Inside_FOR: FOR -> type(FOR) ;
 
 Inside_PUBLIC: PUBLIC -> type(PUBLIC) ;
 Inside_PRIVATE: PRIVATE -> type(PRIVATE) ;

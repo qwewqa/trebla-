@@ -530,6 +530,46 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitWhileExpression(TreblaParser.WhileExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#forExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterForExpression(TreblaParser.ForExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#forExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitForExpression(TreblaParser.ForExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#forInitializer}.
+	 * @param ctx the parse tree
+	 */
+	void enterForInitializer(TreblaParser.ForInitializerContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#forInitializer}.
+	 * @param ctx the parse tree
+	 */
+	void exitForInitializer(TreblaParser.ForInitializerContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#forCondition}.
+	 * @param ctx the parse tree
+	 */
+	void enterForCondition(TreblaParser.ForConditionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#forCondition}.
+	 * @param ctx the parse tree
+	 */
+	void exitForCondition(TreblaParser.ForConditionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#forAfterthought}.
+	 * @param ctx the parse tree
+	 */
+	void enterForAfterthought(TreblaParser.ForAfterthoughtContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#forAfterthought}.
+	 * @param ctx the parse tree
+	 */
+	void exitForAfterthought(TreblaParser.ForAfterthoughtContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#controlStructureBody}.
 	 * @param ctx the parse tree
 	 */

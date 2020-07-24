@@ -12,9 +12,9 @@ import xyz.qwewqa.trebla.grammar.trebla.IfExpressionNode
 
 class IfExpression(override val node: IfExpressionNode) : Expression {
     override fun applyTo(context: Context): Value {
-        if (context !is ExecutionContext) compileError("If statement not allowed at location.", node)
+        if (context !is ExecutionContext) compileError("if statement not allowed at location.", node)
         val condition = node.expression.parseAndApplyTo(context)
-        if (condition !is RawStructValue || condition.type != context.scope.getFullyQualified("std", "Boolean"))
+        if (condition !is RawStructValue || condition.type != context.booleanType)
             compileError("if statement condition must be a boolean.", node.expression)
         when (condition.value.toIR().tryConstexprEvaluate()) {
             null -> { // Condition unknown at compile time

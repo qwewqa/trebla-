@@ -40,6 +40,8 @@ fun StatementNode.parse(context: Context): Expression = when (this) {
     is BooleanLiteralNode -> literalBoolean(this.value, context)
     is SimpleIdentifierNode -> SimpleIdentifierExpression(this)
     is IfExpressionNode -> IfExpression(this)
+    is WhileExpressionNode -> WhileExpression(this)
+    is ForExpressionNode -> ForExpression(this)
     is UnaryFunctionNode -> when (this.op) {
         is MemberAccessNode -> MemberAccessExpression(this)
         is PrefixUnaryFunctionNode -> UnaryFunctionExpression(this)

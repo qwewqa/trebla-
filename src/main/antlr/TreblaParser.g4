@@ -255,11 +255,28 @@ ifExpression
 
 loopExpression
     : whileExpression
+    | forExpression
     ;
 
 
 whileExpression
-    : WHILE NL* LPAREN expression RPAREN NL* controlStructureBody?
+    : WHILE NL* LPAREN expression RPAREN NL* controlStructureBody
+    ;
+
+forExpression
+    : FOR NL* LPAREN forInitializer? SEMICOLON forCondition? SEMICOLON forAfterthought? RPAREN NL* controlStructureBody
+    ;
+
+forInitializer
+    : statement
+    ;
+
+forCondition
+    : expression
+    ;
+
+forAfterthought
+    : expression
     ;
 
 controlStructureBody

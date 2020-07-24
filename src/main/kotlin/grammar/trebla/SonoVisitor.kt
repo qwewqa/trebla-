@@ -292,11 +292,30 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         )
     }
 
+    override fun visitWhileExpression(ctx: TreblaParser.WhileExpressionContext): TreblaNode {
+        return WhileExpressionNode(
+            ctx, filename,
+            ctx.expression().visit() as ExpressionNode,
+            ctx.controlStructureBody().visit() as BlockNode,
+        )
+    }
+
+    override fun visitForExpression(ctx: TreblaParser.ForExpressionContext): TreblaNode {
+        return ForExpressionNode(
+            ctx, filename,
+            ctx.forInitializer().visit() as StatementNode?,
+            ctx.forCondition().visit() as ExpressionNode?,
+            ctx.forAfterthought().visit() as ExpressionNode?,
+            ctx.controlStructureBody().visit() as BlockNode
+        )
+    }
+
     override fun visitControlStructureBody(ctx: TreblaParser.ControlStructureBodyContext): TreblaNode {
-        return if (ctx.expression().exist) BlockNode(ctx,
-            filename,
-            listOf(ctx.expression().visit() as StatementNode)) else
-            ctx.block().visit()
+        return if (ctx.expression().exist) {
+            BlockNode(ctx,
+                filename,
+                listOf(ctx.expression().visit() as StatementNode))
+        } else ctx.block().visit()
     }
 
     override fun visitCallSuffix(ctx: TreblaParser.CallSuffixContext): TreblaNode {

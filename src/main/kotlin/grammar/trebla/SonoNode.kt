@@ -219,6 +219,22 @@ data class IfExpressionNode(
     val fbranch: BlockNode?,
 ) : ExpressionNode
 
+data class WhileExpressionNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val condition: ExpressionNode,
+    val body: BlockNode,
+) : ExpressionNode
+
+data class ForExpressionNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val initializer: StatementNode?,
+    val condition: ExpressionNode?,
+    val afterthought: ExpressionNode?,
+    val body: BlockNode,
+) : ExpressionNode
+
 data class ModifierListNode(
     override val context: ParseTree,
     override val filename: String, val value: List<String>,
