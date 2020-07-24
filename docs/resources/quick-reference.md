@@ -473,3 +473,35 @@ script Note {
     var height = width / 2
 }
 ```
+
+## Packages
+Files in Trebla are organized into packages. 
+They are declared with the package statement at the top of a file.
+```
+// Declares that this file is in package c, contained within package b
+// which is contained within the top level package a.
+package a.b.c
+```
+If no package is specified the default is one named `engine`.
+
+### Visibility Modifiers
+There are three visibility modifiers in Trebla: `public`, `internal`, and `private`.
+
+`public` declarations can be imported, and are accessible by all files in the same package by default including subpackages.
+
+`internal` declarations cannot be imported, but are still accessible by all files in the same package including subpackages.
+
+`private` declarations cannot be imported, and can only be accessed in the particular file the declares it.
+
+Visibility modifiers outside of the top level currently do not do anything.
+
+### Importing
+The public contents of a package may be imported with an import statement.
+They come below the package declaration (if any) and before the rest of the file.
+```
+// A wildcard import imports everything in a package.
+import name.of.package.*
+
+// Or, a specific declaration can be imported.
+import name.of.package.Declaration
+```
