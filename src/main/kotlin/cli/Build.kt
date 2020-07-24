@@ -16,7 +16,7 @@ class Build : CliktCommand(
     "Builds the project in the given directory"
 ) {
     private val path by argument().file(mustExist = true, canBeDir = true, canBeFile = false)
-    private val verbose by option("-v", "--option").flag()
+    private val verbose by option("-v", "--verbose").flag()
     override fun run(): Unit = runBlocking {
         build(BuildConfiguration(path = path, verbose = verbose, allowSkip = false))
     }
