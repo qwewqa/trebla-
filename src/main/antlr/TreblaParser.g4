@@ -54,11 +54,7 @@ functionReceiver
     ;
 
 functionValueParameters
-    : LPAREN (functionValueParameter (COMMA functionValueParameter)* COMMA?)? RPAREN
-    ;
-
-functionValueParameter
-    : parameter (ASSIGNMENT expression)?
+    : LPAREN (parameter (COMMA parameter)* COMMA?)? RPAREN
     ;
 
 functionBody
@@ -143,11 +139,11 @@ initBlock
     ;
 
 parameter
-    : simpleIdentifier (COLON type)?
+    : simpleIdentifier (COLON type)? (ASSIGNMENT expression)?
     ;
 
 type
-    : expression
+    : atomicExpression
     ;
 
 parenthesizedType

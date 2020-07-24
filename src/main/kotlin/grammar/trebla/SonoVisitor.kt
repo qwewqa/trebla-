@@ -33,15 +33,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     override fun visitFunctionValueParameters(ctx: TreblaParser.FunctionValueParametersContext): TreblaNode {
         return FunctionValueParametersNode(
             ctx, filename,
-            ctx.functionValueParameter().visit() as List<FunctionValueParameterNode>
-        )
-    }
-
-    override fun visitFunctionValueParameter(ctx: TreblaParser.FunctionValueParameterContext): TreblaNode {
-        return FunctionValueParameterNode(
-            ctx, filename,
-            ctx.parameter().visit() as ParameterNode,
-            ctx.expression()?.visit() as ExpressionNode?
+            ctx.parameter().visit() as List<ParameterNode>
         )
     }
 
@@ -177,7 +169,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     override fun visitType(ctx: TreblaParser.TypeContext): TreblaNode {
-        return TypeNode(ctx, filename, ctx.expression().visit() as ExpressionNode)
+        return TypeNode(ctx, filename, ctx.atomicExpression().visit() as ExpressionNode)
     }
 
     override fun visitSimpleUserType(ctx: TreblaParser.SimpleUserTypeContext): TreblaNode {
@@ -196,7 +188,8 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         return ParameterNode(
             ctx, filename,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
-            ctx.type()?.visit() as TypeNode?
+            ctx.type()?.visit() as TypeNode?,
+            ctx.expression()?.visit() as ExpressionNode?
         )
     }
 

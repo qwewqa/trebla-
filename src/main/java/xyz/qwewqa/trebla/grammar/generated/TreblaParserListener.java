@@ -90,16 +90,6 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitFunctionValueParameters(TreblaParser.FunctionValueParametersContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TreblaParser#functionValueParameter}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunctionValueParameter(TreblaParser.FunctionValueParameterContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#functionValueParameter}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunctionValueParameter(TreblaParser.FunctionValueParameterContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TreblaParser#functionBody}.
 	 * @param ctx the parse tree
 	 */

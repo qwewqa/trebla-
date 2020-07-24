@@ -61,12 +61,6 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunctionValueParameters(TreblaParser.FunctionValueParametersContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TreblaParser#functionValueParameter}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctionValueParameter(TreblaParser.FunctionValueParameterContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TreblaParser#functionBody}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

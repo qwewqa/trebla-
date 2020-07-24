@@ -21,7 +21,7 @@ class FunctionDeclaration(
     val valueParameters by lazy {
         node.parameters.values.map {
             Parameter(
-                it.value,
+                it,
                 declaringContext
             )
         }
@@ -33,7 +33,8 @@ class FunctionDeclaration(
                 Parameter(
                     name = it.identifier?.value ?: "this",
                     type = it.type.applyIn(declaringContext),
-                    it
+                    default = null,
+                    node = it
                 )
             }
         }?.also {
@@ -75,13 +76,12 @@ class FunctionDeclaration(
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val statements = node.body.value
         val pairedArguments = parameters.pairedWithAndValidated(arguments)
-        val receiverValue = if (usesReceiverScope) pairedArguments[receiverParameter!!] else null
 
         if (callingContext !is ExecutionContext) {
             // we allow single or zero expressions even in non-execution contexts
             val returnValue = when (statements.size) {
                 0 -> UnitValue
-                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(declaringContext, pairedArguments, receiverValue))
+                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(declaringContext, pairedArguments))
                 else -> compileError("Invalid location for multi-statement function call.")
             }
             if (returnType == UnitValue) compileError("Invalid location for call to this function.")
@@ -93,8 +93,7 @@ class FunctionDeclaration(
         val functionContext = FunctionExecutionContext(
             callingContext,
             declaringContext,
-            pairedArguments,
-            receiverValue
+            pairedArguments
         )
 
         statements.dropLast(1).forEach {
@@ -147,8 +146,7 @@ fun FunctionDeclaration.boundTo(receiver: Value) =
 class FunctionScope(
     context: Context,
     parent: Scope,
-    argumentValues: Map<Parameter, Value>,
-    val receiver: Value?,
+    argumentValues: Map<Parameter, Value>
 ) : Scope(context, parent) {
     init {
         argumentValues.forEach { (param, value) -> add(value, param.name) }
@@ -158,12 +156,11 @@ class FunctionScope(
 class FunctionExecutionContext(
     callingContext: ExecutionContext,
     declarationContext: Context,
-    argumentValues: Map<Parameter, Value>,
-    receiver: Value?
+    argumentValues: Map<Parameter, Value>
 ) : ExecutionContext,
     Statement {
     // the parent of the scope comes from the context where the function was declared, not where it was called
-    override val scope = FunctionScope(this, declarationContext.scope, argumentValues, receiver)
+    override val scope = FunctionScope(this, declarationContext.scope, argumentValues)
 
     override val localAllocator = callingContext.localAllocator
     override val statements = mutableListOf<Statement>()
@@ -175,9 +172,8 @@ class FunctionExecutionContext(
 
 class FunctionSimpleContext(
     declarationContext: Context,
-    argumentValues: Map<Parameter, Value>,
-    receiver: Value?
+    argumentValues: Map<Parameter, Value>
 ) : Context {
     // the parent of the scope comes from the context where the function was declared, not where it was called
-    override val scope = FunctionScope(this, declarationContext.scope, argumentValues, receiver)
+    override val scope = FunctionScope(this, declarationContext.scope, argumentValues)
 }

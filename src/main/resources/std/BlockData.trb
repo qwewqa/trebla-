@@ -34,12 +34,12 @@ let levelTransform = Transform3d(
 )
 
 struct UIInfo(
-    anchorX: Number, anchorY: Number,
-    pivotX: Number, pivotY: Number,
+    anchorX: Number = 0, anchorY: Number = 0,
+    pivotX: Number = 0, pivotY: Number = 0,
     width: Number, height: Number,
-    rotation: Number, alpha: Number,
-    horizontalAlign: Number, verticalAlign: Number,
-    background: Boolean,
+    rotation: Number = 0, alpha: Number = 1,
+    horizontalAlign: Number = 0, verticalAlign: Number = 0,
+    background: Boolean = false,
 )
 
 private func uiBlock(offset: Number) = UIInfo(

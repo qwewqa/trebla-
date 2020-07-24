@@ -42,12 +42,17 @@ fun List<ValueArgumentNode>.applyAllIn(context: Context) = map { it.applyIn(cont
 /**
  * A parameter which is often, but not always, derived from a [ParameterNode].
  */
-class Parameter(val name: String, val type: Type, override val node: TreblaNode? = null) : Entity {
+class Parameter(val name: String, val type: Type, val default: DefaultParameter? = null, override val node: TreblaNode? = null) : Entity {
     constructor(node: ParameterNode, context: Context) : this(
         node.identifier.value,
         node.type?.applyIn(context) ?: AnyType,
+        node.default?.let { DefaultParameter(it.parse(context), context) },
         node
     )
+}
+
+data class DefaultParameter(val expression: Expression, val context: Context) {
+    fun get() = expression.applyTo(context)
 }
 
 fun List<ParameterNode>.parse(context: Context) = map {
@@ -68,21 +73,24 @@ fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): Map<Parameter
 
     val namedArguments = arguments.takeLastWhile { it.name != null }
     val namedParameters = this.associateBy { it.name }
-    val pairedOrderedArguments = this.zip(orderedArguments)
-    pairedOrderedArguments.forEach { (param, arg) ->
+    val ordered = this.zip(orderedArguments)
+    ordered.forEach { (param, arg) ->
         if (arg.name != null && param.name != arg.name)
             compileError("Named parameter ${arg.name} is out of order and does not come at the end.")
     }
-    val pairedNamedParameters = namedArguments.map {
+    val named = namedArguments.map {
         val param = namedParameters[it.name]
             ?: compileError("No parameter with name ${it.name} exists or has already been supplied as an ordered argument.")
         param to it
     }
-    val allPairedParameters = pairedOrderedArguments + pairedNamedParameters
-    if (allPairedParameters.size != this.size) {
-        compileError("Wrong number of parameters supplied.")
+    val usedParams = ordered.map { (param, _) -> param }.toSet() + named.map { (param, _) -> param }.toSet()
+    val defaults = this.filter { it !in usedParams }.associateWith {
+        (it.default?.get() ?: compileError("Parameter ${it.name} was not provided an argument and has no default."))
     }
-    return allPairedParameters.associate { (param, arg) -> param to arg.value }
+    return (ordered + named).also {
+        if (ordered.map { (param, _) -> param }.toSet().intersect(named.map { (param, _) -> param }.toSet()).isNotEmpty())
+            compileError("Duplicate named and ordered parameters.")
+    }.associate { (param, arg) -> param to arg.value } + defaults
 }
 
 fun Map<Parameter, Value>.byParameterName() = entries.associate { (param, value) -> param.name to value }

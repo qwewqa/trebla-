@@ -58,16 +58,9 @@ data class FunctionReceiverNode(
 
 data class FunctionValueParametersNode(
     override val context: ParseTree,
-    override val filename: String, val values: List<FunctionValueParameterNode>,
+    override val filename: String, val values: List<ParameterNode>,
 ) :
     TreblaNode
-
-data class FunctionValueParameterNode(
-    override val context: ParseTree,
-    override val filename: String,
-    val value: ParameterNode,
-    val default: ExpressionNode?,
-) : TreblaNode
 
 data class PropertyDeclarationNode(
     override val context: ParseTree,
@@ -153,9 +146,11 @@ data class InitBlockNode(
 
 data class ParameterNode(
     override val context: ParseTree,
-    override val filename: String, val identifier: SimpleIdentifierNode, val type: TypeNode?,
-) :
-    TreblaNode
+    override val filename: String,
+    val identifier: SimpleIdentifierNode,
+    val type: TypeNode?,
+    val default: ExpressionNode?,
+) : TreblaNode
 
 data class BlockNode(
     override val context: ParseTree,
