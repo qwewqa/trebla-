@@ -222,6 +222,18 @@ if (condition) {
     // true branch
 }
 ```
+### While statement
+```
+while (condition) {
+    /* do something */
+}
+```
+### For statement
+```
+for (var i = 0; i < 3; i++) {
+    Clip(i).play()
+}
+```
 
 ## Function declarations
 Functions are declared with the `func` keyword.
@@ -266,7 +278,7 @@ sum() == sum(0, 1) // true
 sum(b = 3) == sum(0, 3) // true
 ```
 
-## Receiver Functions
+### Receiver Functions
 Receiver functions, also known as methods, are a special type of function.
 ```
 // Declares a function named translate with
@@ -314,6 +326,30 @@ operator func Number.plus(other: Number) = Number(builtins.Add(this, other))
 func run() {
     var x = 1 + 2
 }
+```
+
+### Lambda expressions
+Lambda expressions are unnamed functions. They are declared with curly braces.
+Lambdas return the value of their final expression.
+```
+// By default there's an Any type parameter named it that defaults to Unit.
+let lambda = { it + 1 }
+var a = lambda(4) // 5
+
+// Parameters may be specified in parentheses and followed by an arrow.
+let lambda2 = { (a, b: Number, c = 5) -> a + b + c }
+var b = lambda2(5, 2) // 12
+```
+
+#### Lambdas as function parameters
+Lambdas may be moved out of the parentheses of a function call if they are the final parameter.
+```
+func foo(a: Function = { 1 }, b: Function = { 2 }) = a() + b()
+
+var w = foo({ 5 }, { 6 }) // 11
+var x = foo({ 5 }) { 6 } // 11
+var y = foo { 6 } // 7; Uses default for parameter a
+var z = foo({ 6 }) // 8; Uses default for parameter b
 ```
 
 ### Boolean Operators
