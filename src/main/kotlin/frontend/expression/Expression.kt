@@ -51,6 +51,7 @@ fun StatementNode.parse(context: Context): Expression = when (this) {
     is StructDeclarationNode -> StructDeclaration(this, context)
     is PropertyDeclarationNode -> PropertyDeclaration(this, context)
     is LetDeclarationNode -> LetDeclaration(this, context)
+    is LambdaNode -> LambdaExpression(this, context)
     // Should not actually happen, but no sealed interfaces, so this has to be here
     else -> throw UnsupportedOperationException("Unknown statement or expression.")
 }

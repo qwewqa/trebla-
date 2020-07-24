@@ -188,7 +188,8 @@ data class PostfixUnaryFunctionNode(
 
 data class FunctionCallNode(
     override val context: ParseTree,
-    override val filename: String, val arguments: ValueArgumentsNode,
+    override val filename: String,
+    val arguments: ValueArgumentsNode,
 ) : UnaryOperation()
 
 data class MemberAccessNode(
@@ -198,7 +199,9 @@ data class MemberAccessNode(
 
 data class ValueArgumentsNode(
     override val context: ParseTree,
-    override val filename: String, val arguments: List<ValueArgumentNode>,
+    override val filename: String,
+    val arguments: List<ValueArgumentNode>,
+    val tailLambda: LambdaNode?
 ) : TreblaNode
 
 data class ValueArgumentNode(
@@ -256,4 +259,11 @@ data class SimpleIdentifierNode(
 data class IdentifierNode(
     override val context: ParseTree,
     override val filename: String, val value: List<String>,
+) : ExpressionNode
+
+data class LambdaNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val parameters: FunctionValueParametersNode?,
+    val body: List<StatementNode>,
 ) : ExpressionNode

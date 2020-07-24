@@ -17,19 +17,24 @@ interface Callable {
 }
 
 /**
- * A value argument is passed into a function call
+ * A value argument is passed into a function call.
  */
-data class ValueArgument(val name: String?, val value: Value)
+data class ValueArgument(val name: String?, val value: Value, val isTailLambda: Boolean = false)
 
 class CallExpression(override val node: UnaryFunctionNode) : Expression {
-    private val argumentNodes = (node.op as? FunctionCallNode)?.arguments?.arguments ?: error("Not a call expression.")
+    private val arguments = (node.op as? FunctionCallNode)?.arguments ?: error("Not a call expression.")
+    private val argumentNodes = arguments.arguments
+    private val lambdaNode = arguments.tailLambda
 
     override fun applyTo(context: Context): Value {
         val valueArguments = argumentNodes.applyAllIn(context)
+        val lambda = lambdaNode?.parseAndApplyTo(context)?.let { ValueArgument(null, it, true) }
+        val arguments = if (lambda != null) valueArguments + lambda else valueArguments
+
         val callable = node.value.parseAndApplyTo(context)
         if (callable !is Callable) compileError("Not a callable.", node)
         return runWithErrorMessage("Error in call expression.") {
-            callable.callWith(valueArguments, context)
+            callable.callWith(arguments, context)
         }
     }
 }
@@ -66,12 +71,25 @@ fun List<Parameter>.pairedWithAndValidated(arguments: List<ValueArgument>) =
     pairArguments(arguments).also { it.validateTyping() }
 
 fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): Map<Parameter, Value> {
+    val finalArgument = arguments.lastOrNull()
+
+    val valueArguments: List<ValueArgument>
+    val tailArgument: List<Pair<Parameter, ValueArgument>>
+    if (finalArgument?.isTailLambda == true) {
+        val tailParam = this.lastOrNull() ?: compileError("A lambda argument was supplied, but no parameters exist.")
+        tailArgument = listOf(tailParam to finalArgument)
+        valueArguments = arguments.dropLast(1)
+    } else {
+        tailArgument = emptyList()
+        valueArguments = arguments
+    }
+
     // This can still contain named arguments. However, they must match the place in their order.
     // That is, the call would remain equivalent if the name was removed.
     // This is merely a convenience for reading the function call.
-    val orderedArguments = arguments.dropLastWhile { it.name != null }
+    val orderedArguments = valueArguments.dropLastWhile { it.name != null }
 
-    val namedArguments = arguments.takeLastWhile { it.name != null }
+    val namedArguments = valueArguments.takeLastWhile { it.name != null }
     val namedParameters = this.associateBy { it.name }
     val ordered = this.zip(orderedArguments)
     ordered.forEach { (param, arg) ->
@@ -83,11 +101,11 @@ fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): Map<Parameter
             ?: compileError("No parameter with name ${it.name} exists or has already been supplied as an ordered argument.")
         param to it
     }
-    val usedParams = ordered.map { (param, _) -> param }.toSet() + named.map { (param, _) -> param }.toSet()
+    val usedParams: Set<Parameter> = ordered.map { (param, _) -> param }.toSet() + named.map { (param, _) -> param } + tailArgument.map { (param, _) -> param }
     val defaults = this.filter { it !in usedParams }.associateWith {
         (it.default?.get() ?: compileError("Parameter ${it.name} was not provided an argument and has no default."))
     }
-    return (ordered + named).also {
+    return (ordered + named + tailArgument).also {
         if (ordered.map { (param, _) -> param }.toSet().intersect(named.map { (param, _) -> param }.toSet()).isNotEmpty())
             compileError("Duplicate named and ordered parameters.")
     }.associate { (param, arg) -> param to arg.value } + defaults

@@ -48,13 +48,6 @@ class FunctionDeclaration(
         receiverParameter?.let { listOf(it) + valueParameters } ?: valueParameters
     }
 
-    /**
-     * Whether the function scope when calling this function has a receiver.
-     */
-    val usesReceiverScope by lazy {
-        node.receiver != null && node.receiver.identifier == null
-    }
-
     /*
     Unit is the default return type if none is specified and the function has a block body.
     In an assigment body, the return type is Any.

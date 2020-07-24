@@ -460,6 +460,16 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitCallSuffix(TreblaParser.CallSuffixContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#lambda}.
+	 * @param ctx the parse tree
+	 */
+	void enterLambda(TreblaParser.LambdaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#lambda}.
+	 * @param ctx the parse tree
+	 */
+	void exitLambda(TreblaParser.LambdaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#valueArguments}.
 	 * @param ctx the parse tree
 	 */

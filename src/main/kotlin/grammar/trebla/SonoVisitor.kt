@@ -4,6 +4,7 @@ package xyz.qwewqa.trebla.grammar.trebla
 
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
+import org.antlr.v4.runtime.tree.TerminalNode
 import xyz.qwewqa.trebla.grammar.generated.TreblaParser
 import xyz.qwewqa.trebla.grammar.generated.TreblaParserBaseVisitor
 import java.util.*
@@ -292,7 +293,9 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     override fun visitControlStructureBody(ctx: TreblaParser.ControlStructureBodyContext): TreblaNode {
-        return if (ctx.expression().exist) BlockNode(ctx, filename, listOf(ctx.expression().visit() as StatementNode)) else
+        return if (ctx.expression().exist) BlockNode(ctx,
+            filename,
+            listOf(ctx.expression().visit() as StatementNode)) else
             ctx.block().visit()
     }
 
@@ -301,7 +304,20 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     override fun visitValueArguments(ctx: TreblaParser.ValueArgumentsContext): TreblaNode {
-        return ValueArgumentsNode(ctx, filename, ctx.valueArgument().visit() as List<ValueArgumentNode>)
+        return ValueArgumentsNode(
+            ctx, filename,
+            ctx.valueArgument().visit() as List<ValueArgumentNode>,
+            ctx.lambda()?.visit() as LambdaNode?,
+        )
+    }
+
+    override fun visitLambda(ctx: TreblaParser.LambdaContext): TreblaNode {
+        return LambdaNode(
+            ctx,
+            filename,
+            ctx.functionValueParameters()?.visit() as FunctionValueParametersNode?,
+            ctx.statement().visit() as List<StatementNode>
+        )
     }
 
     override fun visitValueArgument(ctx: TreblaParser.ValueArgumentContext): TreblaNode {
@@ -313,7 +329,8 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     private fun visitGenericInfixFunction(ctx: ParserRuleContext, rightAssociative: Boolean = false): TreblaNode {
-        val children = ArrayDeque(ctx.children)
+        // Filter stuff like NL
+        val children = ArrayDeque(ctx.children.filter { it !is TerminalNode || it.text.isNotBlank() })
         return if (rightAssociative) {
             var expr = children.removeLast().visit() as ExpressionNode
             while (children.isNotEmpty()) {

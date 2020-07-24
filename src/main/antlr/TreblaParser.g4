@@ -220,6 +220,7 @@ atomicExpression
     | conditionalExpression
     | loopExpression
     | simpleIdentifier
+    | lambda
     ;
 
 parenthesizedExpression
@@ -230,8 +231,13 @@ callSuffix
     : valueArguments
     ;
 
+lambda
+    : LCURL NL* (functionValueParameters NL* ARROW)? NL* anysemi* (statement (anysemi+ statement?)*)? RCURL
+    ;
+
 valueArguments
-    : LPAREN (valueArgument (COMMA valueArgument)* COMMA?)? RPAREN
+    : LPAREN (valueArgument (COMMA valueArgument)* COMMA?)? RPAREN lambda?
+    | lambda
     ;
 
 valueArgument
@@ -360,6 +366,8 @@ comparisonOperator
     | GE
     ;
 
+// Takes up to one semicolon, but no more.
+// If more than one semicolon is allowed, anysemi* will suffice.
 semi: NL+ | NL* SEMICOLON NL*;
 
 anysemi: NL | SEMICOLON;

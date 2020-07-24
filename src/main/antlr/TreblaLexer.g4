@@ -33,16 +33,12 @@ NL: '\u000A' | '\u000D' '\u000A' ;
 
 DOT: '.' ;
 COMMA: ',' ;
-// not sure if this'll cause issues with lambda declarations (when the come) in parens
-// due to skipping newlines
-// pushing/popping the default mode with curls might work
-// leaving as-is for now
 LPAREN: '(' -> pushMode(Inside) ;
 RPAREN: ')' ;
 LSQUARE: '[' -> pushMode(Inside) ;
 RSQUARE: ']' ;
-LCURL: '{' ;
-RCURL: '}' ;
+LCURL: '{' -> pushMode(DEFAULT_MODE) ; // important for lambdas inside parens
+RCURL: '}' -> popMode ;
 POW: '**' ;
 MULT: '*' ;
 MOD: '%' ;
@@ -161,7 +157,7 @@ Inside_RSQUARE: ']' -> popMode, type(RSQUARE);
 Inside_LPAREN: LPAREN -> pushMode(Inside), type(LPAREN) ;
 Inside_LSQUARE: LSQUARE -> pushMode(Inside), type(LSQUARE) ;
 
-Inside_LCURL: LCURL -> type(LCURL) ;
+Inside_LCURL: LCURL -> pushMode(DEFAULT_MODE), type(LCURL) ;
 Inside_RCURL: RCURL -> type(RCURL) ;
 Inside_DOT: DOT -> type(DOT) ;
 Inside_COMMA: COMMA  -> type(COMMA) ;
