@@ -18,3 +18,7 @@ Trebla was built and tested with JDK 14, but JDK 8 or higher should suffice.
     gradlew run --args="[arguments]"
     ```
     See `gradlew tasks` for other options.
+    
+### Documentation
+Documentation is built using [mkdocs](https://www.mkdocs.org/)
+and the [material theme](https://squidfunk.github.io/mkdocs-material/).

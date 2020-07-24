@@ -258,6 +258,13 @@ sum(1, 2)
 // A call to the sum function with named parameters.
 sum(b = 2, a = 1)
 ```
+A function may also have default parameters.
+```
+func sum(a = 0, b = 1) = a + b
+
+sum() == sum(0, 1) // true
+sum(b = 3) == sum(0, 3) // true
+```
 
 ## Receiver Functions
 Receiver functions, also known as methods, are a special type of function.
