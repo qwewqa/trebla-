@@ -47,6 +47,11 @@ class SimpleExecutionContext(parent: ExecutionContext) : ExecutionContext, State
     }
 }
 
+class InnerExecutionContext(parent: ExecutionContext) : ExecutionContext {
+    override val scope = Scope(this, parent.scope)
+    override val localAllocator = parent.localAllocator
+    override val statements = parent.statements
+}
 
 class ReadOnlyContext(parent: Context) : Context {
     override val scope = ReadOnlyScope(this, parent.scope)
