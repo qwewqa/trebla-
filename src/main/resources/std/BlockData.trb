@@ -32,6 +32,13 @@ let levelTransform = Transform(
     numref(LEVEL_TRANSFORM_BLOCK, 12), numref(LEVEL_TRANSFORM_BLOCK, 13), numref(LEVEL_TRANSFORM_BLOCK, 15),
 )
 
+let background = Quad(
+    Point(numref(LEVEL_BACKGROUND_BLOCK, 0), numref(LEVEL_BACKGROUND_BLOCK, 1)),
+    Point(numref(LEVEL_BACKGROUND_BLOCK, 2), numref(LEVEL_BACKGROUND_BLOCK, 3)),
+    Point(numref(LEVEL_BACKGROUND_BLOCK, 4), numref(LEVEL_BACKGROUND_BLOCK, 5)),
+    Point(numref(LEVEL_BACKGROUND_BLOCK, 6), numref(LEVEL_BACKGROUND_BLOCK, 7)),
+)
+
 struct UIInfo(
     anchorX: Number = 0, anchorY: Number = 0,
     pivotX: Number = 0, pivotY: Number = 0,
