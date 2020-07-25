@@ -17,7 +17,7 @@ infix func Transform.then(other: Transform) = other * this
 
 // This is sufficient to set the value of the level transform, assuming only affine transforms have been applied,
 // since the bottom row will always be [0, 0, 1] in that case.
-fun Transform.setAffine(value: Transform) {
+func Transform.setAffine(value: Transform) {
     this._11 = value_11
     this._12 = value_12
     this._13 = value_13

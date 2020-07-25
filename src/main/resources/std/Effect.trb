@@ -1,6 +1,11 @@
 package std
 
 struct Clip(id: Number)
-func Clip.play(minEffectTime: Number) {
+
+func Clip.play(minEffectTime: Number = 0) {
     builtins.Play(this.id, minEffectTime)
+}
+
+func Clip.playScheduled(time: Number, dist: Number = 0) {
+    builtins.Scheduled(this.id, time, dist)
 }

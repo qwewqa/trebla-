@@ -73,19 +73,35 @@ func arctan(x: Number) = Number(builtins.Arctan(x))
 func arctan2(y: Number, x: Number) = Number(builtins.Arctan2(y, x))
 
 func abs(n: Number) = Number(builtins.Abs(n))
+func sign(n: Number) = Number(builtins.Sign(n))
+
+func ceil(n: Number) = Number(builtins.Ceil(n))
+func Floor(n: Number) = Number(builtins.Floor(n))
+
 func frac(n: Number) = Number(builtins.Frac(n))
 func trunc(n: Number) = Number(builtins.Trunc(n))
 func round(n: Number) = Number(builtins.Round(n))
+
+func log(n: Number) = Number(builtins.Log(n))
+
+func min(a: Number, b: Number) = Number(builtins.Min(a, b))
+func max(a: Number, b: Number) = Number(builtins.Max(a, b))
 
 func lerp(min: Number, max: Number, value: Number) = Number(builtins.Lerp(min, max, value))
 func lerpClamped(min: Number, max: Number, value: Number) = Number(builtins.LerpClamped(min, max, value))
 func unlerp(min: Number, max: Number, value: Number) = Number(builtins.Unlerp(min, max, value))
 func unlerpClamped(min: Number, max: Number, value: Number) = Number(builtins.UnlerpClamped(min, max, value))
+func remap(fromMin: Number, fromMax: Number, toMin: Number, toMax: Number, value: Number) = Number(builtins.Remap(fromMin, fromMax, toMin, toMax, value))
+func remapClamped(fromMin: Number, fromMax: Number, toMin: Number, toMax: Number, value: Number) = Number(builtins.RemapClamped(fromMin, fromMax, toMin, toMax, value))
+func smoothstep(min: Number, max: Number, value: Number) = Number(builtins.Smoothstep(min, max, value))
 
 func Number.lerp(min: Number, max: Number) = lerp(min, max, this)
 func Number.lerpClamped(min: Number, max: Number) = lerpClamped(min, max, this)
 func Number.unlerp(min: Number, max: Number) = unlerp(min, max, this)
 func Number.unlerpClamped(min: Number, max: Number) = unlerpClamped(min, max, this)
+func Number.remap(fromMin: Number, fromMax: Number, toMin: Number, toMax: Number) = remap(fromMin, fromMax, toMin, toMax, this)
+func Number.remapClamped(fromMin: Number, fromMax: Number, toMin: Number, toMax: Number) = remapClamped(fromMin, fromMax, toMin, toMax, this)
+func Number.smoothstep(min: Number, max: Number) = smoothstep(min, max, this)
 
 // It's important that these store their value in a variable (inside the copy function), rather than just directly returning,
 // because the function is a node, which may be evaluated more than once in some cases.
