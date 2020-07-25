@@ -64,6 +64,9 @@ operator func Number.lessOr(other: Number) = Boolean(builtins.LessOr(this, other
 func sin(x: Number) = Number(builtins.Sin(x))
 func cos(x: Number) = Number(builtins.Cos(x))
 func tan(x: Number) = Number(builtins.Tan(x))
+func csc(x: Number) = 1/sin(x)
+func sec(x: Number) = 1/cos(x)
+func cot(x: Number) = 1/tan(x)
 func sinh(x: Number) = Number(builtins.Sinh(x))
 func cosh(x: Number) = Number(builtins.Cosh(x))
 func tanh(x: Number) = Number(builtins.Tanh(x))
@@ -110,3 +113,4 @@ func random(min: Number, max: Number) = copy(Number(builtins.Random(min, max)))
 func randomInteger(min: Number, max: Number) = copy(Number(builtins.RandomInteger(min, max)))
 
 let PI = 3.14159265358979323846
+let E = 2.71828182845904523536
