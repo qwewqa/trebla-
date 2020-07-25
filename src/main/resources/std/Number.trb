@@ -72,6 +72,7 @@ func arccos(x: Number) = Number(builtins.Arccos(x))
 func arctan(x: Number) = Number(builtins.Arctan(x))
 func arctan2(y: Number, x: Number) = Number(builtins.Arctan2(y, x))
 
+func abs(n: Number) = Number(builtins.Abs(n))
 func frac(n: Number) = Number(builtins.Frac(n))
 func trunc(n: Number) = Number(builtins.Trunc(n))
 func round(n: Number) = Number(builtins.Round(n))
