@@ -71,6 +71,8 @@ fun List<Parameter>.pairedWithAndValidated(arguments: List<ValueArgument>) =
     pairArguments(arguments).also { it.validateTyping() }
 
 fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): Map<Parameter, Value> {
+    if (arguments.size > this.size) compileError("Too many arguments.")
+
     val finalArgument = arguments.lastOrNull()
 
     val valueArguments: List<ValueArgument>
