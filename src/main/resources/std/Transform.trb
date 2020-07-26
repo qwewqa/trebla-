@@ -15,6 +15,58 @@ operator func Transform.times(other: Transform) = Transform(
 )
 infix func Transform.then(other: Transform) = other * this
 
+func (m: Transform).invert(): Transform {
+    var det = m._11 * (m._22 * m._33 - m._32 * m._23) -
+              m._12 * (m._21 * m._33 - m._23 * m._31) +
+              m._13 * (m._21 * m._32 - m._22 * m._31)
+
+    var invdet = 1 / det
+    Transform(
+        (m._22 * m._33 - m._32 * m._23) * invdet,
+        (m._13 * m._32 - m._12 * m._33) * invdet,
+        (m._12 * m._23 - m._13 * m._22) * invdet,
+        (m._23 * m._31 - m._21 * m._33) * invdet,
+        (m._11 * m._33 - m._13 * m._31) * invdet,
+        (m._21 * m._13 - m._11 * m._23) * invdet,
+        (m._21 * m._32 - m._31 * m._22) * invdet,
+        (m._31 * m._12 - m._11 * m._32) * invdet,
+        (m._11 * m._22 - m._21 * m._12) * invdet,
+    )
+}
+
+func (m: Transform).transpose(): Transform = Transform(
+    m._11, m._21, m._31,
+    m._12, m._22, m._32,
+    m._13, m._23, m._33,
+)
+
+struct HomogeneousPoint(x: Number, y: Number, w: Number)
+
+func Point.toHomogeneousPoint() = HomogeneousPoint(this.x, this.y, 1)
+
+func HomogeneousPoint.toPoint() = Point(this.x / this.w, this.y / this.w)
+
+func (p: HomogeneousPoint).transformedBy(t: Transform) =
+    HomogeneousPoint(
+        p.x * t._11 + p.y * t._12 + p.w * t._13,
+        p.x * t._21 + p.y * t._22 + p.w * t._23,
+        p.x * t._31 + p.y * t._32 + p.w * t._33,
+    )
+
+func Point.transformedBy(t: Transform) = this.toHomogeneousPoint().transformedBy(t).toPoint()
+
+struct HomogeneousQuad(p1: HomogeneousPoint, p2: HomogeneousPoint, p3: HomogeneousPoint, p4: HomogeneousPoint)
+
+func HomogeneousQuad.transformedBy(t: Transform) =
+    HomogeneousQuad(this.p1.transformedBy(t), this.p2.transformedBy(t), this.p3.transformedBy(t), this.p4.transformedBy(t))
+
+func Quad.transformedBy(t: Transform) = this.toHomogeneousQuad().transformedBy(t).toQuad()
+
+func HomogeneousQuad.toQuad() = Quad(this.p1.toPoint(), this.p2.toPoint(), this.p3.toPoint(), this.p4.toPoint())
+
+func Quad.toHomogeneousQuad() =
+    HomogeneousQuad(this.p1.toHomogeneousPoint(), this.p2.toHomogeneousPoint(), this.p3.toHomogeneousPoint(), this.p4.toHomogeneousPoint())
+
 let identityTransform = Transform(
     1, 0, 0,
     0, 1, 0,

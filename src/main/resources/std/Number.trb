@@ -90,6 +90,7 @@ func log(n: Number) = Number(builtins.Log(n))
 func min(a: Number, b: Number) = Number(builtins.Min(a, b))
 func max(a: Number, b: Number) = Number(builtins.Max(a, b))
 
+func clamp(min: Number, max: Number, value: Number) = Number(builtins.Clamp(min, max, value))
 func lerp(min: Number, max: Number, value: Number) = Number(builtins.Lerp(min, max, value))
 func lerpClamped(min: Number, max: Number, value: Number) = Number(builtins.LerpClamped(min, max, value))
 func unlerp(min: Number, max: Number, value: Number) = Number(builtins.Unlerp(min, max, value))
@@ -98,6 +99,7 @@ func remap(fromMin: Number, fromMax: Number, toMin: Number, toMax: Number, value
 func remapClamped(fromMin: Number, fromMax: Number, toMin: Number, toMax: Number, value: Number) = Number(builtins.RemapClamped(fromMin, fromMax, toMin, toMax, value))
 func smoothstep(min: Number, max: Number, value: Number) = Number(builtins.Smoothstep(min, max, value))
 
+func Number.clamp(min: Number, max: Number) = clamp(min, max, this)
 func Number.lerp(min: Number, max: Number) = lerp(min, max, this)
 func Number.lerpClamped(min: Number, max: Number) = lerpClamped(min, max, this)
 func Number.unlerp(min: Number, max: Number) = unlerp(min, max, this)
