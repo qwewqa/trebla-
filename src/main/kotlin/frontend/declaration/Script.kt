@@ -13,7 +13,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
-    override val type = AnyType
+    override val type = ScriptType
     override val scope = Scope(this, declaringContext.scope)
     override val memoryAllocator = StandardAllocator(21, 64)
     override val dataAllocator = StandardAllocator(22, 32)
@@ -119,6 +119,8 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
         }
     }
 }
+
+object ScriptType : BuiltinType("Script")
 
 interface ScriptContext : Context {
     val memoryAllocator: Allocator

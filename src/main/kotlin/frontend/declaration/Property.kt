@@ -28,7 +28,7 @@ class PropertyDeclaration(
         }
     }
 
-    override fun applyTo(context: Context): Value = runWithErrorMessage("Error in property declaration.") {
+    override fun applyTo(context: Context): Copyable = runWithErrorMessage("Error in property declaration.") {
         val initializer = node.expression?.parse(context)
         val typeConstraint = typeConstraint // loads lazy delegate and allows smart casts
         val allocator = when (variant) {

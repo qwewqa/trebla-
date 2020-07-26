@@ -36,3 +36,20 @@ data class ConcreteAllocation(val block: Int, val index: Int) : Allocation()
  * @property id used for uniqueness between temporary allocations
  */
 data class TemporaryAllocation(val id: Int) : Allocation()
+
+const val LEVEL_MEMORY_BLOCK = 0
+const val LEVEL_DATA_BLOCK = 1
+const val LEVEL_OPTION_BLOCK = 2
+const val LEVEL_TRANSFORM_BLOCK = 3
+const val LEVEL_BACKGROUND_BLOCK = 4
+const val LEVEL_UI_BLOCK = 5
+const val ENTITY_INFO_ARRAY = 10
+const val ENTITY_DATA_ARRAY = 11
+const val ENTITY_SHARED_MEMORY_ARRAY = 12
+const val ENTITY_INFO = 20
+const val ENTITY_MEMORY = 21
+const val ENTITY_DATA = 22
+const val ENTITY_INPUT = 23
+const val ENTITY_SHARED_MEMORY = 24
+const val TEMPORARY_MEMORY = 100
+const val TEMPORARY_DATA = 101

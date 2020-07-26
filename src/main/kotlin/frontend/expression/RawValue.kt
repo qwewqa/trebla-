@@ -30,6 +30,14 @@ class AllocatedValue(val allocation: Allocation) : RawValue() {
     }
 }
 
+class DynamicAllocatedValue(val block: IRNode, val offset: IRNode, val index: IRNode) : RawValue() {
+    override fun toIR() = FunctionIRNodeVariant.GetShifted.calledWith(
+        offset,
+        block,
+        index,
+    )
+}
+
 class LiteralValue(val value: Double) : RawValue() {
     override fun toIR(): IRNode {
         return value.toValueIRNode()
@@ -46,7 +54,7 @@ class BuiltinCallValue(val function: BuiltinFunctionVariant, val arguments: List
     }
 }
 
-class RawValueAssigment(val lhs: AllocatedValue, val rhs: RawValue) : Statement {
+class AllocatedValueAssignment(val lhs: AllocatedValue, val rhs: RawValue) : Statement {
     override fun toIR() = when (val alloc = lhs.allocation) {
         is ConcreteAllocation -> FunctionIRNodeVariant.Set.calledWith(
             alloc.block.toValueIRNode(),
@@ -55,4 +63,13 @@ class RawValueAssigment(val lhs: AllocatedValue, val rhs: RawValue) : Statement 
         )
         is TemporaryAllocation -> AssignTempIRNode(alloc.id, rhs.toIR())
     }
+}
+
+class DynamicAllocatedValueAssignment(val lhs: DynamicAllocatedValue, val rhs: RawValue) : Statement {
+    override fun toIR() = FunctionIRNodeVariant.SetShifted.calledWith(
+        lhs.offset,
+        lhs.block,
+        lhs.index,
+        rhs.toIR()
+    )
 }

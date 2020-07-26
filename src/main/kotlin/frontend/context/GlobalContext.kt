@@ -92,11 +92,12 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to UnitValue,
     listOf("std") to StructType,
     listOf("std") to FunctionType,
-    listOf("std") to PackageType
+    listOf("std") to PackageType,
 )
 
 // constructors for intrinsics that require the context
 val intrinsics: List<Pair<List<String>, (Context, CompilerConfiguration) -> Expression>> = listOf(
     listOf("std") to ::Memref,
-    listOf("std") to ::OptionsAccessor
+    listOf("std") to ::OptionsAccessor,
+    listOf("std") to ::EntityPtr
 )

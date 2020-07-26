@@ -19,8 +19,8 @@ class Memref(override val declaringContext: Context, val projectConfiguration: C
 
     override val parameters by lazy {
         listOf(
-            Parameter("block", declaringContext.scope.getFullyQualified("std", "Number") as StructDeclaration),
-            Parameter("index", declaringContext.scope.getFullyQualified("std", "Number") as StructDeclaration)
+            Parameter("block", declaringContext.numberType),
+            Parameter("index", declaringContext.numberType)
         )
     }
 

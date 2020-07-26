@@ -17,7 +17,7 @@ interface Value : Entity {
 }
 
 interface Allocatable : Value {
-    fun allocateOn(allocator: Allocator, context: Context): Value
+    fun allocateOn(allocator: Allocator, context: Context): Copyable
 }
 
 interface Copyable : Value {
@@ -25,6 +25,11 @@ interface Copyable : Value {
      * Copies the value onto new allocations on the allocator.
      */
     fun copyOn(allocator: Allocator, context: ExecutionContext): Copyable
+
+    /**
+     * Used for shared/data arrays.
+     */
+    fun onBlock(block: Int, offset: RawValue): Copyable
 }
 
 interface Mutable : Value {
