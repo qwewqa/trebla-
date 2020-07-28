@@ -3,9 +3,9 @@ package std
 // A transformation matrix for 2d coordinates.
 // The matrix in level data is 4x4, but since the Sonolus is 2d, z can be ignored.
 struct Transform(
-    _11, _12, _13,
-    _21, _22, _23,
-    _31, _32, _33,
+    _11: Number, _12: Number, _13: Number,
+    _21: Number, _22: Number, _23: Number,
+    _31: Number, _32: Number, _33: Number,
 )
 
 operator func Transform.times(other: Transform) = Transform(
@@ -73,7 +73,7 @@ let identityTransform = Transform(
     0, 0, 1,
 )
 
-func translationTransform(x: Number = 0, y: Number = 0) = Transform(
+func translateTransform(x: Number = 0, y: Number = 0) = Transform(
     1, 0, x,
     0, 1, y,
     0, 0, 1,
@@ -85,7 +85,7 @@ func scaleTransform(x: Number = 1, y: Number = 1) = Transform(
     0, 0, 1,
 )
 
-func rotationTransform(theta: Number = 0) = Transform(
+func rotateTransform(theta: Number = 0) = Transform(
     cos(theta), -sin(theta), 0,
     sin(theta), cos(theta), 0,
     0, 0, 1,

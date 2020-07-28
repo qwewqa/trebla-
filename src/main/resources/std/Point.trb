@@ -23,3 +23,5 @@ func Point.translated(x: Number, y: Number) = Point(this.x + x, this.y + y)
 func Point.translate(x: Number, y: Number) {
     this = this.translated(x, y)
 }
+
+infix func Point.distanceTo(other: Point) = ((this.x - other.x)**2 + (this.y - other.y)**2)**0.5

@@ -170,7 +170,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     override fun visitType(ctx: TreblaParser.TypeContext): TreblaNode {
-        return TypeNode(ctx, filename, ctx.atomicExpression().visit() as ExpressionNode)
+        return TypeNode(ctx, filename, ctx.prefixUnaryExpression().visit() as ExpressionNode)
     }
 
     override fun visitSimpleUserType(ctx: TreblaParser.SimpleUserTypeContext): TreblaNode {

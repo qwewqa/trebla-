@@ -18,10 +18,13 @@ func draw(
     )
 }
 
+struct Drawable(quad: Quad, id: Number, z: Number, alpha: Number = 1)
+func Drawable.draw() = this.quad.draw(this.id, this.z, this.alpha)
+
 // p1 is bottom left; points go clockwise.
 struct Quad(p1: Point, p2: Point, p3: Point, p4: Point)
 
-func Quad.draw(id: Number, z: Number, alpha: Number) {
+func Quad.draw(id: Number, z: Number, alpha: Number = 1) {
     draw(
         id,
         this.p1.x, this.p1.y,
@@ -49,3 +52,10 @@ func cornerRectangle(corner: Point, length: Number, width: Number) = Quad(
 
 func centerSquare(center: Point, halfWidth: Number) = centerRectangle(center, halfWidth, halfWidth)
 func cornerSquare(corner: Point, halfWidth: Number) = cornerRectangle(corner, halfWidth, halfWidth)
+
+func offsetRectangle(top: Number, bottom: Number, left: Number, right: Number) = Quad(
+    Point(left, bottom),
+    Point(left, top),
+    Point(right, top),
+    Point(right, bottom),
+)

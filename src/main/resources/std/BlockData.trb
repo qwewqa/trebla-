@@ -23,8 +23,8 @@ func boolref(block: Number, index: Number) = Boolean(memref(block, index))
 let time = numref(LEVEL_DATA_BLOCK, 0)
 let deltaTime = numref(LEVEL_DATA_BLOCK, 1)
 let aspectRatio = numref(LEVEL_DATA_BLOCK, 2)
-let audioOffset = numref(LEVEL_DATA_BLOCK, 3)
-let inputOffset = numref(LEVEL_DATA_BLOCK, 4)
+let deviceAudioOffset = numref(LEVEL_DATA_BLOCK, 3)
+let deviceInputOffset = numref(LEVEL_DATA_BLOCK, 4)
 
 let levelTransform = Transform(
     numref(LEVEL_TRANSFORM_BLOCK, 0), numref(LEVEL_TRANSFORM_BLOCK, 1), numref(LEVEL_TRANSFORM_BLOCK, 3),
@@ -63,7 +63,7 @@ private func uiBlock(offset: Number) = UIInfo(
 )
 
 let menuUI = uiBlock(0 * 11)
-let judgementUI = uiBlock(1 * 11)
+let judgmentUI = uiBlock(1 * 11)
 let comboValueUI = uiBlock(2 * 11)
 let comboTextUI = uiBlock(3 * 11)
 let scoreBarUI = uiBlock(4 * 11)
@@ -81,11 +81,11 @@ func EntityInfo.waiting() = this.state() == 0
 func EntityInfo.spawned() = this.state() == 1
 func EntityInfo.despawned() = this.state() == 2
 
-let entityJudgement = numref(ENTITY_INPUT, 0)
+let entityJudgment = numref(ENTITY_INPUT, 0)
 let entityBucket = numref(ENTITY_INPUT, 1)
 let entityBucketValue = numref(ENTITY_INPUT, 2)
 
-let touchIdentifier = numref(TEMPORARY_DATA, 0)
+let touchID = numref(TEMPORARY_DATA, 0)
 let touchStarted = boolref(TEMPORARY_DATA, 1)
 let touchEnded = boolref(TEMPORARY_DATA, 2)
 let touchT = numref(TEMPORARY_DATA, 3)

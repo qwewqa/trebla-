@@ -7,5 +7,13 @@ func Clip.play(minEffectTime: Number = 0) {
 }
 
 func Clip.playScheduled(time: Number, dist: Number = 0) {
-    builtins.Scheduled(this.id, time, dist)
+    builtins.PlayScheduled(this.id, time, dist)
+}
+
+func Clip.playSFX(minEffectTime: Number = 0) {
+    if (options.`#EFFECT`) builtins.Play(this.id, minEffectTime)
+}
+
+func Clip.playScheduledSFX(time: Number, dist: Number = 0) {
+    if (options.`#EFFECT`) builtins.PlayScheduled(this.id, time, dist)
 }

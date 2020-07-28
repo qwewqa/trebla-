@@ -119,6 +119,7 @@ val stdFilenames = listOf(
     "Draw.trb",
     "Easing.trb",
     "Number.trb",
+    "Options.trb",
     "Point.trb",
     "Raw.trb",
     "Transform.trb",

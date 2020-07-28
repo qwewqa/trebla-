@@ -21,7 +21,7 @@ options:
     type: toggle
     def: 0
 
-# Judgement buckets (optional)
+# Judgment buckets (optional)
 buckets:
   - sprites:
       - id: 1001
