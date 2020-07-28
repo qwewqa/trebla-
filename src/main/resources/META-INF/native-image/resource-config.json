@@ -1,0 +1,16 @@
+{
+  "resources":[
+    {"pattern":"\\Qstd/BlockData.trb\\E"},
+    {"pattern":"\\Qstd/Boolean.trb\\E"},
+    {"pattern":"\\Qstd/Draw.trb\\E"},
+    {"pattern":"\\Qstd/Easing.trb\\E"},
+    {"pattern":"\\Qstd/Effect.trb\\E"},
+    {"pattern":"\\Qstd/Number.trb\\E"},
+    {"pattern":"\\Qstd/Options.trb\\E"},
+    {"pattern":"\\Qstd/Point.trb\\E"},
+    {"pattern":"\\Qstd/Raw.trb\\E"},
+    {"pattern":"\\Qstd/Transform.trb\\E"},
+    {"pattern":"\\Qstd/Util.trb\\E"}
+  ],
+  "bundles":[]
+}
