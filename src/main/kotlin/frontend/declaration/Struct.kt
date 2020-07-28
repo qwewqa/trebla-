@@ -18,7 +18,7 @@ class StructDeclaration(
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility: Visibility
-    override val type = AnyType
+    override val type = TypeType
 
     override val loadEarly = true
 

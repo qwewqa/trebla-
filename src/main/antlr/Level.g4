@@ -24,11 +24,11 @@ Identifier
     ;
 
 FloatLiteral
-    : DecDigit+ '.' DecDigit+
+    : '-'? DecDigit+ '.' DecDigit+
     ;
 
 IntegerLiteral
-    : DecDigit+
+    : '-'? DecDigit+
     ;
 
 fragment DecDigit

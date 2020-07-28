@@ -56,8 +56,12 @@ class FunctionDeclaration(
     A function that has a unit return type always returns unit, regardless of the final statement.
     It is roughly equivalent to a void return type in some languages.
      */
-    val returnType = node.type?.applyIn(declaringContext) ?: if (node.assigmentBody) AnyType else UnitValue
-    val returnsUnit = returnType is UnitValue
+    val returnType by lazy {
+        node.type?.applyIn(declaringContext) ?: if (node.assigmentBody) AnyType else UnitValue
+    }
+    val returnsUnit by lazy {
+        returnType is UnitValue
+    }
 
     override val isOperator: Boolean
     override val isInfix: Boolean

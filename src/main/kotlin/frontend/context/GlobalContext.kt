@@ -99,5 +99,6 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
 val intrinsics: List<Pair<List<String>, (Context, CompilerConfiguration) -> Expression>> = listOf(
     listOf("std") to ::Memref,
     listOf("std") to ::OptionsAccessor,
-    listOf("std") to ::EntityPtr
+    listOf("std") to ::EntityPtr,
+    listOf("std") to ::TreblaList
 )

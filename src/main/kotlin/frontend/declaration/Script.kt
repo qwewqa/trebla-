@@ -56,14 +56,15 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
         sharedProperties
 
         val callbacks = mutableListOf(initializeCallback)
-        propertyDeclarations.forEach {
-            if (it.variant != PropertyVariant.SPAWN && it.variant != PropertyVariant.DATA && it.variant != PropertyVariant.SHARED) it.applyTo(
-                initializationContext
-            )
-        }
+        val propertyDeclarationsByNode = propertyDeclarations.associateBy { it.node }
         node.body.value.forEach { memberNode ->
             when (memberNode) {
                 is PropertyDeclarationNode -> {
+                    propertyDeclarationsByNode[memberNode]?.let {
+                        if (it.variant != PropertyVariant.SPAWN && it.variant != PropertyVariant.DATA && it.variant != PropertyVariant.SHARED) it.applyTo(
+                            initializationContext
+                        )
+                    }
                 }
                 is CallbackDeclarationNode -> CallbackDeclaration(memberNode, this).let {
                     it.applyTo(initializationContext)

@@ -941,7 +941,7 @@ public class TreblaParser extends Parser {
 			setState(288);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
+			if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (NOTE - 51)) | (1L << (Identifier - 51)))) != 0)) {
 				{
 				setState(277);
 				parameter();
@@ -1320,7 +1320,7 @@ public class TreblaParser extends Parser {
 				setState(349);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
+				if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (NOTE - 51)) | (1L << (Identifier - 51)))) != 0)) {
 					{
 					setState(338);
 					structField();
@@ -1929,7 +1929,7 @@ public class TreblaParser extends Parser {
 			setState(445);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) {
+			if (((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (NOTE - 51)) | (1L << (Identifier - 51)))) != 0)) {
 				{
 				setState(437);
 				archetypeDefault();
@@ -2419,8 +2419,8 @@ public class TreblaParser extends Parser {
 	}
 
 	public static class TypeContext extends ParserRuleContext {
-		public AtomicExpressionContext atomicExpression() {
-			return getRuleContext(AtomicExpressionContext.class,0);
+		public PrefixUnaryExpressionContext prefixUnaryExpression() {
+			return getRuleContext(PrefixUnaryExpressionContext.class,0);
 		}
 		public TypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2448,7 +2448,7 @@ public class TreblaParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(515);
-			atomicExpression();
+			prefixUnaryExpression();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2617,7 +2617,7 @@ public class TreblaParser extends Parser {
 			setState(544);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (NOTE - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 				{
 				setState(530);
 				statement();
@@ -2650,7 +2650,7 @@ public class TreblaParser extends Parser {
 					setState(537);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (NOTE - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 						{
 						setState(536);
 						statement();
@@ -3857,6 +3857,7 @@ public class TreblaParser extends Parser {
 			case LEVEL:
 			case TEMP:
 			case RAW:
+			case NOTE:
 			case Identifier:
 				enterOuterAlt(_localctx, 5);
 				{
@@ -4107,7 +4108,7 @@ public class TreblaParser extends Parser {
 			setState(766);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (NOTE - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 				{
 				setState(752);
 				statement();
@@ -4140,7 +4141,7 @@ public class TreblaParser extends Parser {
 					setState(759);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (NOTE - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 						{
 						setState(758);
 						statement();
@@ -4223,7 +4224,7 @@ public class TreblaParser extends Parser {
 				setState(782);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << ARCHETYPE) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << ARCHETYPE) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (NOTE - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 					{
 					setState(771);
 					valueArgument();
@@ -4768,7 +4769,7 @@ public class TreblaParser extends Parser {
 			setState(867);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << STRUCT) | (1L << FUNC) | (1L << LET) | (1L << ARCHETYPE) | (1L << VAR) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (INFIX - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (CONST - 64)) | (1L << (NOTE - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 				{
 				setState(866);
 				forInitializer();
@@ -4780,7 +4781,7 @@ public class TreblaParser extends Parser {
 			setState(871);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << ARCHETYPE) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << ARCHETYPE) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (NOTE - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 				{
 				setState(870);
 				forCondition();
@@ -4792,7 +4793,7 @@ public class TreblaParser extends Parser {
 			setState(875);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << ARCHETYPE) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LPAREN) | (1L << LCURL) | (1L << ADD) | (1L << SUB) | (1L << INCR) | (1L << DECR) | (1L << EXCL) | (1L << ARCHETYPE) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << PACKAGE) | (1L << PUBLIC) | (1L << PRIVATE))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (INTERNAL - 64)) | (1L << (PROTECTED - 64)) | (1L << (SHARED - 64)) | (1L << (STATIC - 64)) | (1L << (OPERATOR - 64)) | (1L << (INLINE - 64)) | (1L << (INIT - 64)) | (1L << (SPAWN - 64)) | (1L << (DATA - 64)) | (1L << (LEVEL - 64)) | (1L << (TEMP - 64)) | (1L << (RAW - 64)) | (1L << (NOTE - 64)) | (1L << (FloatLiteral - 64)) | (1L << (IntegerLiteral - 64)) | (1L << (BooleanLiteral - 64)) | (1L << (Identifier - 64)))) != 0)) {
 				{
 				setState(874);
 				forAfterthought();
@@ -5270,6 +5271,7 @@ public class TreblaParser extends Parser {
 		public TerminalNode PACKAGE() { return getToken(TreblaParser.PACKAGE, 0); }
 		public TerminalNode TEMP() { return getToken(TreblaParser.TEMP, 0); }
 		public TerminalNode ARCHETYPE() { return getToken(TreblaParser.ARCHETYPE, 0); }
+		public TerminalNode NOTE() { return getToken(TreblaParser.NOTE, 0); }
 		public SimpleIdentifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -5298,7 +5300,7 @@ public class TreblaParser extends Parser {
 			{
 			setState(923);
 			_la = _input.LA(1);
-			if ( !(((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (Identifier - 51)))) != 0)) ) {
+			if ( !(((((_la - 51)) & ~0x3f) == 0 && ((1L << (_la - 51)) & ((1L << (ARCHETYPE - 51)) | (1L << (PACKAGE - 51)) | (1L << (PUBLIC - 51)) | (1L << (PRIVATE - 51)) | (1L << (INTERNAL - 51)) | (1L << (PROTECTED - 51)) | (1L << (SHARED - 51)) | (1L << (STATIC - 51)) | (1L << (OPERATOR - 51)) | (1L << (INLINE - 51)) | (1L << (INIT - 51)) | (1L << (SPAWN - 51)) | (1L << (DATA - 51)) | (1L << (LEVEL - 51)) | (1L << (TEMP - 51)) | (1L << (RAW - 51)) | (1L << (NOTE - 51)) | (1L << (Identifier - 51)))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -6095,14 +6097,14 @@ public class TreblaParser extends Parser {
 		"\nH\fH\16H\u03d0\13H\5H\u03d2\nH\3I\3I\3I\2\2J\2\4\6\b\n\f\16\20\22\24"+
 		"\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDFHJLNPRTVXZ\\^`bdfhjlnprtv"+
 		"xz|~\u0080\u0082\u0084\u0086\u0088\u008a\u008c\u008e\u0090\2\f\5\2@AD"+
-		"FHO\6\2\65\65?IKNTT\3\2QS\3\2\23\24\3\2\20\22\4\2\23\26\31\31\3\2\35\""+
-		"\3\2*+\3\2&)\4\2\6\6\34\34\2\u041c\2\u0095\3\2\2\2\4\u00ba\3\2\2\2\6\u00c1"+
-		"\3\2\2\2\b\u00c4\3\2\2\2\n\u00d2\3\2\2\2\f\u00d4\3\2\2\2\16\u0114\3\2"+
-		"\2\2\20\u0116\3\2\2\2\22\u012f\3\2\2\2\24\u0131\3\2\2\2\26\u0148\3\2\2"+
-		"\2\30\u0162\3\2\2\2\32\u0164\3\2\2\2\34\u0166\3\2\2\2\36\u0176\3\2\2\2"+
-		" \u0191\3\2\2\2\"\u019a\3\2\2\2$\u01b4\3\2\2\2&\u01b6\3\2\2\2(\u01c3\3"+
-		"\2\2\2*\u01c7\3\2\2\2,\u01db\3\2\2\2.\u01dd\3\2\2\2\60\u01f3\3\2\2\2\62"+
-		"\u01fc\3\2\2\2\64\u0205\3\2\2\2\66\u0207\3\2\2\28\u020b\3\2\2\2:\u020d"+
+		"FHO\7\2\65\65?IKNPPTT\3\2QS\3\2\23\24\3\2\20\22\4\2\23\26\31\31\3\2\35"+
+		"\"\3\2*+\3\2&)\4\2\6\6\34\34\2\u041c\2\u0095\3\2\2\2\4\u00ba\3\2\2\2\6"+
+		"\u00c1\3\2\2\2\b\u00c4\3\2\2\2\n\u00d2\3\2\2\2\f\u00d4\3\2\2\2\16\u0114"+
+		"\3\2\2\2\20\u0116\3\2\2\2\22\u012f\3\2\2\2\24\u0131\3\2\2\2\26\u0148\3"+
+		"\2\2\2\30\u0162\3\2\2\2\32\u0164\3\2\2\2\34\u0166\3\2\2\2\36\u0176\3\2"+
+		"\2\2 \u0191\3\2\2\2\"\u019a\3\2\2\2$\u01b4\3\2\2\2&\u01b6\3\2\2\2(\u01c3"+
+		"\3\2\2\2*\u01c7\3\2\2\2,\u01db\3\2\2\2.\u01dd\3\2\2\2\60\u01f3\3\2\2\2"+
+		"\62\u01fc\3\2\2\2\64\u0205\3\2\2\2\66\u0207\3\2\2\28\u020b\3\2\2\2:\u020d"+
 		"\3\2\2\2<\u0228\3\2\2\2>\u022e\3\2\2\2@\u0230\3\2\2\2B\u0239\3\2\2\2D"+
 		"\u024d\3\2\2\2F\u0261\3\2\2\2H\u0270\3\2\2\2J\u027c\3\2\2\2L\u028b\3\2"+
 		"\2\2N\u029a\3\2\2\2P\u02a9\3\2\2\2R\u02ba\3\2\2\2T\u02bf\3\2\2\2V\u02cc"+
@@ -6234,7 +6236,7 @@ public class TreblaParser extends Parser {
 		"\u01fb\5:\36\2\u01fb\61\3\2\2\2\u01fc\u01ff\5z>\2\u01fd\u01fe\7\32\2\2"+
 		"\u01fe\u0200\5\64\33\2\u01ff\u01fd\3\2\2\2\u01ff\u0200\3\2\2\2\u0200\u0203"+
 		"\3\2\2\2\u0201\u0202\7\35\2\2\u0202\u0204\5@!\2\u0203\u0201\3\2\2\2\u0203"+
-		"\u0204\3\2\2\2\u0204\63\3\2\2\2\u0205\u0206\5V,\2\u0206\65\3\2\2\2\u0207"+
+		"\u0204\3\2\2\2\u0204\63\3\2\2\2\u0205\u0206\5R*\2\u0206\65\3\2\2\2\u0207"+
 		"\u0208\7\t\2\2\u0208\u0209\5\64\33\2\u0209\u020a\7\n\2\2\u020a\67\3\2"+
 		"\2\2\u020b\u020c\5z>\2\u020c9\3\2\2\2\u020d\u0211\7\r\2\2\u020e\u0210"+
 		"\5\u0090I\2\u020f\u020e\3\2\2\2\u0210\u0213\3\2\2\2\u0211\u020f\3\2\2"+

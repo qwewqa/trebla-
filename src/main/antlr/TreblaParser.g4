@@ -143,7 +143,7 @@ parameter
     ;
 
 type
-    : atomicExpression
+    : prefixUnaryExpression
     ;
 
 parenthesizedType
@@ -326,6 +326,7 @@ simpleIdentifier
     | PACKAGE
     | TEMP
     | ARCHETYPE
+    | NOTE
     ;
 
 literalConstant

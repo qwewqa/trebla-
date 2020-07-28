@@ -28,8 +28,14 @@ abstract class BuiltinType(override val identifier: String) : Type,
     override fun accepts(other: Value) = other.type == this
 }
 
+class UnionType(val types: List<Type>) : Type {
+    override fun accepts(other: Value): Boolean {
+        return types.any { it.accepts(other) }
+    }
+}
+
 object TypeType : BuiltinType("Type") {
-    override fun accepts(other: Value): Boolean = other is TypeType
+    override fun accepts(other: Value): Boolean = other.type == TypeType
 }
 
 object AnyType : BuiltinType("Any") {
