@@ -1,9 +1,10 @@
-package xyz.qwewqa.trebla.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import kotlin.math.roundToInt
 
@@ -69,15 +70,19 @@ class ListValue(val context: Context, override val type: Type, val values: List<
     }
 
     override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return name == "forEach" || name == "forEachIndexed"
+        return name in members.keys
     }
 
     override fun getMember(name: String, accessingContext: Context?): Value {
-        return when {
-            name == "forEach" -> ListValueForEach(context, this, false)
-            name == "forEachIndexed" -> ListValueForEach(context, this, true)
-            else -> compileError("List does not have member with name $name.")
-        }
+        return members[name] ?: compileError("List does not have member with name $name.")
+    }
+
+    private val members: Map<String, Value> by lazy {
+        mapOf(
+            "forEach" to ListValueForEach(context, this, false),
+            "forEachIndexed" to ListValueForEach(context, this, true),
+            "get" to ListGet(context, this)
+        )
     }
 }
 
@@ -119,5 +124,47 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
             index++
         }
         return UnitValue
+    }
+}
+
+class ListGet(val context: Context, val listValue: ListValue) : Callable, Value {
+    override val type = FunctionType
+
+    override val parameters by lazy {
+        listOf(
+            Parameter(
+                "index",
+                UnionType(listOf(UnitValue, context.numberType)),
+                DefaultParameter(ValueExpression(UnitValue), context)
+            )
+        )
+    }
+
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+        val index = parameters.pairedWithAndValidated(arguments).byParameterName()["index"] as RawStructValue
+        if (callingContext !is ExecutionContext) compileError("Dynamic list get requires an execution context.")
+        val types = listValue.values.map { it.type }.toSet()
+        if (types.isEmpty()) compileError("List is empty.")
+        if (types.size > 1) compileError("Dynamic list get is only available for homogenous lists.")
+        val type = types.first()
+        if (type !is Allocatable) compileError("Dynamic list get is only available for lists with allocatable types.")
+        val returns = type.allocateOn(callingContext.localAllocator, callingContext)
+        if (returns !is Mutable) compileError("Dynamic list get is only available for mutable types.")
+        callingContext.statements += BuiltinCallValue(
+            BuiltinFunctionVariant.SwitchIntegerWithDefault,
+            listValue.values.map { value ->
+                SimpleExecutionContext(callingContext).also {
+                    returns.copyFrom(value, it)
+                }.toIR()
+            }.let {
+                /*
+                Switch is one indexed but lists are zero indexed, so we can put the first value as the final, default value
+                rather than subtracting one.
+                Out of range access is undefined regardless.
+                */
+                listOf(index.value.toIR()) + it.drop(1) + it.first()
+            }
+        )
+        return returns
     }
 }
