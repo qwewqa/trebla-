@@ -123,7 +123,7 @@ jobs:
           echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
       - name: 'Build Native Image'
         run: |
-          native-image --no-server --no-fallback -H:ReflectionConfigurationResources=reflection-config.json -H:IncludeResources=logback.xml --allow-incomplete-classpath -jar trebla-${{env.VERSION}}-all.jar
+          native-image --no-server --no-fallback -jar trebla-${{env.VERSION}}-all.jar
       - name: 'Publish Native Image'
         if: success()
         uses: actions/upload-artifact@v2-preview
@@ -181,7 +181,7 @@ jobs:
           JAVA_HOME: ./graalvm-ce-java11-20.1.0
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-          ./graalvm-ce-java11-20.1.0/bin/native-image --no-server --no-fallback -H:ReflectionConfigurationResources=reflection-config.json -H:IncludeResources=logback.xml -H:Name=trebla-${{env.VERSION}}-all --allow-incomplete-classpath -jar trebla-${{env.VERSION}}-all.jar
+          ./graalvm-ce-java11-20.1.0/bin/native-image --no-server --no-fallback -jar trebla-${{env.VERSION}}-all.jar
       - name: 'Get Release URL'
         if: contains(github.ref, 'v')
         uses: actions/download-artifact@v2-preview
