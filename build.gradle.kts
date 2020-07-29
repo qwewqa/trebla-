@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.4-M3"
+    kotlin("jvm") version "1.4.0-rc"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("org.beryx.runtime") version "1.11.1"
     antlr
@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.3.7-1.4-M3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.3.8-1.4.0-rc")
     implementation("com.github.ajalt:clikt:2.7.1")
     implementation("org.snakeyaml:snakeyaml-engine:2.1")
     implementation("com.google.code.gson:gson:2.8.6")
