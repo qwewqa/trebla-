@@ -14,8 +14,8 @@ class WhileExpression(override val node: WhileExpressionNode) : Expression {
         val condition = node.condition.parseAndApplyTo(context)
         if (condition !is RawStructValue || condition.type != context.booleanType)
             compileError("while statement condition must be a boolean.", node.condition)
-        val body = SimpleExecutionContext(context).apply {
-            node.body.value.forEach { it.parseAndApplyTo(this) }
+        val body = SimpleExecutionContext(context).also { ctx ->
+            node.body.value.forEach { it.parseAndApplyTo(ctx) }
         }
         context.statements += WhileStatement(condition, body)
         return UnitValue

@@ -1,11 +1,10 @@
-package xyz.qwewqa.trebla.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
 import xyz.qwewqa.trebla.backend.compile.toValueIRNode
-import xyz.qwewqa.trebla.backend.constexpr.ConstexprEvaluationException
-import xyz.qwewqa.trebla.backend.constexpr.constexprEvaluate
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
 class EntityPtr(override val declaringContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration,

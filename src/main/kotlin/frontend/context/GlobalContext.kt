@@ -5,6 +5,7 @@ import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.TreblaFile
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.*
 import xyz.qwewqa.trebla.frontend.expression.Expression
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
@@ -93,6 +94,9 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to StructType,
     listOf("std") to FunctionType,
     listOf("std") to PackageType,
+    listOf("std") to ContextType,
+    listOf("std") to LocalContext,
+    listOf("std") to WithContext,
 )
 
 // constructors for intrinsics that require the context
@@ -100,5 +104,5 @@ val intrinsics: List<Pair<List<String>, (Context, CompilerConfiguration) -> Expr
     listOf("std") to ::Memref,
     listOf("std") to ::OptionsAccessor,
     listOf("std") to ::EntityPtr,
-    listOf("std") to ::TreblaList
+    listOf("std") to ::TreblaList,
 )

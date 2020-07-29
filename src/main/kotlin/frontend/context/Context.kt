@@ -3,14 +3,31 @@ package xyz.qwewqa.trebla.frontend.context
 import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
 import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
 import xyz.qwewqa.trebla.backend.compile.IRNode
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
+import xyz.qwewqa.trebla.frontend.declaration.PackageType
+import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Statement
+import xyz.qwewqa.trebla.frontend.expression.Value
 
 /**
  * A context contains declarations, which are stored in its scope.
  */
-interface Context {
+interface Context : MemberAccessor {
+    override val type: Type get() = ContextType
+
+    override fun hasMember(name: String, accessingContext: Context?): Boolean {
+        return scope.find(name) != null
+    }
+
+    override fun getMember(name: String, accessingContext: Context?): Value {
+        return scope.find(name) ?: compileError("Context has no member with name $name/")
+    }
+
     val scope: Scope
 }
+
+object ContextType : BuiltinType("Context")
 
 /**
  * A context under which a block of expressions may be evaluated.

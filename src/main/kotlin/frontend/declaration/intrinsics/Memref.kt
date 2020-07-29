@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.frontend.declaration
+package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
 import xyz.qwewqa.trebla.backend.constexpr.ConstexprEvaluationException
 import xyz.qwewqa.trebla.backend.constexpr.constexprEvaluate
@@ -8,6 +8,7 @@ import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
+import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
 class Memref(override val declaringContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration, Callable {

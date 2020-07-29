@@ -20,11 +20,11 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
             null -> { // Condition unknown at compile time
                 context.statements += IfElseStatement(
                     condition.value,
-                    SimpleExecutionContext(context).apply {
-                        node.tbranch.value.forEach { it.parseAndApplyTo(this) }
+                    SimpleExecutionContext(context).also { ctx ->
+                        node.tbranch.value.forEach { it.parseAndApplyTo(ctx) }
                     },
-                    SimpleExecutionContext(context).apply {
-                        node.fbranch?.value?.forEach { it.parseAndApplyTo(this) }
+                    SimpleExecutionContext(context).also { ctx ->
+                        node.fbranch?.value?.forEach { it.parseAndApplyTo(ctx) }
                     }
                 )
             }

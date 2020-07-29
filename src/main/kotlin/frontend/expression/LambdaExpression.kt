@@ -14,12 +14,17 @@ class LambdaExpression(override val node: LambdaNode, val declaringContext: Cont
                 it,
                 declaringContext
             )
-        } ?: listOf(Parameter("it", AnyType, DefaultParameter(ValueExpression(UnitValue), declaringContext), node))
+        } ?: defaultParameterList
+    }
+    private val defaultParameterList by lazy {
+        listOf(Parameter("it", AnyType, node = node) )
     }
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val statements = node.body
-        val pairedArguments = parameters.pairedWithAndValidated(arguments)
+        val pairedArguments =
+            if (parameters == defaultParameterList && arguments.isEmpty()) emptyMap()
+            else parameters.pairedWithAndValidated(arguments)
 
         if (callingContext !is ExecutionContext) {
             // we allow single or zero expressions even in non-execution contexts
