@@ -25,6 +25,7 @@ jobs:
 
       - name: 'Build JAR'
         run: |
+          chmod +x gradlew
           ./gradlew shadowJar
       - name: 'Get Version Number'
         run: |
