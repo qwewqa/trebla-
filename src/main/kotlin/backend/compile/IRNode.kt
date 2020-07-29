@@ -23,9 +23,11 @@ data class AssignTempIRNode(val id: Int, val rhs: IRNode) : IRNode() {
 
 data class FunctionIRNode(val variant: FunctionIRNodeVariant, var arguments: List<IRNode>) : IRNode() {
     override fun toString() = "$variant${
-        if (arguments.joinToString(", ").length > 120)
-            "(\n${arguments.joinToString(",\n").prependIndent()}\n)"
-        else
-            "(${arguments.joinToString(", ")})"
+        arguments.map { it.toString() }.let {
+            if (it.joinToString(", ").length > 120)
+                "(\n${it.joinToString(",\n").prependIndent()}\n)"
+            else
+                "(${it.joinToString(", ")})"
+        }
     }"
 }
