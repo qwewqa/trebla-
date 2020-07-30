@@ -35,6 +35,10 @@ func Quad.draw(id: Number, z: Number, alpha: Number = 1) {
     )
 }
 
+func Quad.rotatedCW() = Quad(this.p4, this.p1, this.p2, this.p3)
+func Quad.rotatedCCW() = Quad(this.p2, this.p3, this.p4, this.p1)
+func Quad.rotated180() = Quad(this.p3, this.p4, this.p1, this.p2)
+
 func centerRectangle(center: Point, halfLength: Number, halfWidth: Number) = Quad(
     center.translated(-halfLength, -halfWidth),
     center.translated(-halfLength, halfWidth),

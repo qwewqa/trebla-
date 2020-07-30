@@ -90,7 +90,7 @@ func log(n: Number) = Number(builtins.Log(n))
 func min(a: Number, b: Number) = Number(builtins.Min(a, b))
 func max(a: Number, b: Number) = Number(builtins.Max(a, b))
 
-func clamp(min: Number, max: Number, value: Number) = Number(builtins.Clamp(min, max, value))
+func clamp(min: Number, max: Number, value: Number) = Number(builtins.Clamp(value, min, max))
 func lerp(min: Number, max: Number, value: Number) = Number(builtins.Lerp(min, max, value))
 func lerpClamped(min: Number, max: Number, value: Number) = Number(builtins.LerpClamped(min, max, value))
 func unlerp(min: Number, max: Number, value: Number) = Number(builtins.Unlerp(min, max, value))

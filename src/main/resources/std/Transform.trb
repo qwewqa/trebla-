@@ -55,12 +55,21 @@ func (p: HomogeneousPoint).transformedBy(t: Transform) =
 
 func Point.transformedBy(t: Transform) = this.toHomogeneousPoint().transformedBy(t).toPoint()
 
+func (p: Point).transformedAffineBy(t: Transform) =
+    Point(
+        p.x * t._11 + p.y * t._12 + t._13,
+        p.x * t._21 + p.y * t._22 + t._23,
+    )
+
 struct HomogeneousQuad(p1: HomogeneousPoint, p2: HomogeneousPoint, p3: HomogeneousPoint, p4: HomogeneousPoint)
 
 func HomogeneousQuad.transformedBy(t: Transform) =
     HomogeneousQuad(this.p1.transformedBy(t), this.p2.transformedBy(t), this.p3.transformedBy(t), this.p4.transformedBy(t))
 
 func Quad.transformedBy(t: Transform) = this.toHomogeneousQuad().transformedBy(t).toQuad()
+
+func Quad.transformedAffineBy(t: Transform) =
+    Quad(this.p1.transformedAffineBy(t), this.p2.transformedAffineBy(t), this.p3.transformedAffineBy(t), this.p4.transformedAffineBy(t))
 
 func HomogeneousQuad.toQuad() = Quad(this.p1.toPoint(), this.p2.toPoint(), this.p3.toPoint(), this.p4.toPoint())
 

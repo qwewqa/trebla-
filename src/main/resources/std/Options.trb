@@ -1,5 +1,5 @@
 let levelAudioOffset = options.`#OFFSET_AUDIO`
-let levelInputOffset = options.`#OFFSET_AUDIO`
+let levelInputOffset = options.`#OFFSET_INPUT`
 let levelSpeed = options.`#SPEED`
 let autoPlay = options.`#AUTO`
 let mirrorLevel = options.`#MIRROR`
