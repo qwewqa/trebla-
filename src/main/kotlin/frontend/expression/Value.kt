@@ -49,7 +49,7 @@ interface Mutable : Value {
     /**
      * Used for shared/data arrays.
      */
-    fun reallocate(allocator: Allocator, context: Context?): Mutable
+    fun offsetReallocate(block: RawValue, index: RawValue): Mutable
 }
 
 /**

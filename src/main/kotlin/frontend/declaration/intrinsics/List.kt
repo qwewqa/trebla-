@@ -62,8 +62,8 @@ class ListValue(val parentContext: Context, override val type: Type, val values:
         return values[index]
     }
 
-    override fun reallocate(allocator: Allocator, context: Context?): Mutable {
-        return ListValue(parentContext, type, values.map { it.reallocate(allocator, context) })
+    override fun offsetReallocate(block: RawValue, index: RawValue): Mutable {
+        return ListValue(parentContext, type, values.map { it.offsetReallocate(block, index) })
     }
 
     override fun copyOn(allocator: Allocator, context: ExecutionContext): Mutable {
@@ -71,7 +71,11 @@ class ListValue(val parentContext: Context, override val type: Type, val values:
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
-        TODO("Not yet implemented")
+        if (other is ListValue && other.type == type) {
+            values.zip(other.values).forEach { (v, o) -> v.copyFrom(o, context) }
+        } else {
+            compileError("Incompatible assignment.")
+        }
     }
 
     override fun hasMember(name: String, accessingContext: Context?): Boolean {

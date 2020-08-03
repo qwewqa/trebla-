@@ -9,7 +9,7 @@ import xyz.qwewqa.trebla.frontend.expression.*
 
 class EntityPtr(override val parentContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration,
     Callable {
-    override val identifier = "entityPtr"
+    override val identifier = "entityOffsetPtr"
     override val type = AnyType
 
     override val signature = Signature.Default
@@ -17,6 +17,8 @@ class EntityPtr(override val parentContext: Context, val projectConfiguration: C
 
     override val parameters by lazy {
         listOf(
+            // The index of the start of the entity, i.e. entity index * 32 for some blocks
+            // Done this way to save a bit of performance
             Parameter("index", parentContext.numberType),
             Parameter("script", ScriptType),
         )
@@ -40,27 +42,15 @@ class EntityPointer(val index: RawStructValue, val script: ScriptDeclaration) : 
     override fun getMember(name: String, accessingContext: Context?): Value {
         return when {
             name in script.dataProperties -> {
-                script.dataProperties.getValue(name).reallocate(
-                    DynamicAllocator(
-                        ENTITY_DATA_ARRAY.toLiteralRawValue(),
-                        BuiltinCallRawValue(
-                            BuiltinFunctionVariant.Multiply,
-                            listOf(32.toValueIRNode(), index.raw.toIR())
-                        ),
-                    ),
-                    accessingContext,
+                script.dataProperties.getValue(name).offsetReallocate(
+                    ENTITY_DATA_ARRAY.toLiteralRawValue(),
+                    index.raw,
                 )
             }
             name in script.sharedProperties -> {
-                script.sharedProperties.getValue(name).reallocate(
-                    DynamicAllocator(
-                        ENTITY_SHARED_MEMORY_ARRAY.toLiteralRawValue(),
-                        BuiltinCallRawValue(
-                            BuiltinFunctionVariant.Multiply,
-                            listOf(32.toValueIRNode(), index.raw.toIR())
-                        ),
-                    ),
-                    accessingContext,
+                script.sharedProperties.getValue(name).offsetReallocate(
+                    ENTITY_SHARED_MEMORY_ARRAY.toLiteralRawValue(),
+                    index.raw,
                 )
             }
             else -> compileError("Unknown script member $name.")

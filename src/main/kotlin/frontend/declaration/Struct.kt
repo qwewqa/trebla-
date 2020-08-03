@@ -159,8 +159,14 @@ class NormalStructValue(
         return fields[name] != null || super.hasMember(name, accessingContext)
     }
 
-    override fun reallocate(allocator: Allocator, context: Context?): Mutable {
-        return NormalStructValue((type.allocateOn(allocator, context) as NormalStructValue).fields, searchContext, type)
+    override fun offsetReallocate(block: RawValue, index: RawValue): Mutable {
+        return NormalStructValue(
+            fields.mapValues { (_, v) ->
+                (v as? Mutable)?.offsetReallocate(block, index) ?: v
+            },
+            searchContext,
+            type,
+        )
     }
 }
 
@@ -183,7 +189,17 @@ class RawStructValue(
         }
     }
 
-    override fun reallocate(allocator: Allocator, context: Context?): Mutable {
-        return RawStructValue(AllocatedRawValue(allocator.allocate()), searchContext, type)
+    override fun offsetReallocate(block: RawValue, index: RawValue): Mutable {
+        return when (raw) {
+            is AllocatedRawValue -> when (raw.allocation) {
+                is ConcreteAllocation -> RawStructValue(
+                    AllocatedRawValue(DynamicAllocation(block, index, raw.allocation.index.toLiteralRawValue())),
+                    searchContext,
+                    type
+                )
+                else -> compileError("Reallocation not available for dynamic or temporary allocated raw structs.")
+            }
+            else -> compileError("Reallocation not available for non-allocated raw structs.")
+        }
     }
 }
