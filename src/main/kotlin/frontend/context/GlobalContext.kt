@@ -12,7 +12,8 @@ import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 
 class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAllocatorContext {
-    override val scope = Scope(this, null)
+    override val parentContext: Context? = null
+    override val scope = Scope(null)
     override val levelAllocator = StandardAllocator(0, 256)
     override val tempAllocator = StandardAllocator(100, 16)
 
@@ -26,8 +27,8 @@ class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAll
             forEach(TreblaFile::loadFinal)
         }
         return CompileData(
-            files.flatMap { it.scripts }.map { it.finalize() },
-            files.flatMap { it.archetypes }.map { it.finalize() }
+            files.flatMap { it.scripts }.map { it.process() },
+            files.flatMap { it.archetypes }.map { it.process() }
         )
     }
 
@@ -40,7 +41,7 @@ class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAll
      */
     fun getPackage(name: List<String>): Package {
         if (name.isEmpty()) error("Package name is empty")
-        val base = (scope.get(name[0]) ?: Package(name[0], this).also { scope.add(it) }) as? Package ?: compileError(
+        val base = (scope.get(name[0]) ?: Package(name[0], this).also { it.applyTo(this) }) as? Package ?: compileError(
             "${
                 name.joinToString(
                     "."
@@ -50,7 +51,7 @@ class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAll
         return name
             .drop(1)
             .fold(base) { a, v ->
-                (a.scope.get(v) ?: Package(v, a).also { a.scope.add(it) }) as? Package
+                (a.scope.get(v) ?: Package(v, a).also { it.applyTo(a) }) as? Package
                     ?: compileError("${name.joinToString(".")} is not a package")
             }
     }

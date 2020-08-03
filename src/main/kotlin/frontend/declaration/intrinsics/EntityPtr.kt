@@ -7,7 +7,7 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
-class EntityPtr(override val declaringContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration,
+class EntityPtr(override val parentContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration,
     Callable {
     override val identifier = "entityPtr"
     override val type = AnyType
@@ -17,12 +17,12 @@ class EntityPtr(override val declaringContext: Context, val projectConfiguration
 
     override val parameters by lazy {
         listOf(
-            Parameter("index", declaringContext.numberType),
+            Parameter("index", parentContext.numberType),
             Parameter("script", ScriptType),
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val argumentValues = parameters.pairedWithAndValidated(arguments).byParameterName()
         val index = argumentValues["index"] as RawStructValue
         val script = argumentValues["script"] as ScriptDeclaration
@@ -40,15 +40,27 @@ class EntityPointer(val index: RawStructValue, val script: ScriptDeclaration) : 
     override fun getMember(name: String, accessingContext: Context?): Value {
         return when {
             name in script.dataProperties -> {
-                script.dataProperties.getValue(name).onBlock(
-                    ENTITY_DATA_ARRAY,
-                    BuiltinCallValue(BuiltinFunctionVariant.Multiply, listOf(32.toValueIRNode(), index.value.toIR())),
+                script.dataProperties.getValue(name).reallocate(
+                    DynamicAllocator(
+                        ENTITY_DATA_ARRAY.toLiteralRawValue(),
+                        BuiltinCallRawValue(
+                            BuiltinFunctionVariant.Multiply,
+                            listOf(32.toValueIRNode(), index.raw.toIR())
+                        ),
+                    ),
+                    accessingContext,
                 )
             }
             name in script.sharedProperties -> {
-                script.sharedProperties.getValue(name).onBlock(
-                    ENTITY_SHARED_MEMORY_ARRAY,
-                    BuiltinCallValue(BuiltinFunctionVariant.Multiply, listOf(32.toValueIRNode(), index.value.toIR())),
+                script.sharedProperties.getValue(name).reallocate(
+                    DynamicAllocator(
+                        ENTITY_SHARED_MEMORY_ARRAY.toLiteralRawValue(),
+                        BuiltinCallRawValue(
+                            BuiltinFunctionVariant.Multiply,
+                            listOf(32.toValueIRNode(), index.raw.toIR())
+                        ),
+                    ),
+                    accessingContext,
                 )
             }
             else -> compileError("Unknown script member $name.")

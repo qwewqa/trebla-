@@ -11,7 +11,7 @@ import xyz.qwewqa.trebla.grammar.trebla.PropertyDeclarationNode
  */
 class PropertyDeclaration(
     override val node: PropertyDeclarationNode,
-    override val declaringContext: Context,
+    override val parentContext: Context,
 ) : Declaration {
     override val identifier = node.identifier.value
     override val signature = Signature.Default
@@ -19,7 +19,7 @@ class PropertyDeclaration(
     override val type = UnitValue
 
     val variant: PropertyVariant
-    val typeConstraint by lazy { node.type?.applyIn(declaringContext) }
+    val typeConstraint by lazy { node.type?.applyIn(parentContext) }
 
     init {
         node.modifiers.parse {
@@ -28,7 +28,7 @@ class PropertyDeclaration(
         }
     }
 
-    override fun applyTo(context: Context): Copyable = runWithErrorMessage("Error in property declaration.") {
+    override fun applyTo(context: Context): Mutable = runWithErrorMessage("Error in property declaration.") {
         val initializer = node.expression?.parse(context)
         val typeConstraint = typeConstraint // loads lazy delegate and allows smart casts
         val allocator = when (variant) {
@@ -72,7 +72,7 @@ class PropertyDeclaration(
                     typeConstraint.allocateOn(allocator, context)
                 } else {
                     val rhsValue = initializer.applyTo(context)
-                    if (rhsValue !is Copyable)
+                    if (rhsValue !is Mutable)
                         compileError("Invalid initializer. Should be a struct.")
                     rhsValue.copyOn(allocator, context as ExecutionContext)
                 }

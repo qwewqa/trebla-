@@ -5,10 +5,7 @@ import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
 import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
 import xyz.qwewqa.trebla.backend.compile.ValueIRNode
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.ExecutionContext
-import xyz.qwewqa.trebla.frontend.context.Scope
-import xyz.qwewqa.trebla.frontend.context.TemporaryAllocator
-import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.Statement
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
@@ -18,7 +15,7 @@ import kotlin.math.roundToInt
 
 class CallbackDeclaration(
     override val node: CallbackDeclarationNode,
-    override val declaringContext: ScriptDeclaration,
+    override val parentContext: ScriptDeclaration,
 ) :
     Declaration {
     override val identifier = node.identifier.value
@@ -34,9 +31,9 @@ class CallbackDeclaration(
         else compileError("Unknown callback $identifier.", node.identifier)
 
     fun getCallback(): Callback {
-        val callback = Callback(node.order?.let {
-            it.tryConstexprEval(declaringContext) ?: compileError("Invalid callback order expression.")
-        }?.roundToInt() ?: 0, name, declaringContext)
+        val callback = Callback(parentContext, node.order?.let {
+            it.tryConstexprEval(parentContext) ?: compileError("Invalid callback order expression.")
+        }?.roundToInt() ?: 0, name, parentContext)
         node.body.value.let { body ->
             body.dropLast(1).forEach { it.parseAndApplyTo(callback) }
             body.lastOrNull()?.let { callback.returnValue = it.parseAndApplyTo(callback) }
@@ -45,15 +42,15 @@ class CallbackDeclaration(
     }
 }
 
-class Callback(val order: Int, val name: CallbackName, script: ScriptDeclaration) : ExecutionContext {
-    override val scope = Scope(this, script.scope)
+class Callback(override val parentContext: ScriptContext, val order: Int, val name: CallbackName, script: ScriptDeclaration) : ExecutionContext {
+    override val scope = EagerScope(script.scope)
     override val localAllocator = TemporaryAllocator()
     override val statements = mutableListOf<Statement>()
 
     var returnValue: Value? = null
 
     fun toIR(): FunctionIRNode {
-        val returnIRValue = (returnValue as? RawStructValue)?.value?.toIR() ?: ValueIRNode(0.0)
+        val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR() ?: ValueIRNode(0.0)
         return FunctionIRNodeVariant.Execute.calledWith(statements.map { it.toIR() } + listOf(returnIRValue))
     }
 }

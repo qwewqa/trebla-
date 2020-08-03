@@ -6,7 +6,6 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.trebla.frontend.context.getFullyQualified
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.grammar.trebla.IfExpressionNode
 
@@ -16,10 +15,10 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
         val condition = node.expression.parseAndApplyTo(context)
         if (condition !is RawStructValue || condition.type != context.booleanType)
             compileError("if statement condition must be a boolean.", node.expression)
-        when (condition.value.toIR().tryConstexprEvaluate()) {
+        when (condition.raw.toIR().tryConstexprEvaluate()) {
             null -> { // Condition unknown at compile time
                 context.statements += IfElseStatement(
-                    condition.value,
+                    condition.raw,
                     SimpleExecutionContext(context).also { ctx ->
                         node.tbranch.value.forEach { it.parseAndApplyTo(ctx) }
                     },

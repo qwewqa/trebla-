@@ -1,179 +1,164 @@
 package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.trebla.frontend.CompileError
 import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.declaration.AnyType
-import xyz.qwewqa.trebla.frontend.declaration.Declaration
-import xyz.qwewqa.trebla.frontend.declaration.Signature
+import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Value
 
-open class Scope(
-    val context: Context,
-    val parent: Scope?,
-) {
-    private val symbols = SymbolTable()
+open class Scope(val parent: Scope?) {
+    private val values = mutableMapOf<String, MutableMap<Signature, ValueMetadata>>()
+    private val imported = mutableMapOf<String, MutableMap<Signature, ValueMetadata>>()
 
-    open fun add(declaration: Declaration) = symbols.add(declaration)
+    /**
+     * Adds the given value to this scope.
+     */
     open fun add(
-        value: Value,
+        value: Lazy<Value>,
         identifier: String,
         signature: Signature = Signature.Default,
         visibility: Visibility = Visibility.PUBLIC,
-        native: Boolean = true,
-    ) = symbols.add(value, identifier, signature, visibility, native)
-
-    open fun addDeferred(
-        identifier: String,
-        signature: Signature = Signature.Default,
-        visibility: Visibility = Visibility.PUBLIC,
-        native: Boolean = true,
-        value: () -> Value,
-    ) = symbols.addDeferred(identifier, signature, visibility, native, value)
-
-    open fun get(name: String, signature: Signature = Signature.Default) = symbols.get(name, signature)
-    open fun getNative(name: String, signature: Signature = Signature.Default) = symbols.getNative(name, signature)
-    open fun find(name: String, signature: Signature = Signature.Default): Value? =
-        get(name, signature) ?: parent?.find(name, signature)
-
-    fun import(
-        other: Scope,
-        minVisibility: Visibility = Visibility.PUBLIC,
-        filterName: String? = null,
-        native: Boolean = false,
-    ) = symbols.import(other.symbols, minVisibility, filterName, native)
-
-    open fun getFullyQualified(name: List<String>) = getFullyQualifiedOrNull(name)
-        ?: compileError("${name.joinToString(".")} does not exist")
-
-    open fun getFullyQualifiedOrNull(name: List<String>): Entity? {
-        if (name.isEmpty()) error("Declaration name is empty")
-        parent?.let { return parent.getFullyQualifiedOrNull(name) }
-        val base = get(name[0]) ?: return null
-        return name
-            .drop(1)
-            .fold(base as Entity) { a, v ->
-                (a as? Context)?.scope?.get(v) ?: (a as? MemberAccessor)?.getMember(v, null) ?: return null
-            }
-    }
-}
-
-class ReadOnlyScope(context: Context, parent: Scope? = null) : Scope(context, parent) {
-    override fun add(declaration: Declaration) {
-        compileError("Scope is read only.")
-    }
-
-    override fun add(value: Value, identifier: String, signature: Signature, visibility: Visibility, native: Boolean) {
-        compileError("Scope is read only.")
-    }
-}
-
-fun Scope.getFullyQualified(vararg name: String) = getFullyQualified(name.toList())
-
-/**
- * A table for organizing and finding symbols and corresponding signatures and declarations
- */
-class SymbolTable {
-    /**
-     * A map of symbols to a map of signatures to declarations.
-     * Always a superset of [nativeSymbols].
-     */
-    private val symbols = mutableMapOf<String, MutableMap<Signature, Symbol>>()
-
-    /**
-     * Same as [symbols] but only contains symbols that were specified as native
-     * when added through [add] (default: true).
-     * Currently should just exclude imported symbols.
-     */
-    private val nativeSymbols = mutableMapOf<String, MutableMap<Signature, Symbol>>()
-
-    fun get(name: String, signature: Signature = Signature.Default) = symbols[name]?.get(signature)?.value?.let {
-        if (it is DeferredWrapper) it.get()
-        else it
-    }
-
-    fun getNative(name: String, signature: Signature = Signature.Default) = nativeSymbols[name]?.get(signature)?.value
-
-    /**
-     * Add a declaration or throws an [IllegalStateException] if
-     * a declaration with an identical identifier and signature exists already in the context.
-     * The symbol is native by default and included in the output of [getNative] unless [native] is specified as false.
-     */
-    fun add(declaration: Declaration, native: Boolean = true) {
-        add(declaration, declaration.identifier, declaration.signature, declaration.visibility, native)
-    }
-
-    fun add(
-        value: Value,
-        identifier: String,
-        signature: Signature = Signature.Default,
-        visibility: Visibility = Visibility.PUBLIC,
-        native: Boolean = true,
     ) {
-        symbols.getOrPut(identifier) { mutableMapOf() }.let {
-            if (signature in it && it[signature]!!.value != value) throw CompileError(
-                "Symbol of identifier $identifier with the same signature already exists within this scope",
-                value.node,
-                CompileError("Already declared", it[signature]!!.value.node)
-            )
-            it[signature] = Symbol(visibility, value)
+        val bySignature = values.getOrPut(identifier) { mutableMapOf() }
+        if (bySignature[signature]?.lazyValue != null) {
+            compileError("Symbol with identifier $identifier and signature $signature already exists.")
         }
-        if (native) nativeSymbols.getOrPut(identifier) { mutableMapOf() }[signature] =
-            Symbol(visibility, value)
+        bySignature[signature] = ValueMetadata(value, visibility)
     }
 
-    fun addDeferred(
+    /**
+     * Returns the value with the given identifier and signature directly in this scope,
+     * excluding parents or imports, if it exists and has the minimum visibility.
+     * Otherwise returns null.
+     */
+    open fun get(
         identifier: String,
         signature: Signature = Signature.Default,
-        visibility: Visibility = Visibility.PUBLIC,
-        native: Boolean = true,
-        value: () -> Value,
-    ) = DeferredWrapper(value).let { add(it, identifier, signature, visibility, native) }
+        minVisibility: Visibility = Visibility.PRIVATE,
+    ): Value? {
+        return values[identifier]?.get(signature)?.let {
+            if (it.visibility >= minVisibility) it.lazyValue.value
+            else null
+        }
+    }
 
     /**
-     * Imports symbols which are native in another symbol table with visibility at least [minVisibility], which is
-     * public only by default.
-     * All symbols are considered if [filterName] is null, otherwise only imports those with that identifier.
-     * Returns true if the import succeeded in importing at least one value (even if the value already exists in this table)
+     * Searches for a value with the given identifier, signature, and minimum visibility
+     * in this scope, then imports, then repeats this operator for parents until a value is found,
+     * or returns null.
      */
-    fun import(
-        other: SymbolTable,
-        minVisibility: Visibility = Visibility.PUBLIC,
-        filterName: String? = null,
-        native: Boolean = false,
-    ): Boolean {
-        var found = false
-        other.nativeSymbols.forEach { (identifier, entry) ->
-            entry.forEach { (signature, symbol) ->
-                if (symbol.visibility >= minVisibility && (filterName == null || identifier == filterName)) {
-                    found = true
-                    add(
-                        symbol.value,
-                        identifier,
-                        signature,
-                        symbol.visibility,
-                        native
-                    )
+    open fun find(
+        identifier: String,
+        signature: Signature = Signature.Default,
+        minVisibility: Visibility = Visibility.PRIVATE,
+    ): Value? {
+        return get(identifier, signature, minVisibility)
+            ?: imported.getOrPut(identifier) { mutableMapOf() }[signature]?.lazyValue?.value
+            ?: parent?.find(identifier, signature, minVisibility)
+    }
+
+    /**
+     * Imports symbols from the [other] scope.
+     * Imported symbols are shadowed by symbols declared locally.
+     * Imported symbols in the other scope are not imported.
+     */
+    open fun import(other: Scope) {
+        other.values.forEach { (identifier, bySignature) ->
+            bySignature.forEach { (signature, valueMetadata) ->
+                imported.getOrPut(identifier) { mutableMapOf() }.let { bySignature ->
+                    if (bySignature[signature]?.let { it.lazyValue != valueMetadata.lazyValue } == true) {
+                        compileError("Duplicate import with identifier $identifier and signature $signature.")
+                    } else {
+                        bySignature[signature] = valueMetadata
+                    }
                 }
             }
         }
-        return found
     }
 
-    private class DeferredWrapper(private val expr: () -> Value) : Value {
-        override val type = AnyType
-        private lateinit var value: Value
-
-        fun get(): Value {
-            if (!::value.isInitialized) {
-                value = expr()
+    /**
+     * Merges the internal and public members of the [other] scope into
+     * this scope.
+     */
+    open fun mergeIn(other: Scope) {
+        other.values.forEach { (identifier, bySignature) ->
+            bySignature.forEach { (signature, valueMetadata) ->
+                values.getOrPut(identifier) { mutableMapOf() }.let { bySignature ->
+                    if (bySignature[signature]?.lazyValue?.let { it != valueMetadata.lazyValue } == true) {
+                        compileError("Ambiguous merge with identifier $identifier and signature $signature.")
+                    }
+                    if (valueMetadata.visibility >= Visibility.INTERNAL) bySignature[signature] = valueMetadata
+                }
             }
-            return value
         }
+    }
+
+    /**
+     * Checks the lazy values in this scope and finalizes them as it's
+     * desirable to detect errors even if they exist in unused values.
+     */
+    fun finalize() {
+        values.values.forEach { bySignature -> bySignature.forEach { (_, v) -> v.lazyValue.value.finalize() } }
+    }
+
+    data class ValueMetadata(val lazyValue: Lazy<Value>, val visibility: Visibility)
+}
+
+/*
+Not that pretty. Might want to find a better way of doing this at some point.
+ */
+fun Scope.getFullyQualifiedOrNull(name: List<String>): Entity? {
+    if (name.isEmpty()) error("Declaration name is empty")
+    parent?.let { return parent.getFullyQualifiedOrNull(name) }
+    val base = get(name[0]) ?: return null
+    return name
+        .drop(1)
+        .fold(base as Entity) { a, v ->
+            (a as? Context)?.scope?.get(v) ?: (a as? MemberAccessor)?.getMember(v, null) ?: return null
+        }
+}
+
+fun Scope.getFullyQualified(name: List<String>) = getFullyQualifiedOrNull(name)
+    ?: compileError("${name.joinToString(".")} does not exist")
+
+fun Scope.getFullyQualified(vararg name: String) = getFullyQualified(name.toList())
+
+sealed class Signature {
+    object Default : Signature() {
+        override fun toString() = "Default"
+    }
+
+    object Archetype : Signature() {
+        override fun toString() = "Archetype"
+    }
+
+    data class TypedReceiver(val receiverType: Type) : Signature() {
+        override fun toString() = "Receiver ($receiverType)"
     }
 }
 
-data class Symbol(val visibility: Visibility, val value: Value)
+class ReadOnlyScope(parent: Scope? = null) : Scope(parent) {
+    override fun add(value: Lazy<Value>, identifier: String, signature: Signature, visibility: Visibility) {
+        compileError("Scope is read only.")
+    }
+
+    override fun import(other: Scope) {
+        compileError("Scope is read only.")
+    }
+
+    override fun mergeIn(other: Scope) {
+        compileError("Scope is read only.")
+    }
+}
+
+/**
+ * A scope where add immediately tries to resolve the lazy value.
+ */
+open class EagerScope(parent: Scope?) : Scope(parent) {
+    override fun add(value: Lazy<Value>, identifier: String, signature: Signature, visibility: Visibility) {
+        value.value
+        super.add(value, identifier, signature, visibility)
+    }
+}
 
 enum class Visibility {
     PRIVATE, INTERNAL, PUBLIC

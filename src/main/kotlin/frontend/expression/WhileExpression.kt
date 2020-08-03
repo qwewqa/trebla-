@@ -24,7 +24,7 @@ class WhileExpression(override val node: WhileExpressionNode) : Expression {
 
 class WhileStatement(val condition: RawStructValue, val body: SimpleExecutionContext) : Statement {
     override fun toIR() = FunctionIRNodeVariant.While.calledWith(
-        condition.value.toIR(),
+        condition.raw.toIR(),
         body.toIR(),
     )
 }

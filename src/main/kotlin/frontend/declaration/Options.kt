@@ -1,14 +1,11 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.backend.constexpr.ConstexprEvaluationException
-import xyz.qwewqa.trebla.backend.constexpr.constexprEvaluate
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
-import xyz.qwewqa.trebla.project.ProjectConfiguration
 
-class OptionsAccessor(override val declaringContext: Context, projectConfiguration: CompilerConfiguration) : Declaration, MemberAccessor {
+class OptionsAccessor(override val parentContext: Context, projectConfiguration: CompilerConfiguration) : Declaration, MemberAccessor {
     override val identifier = "options"
     override val type = AnyType
     override val signature = Signature.Default
@@ -32,9 +29,9 @@ class OptionsAccessor(override val declaringContext: Context, projectConfigurati
     override fun getMember(name: String, accessingContext: Context?): Value {
         val option = options[name] ?: compileError("No option with name '$name'.")
         return RawStructValue(
-            AllocatedValue(ConcreteAllocation(2, option.index)),
+            AllocatedRawValue(ConcreteAllocation(2, option.index)),
             accessingContext,
-            declaringContext.scope.getFullyQualified("std", option.type.structName) as StructDeclaration
+            parentContext.scope.getFullyQualified("std", option.type.structName) as StructDeclaration
         )
     }
 

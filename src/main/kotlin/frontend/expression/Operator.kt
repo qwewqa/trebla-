@@ -80,11 +80,11 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         val rhsValue = node.rhs.parseAndApplyTo(rhsBlock)
         if (rhsValue !is RawStructValue || rhsValue.type != context.booleanType)
             compileError("Short circuiting operators can only be applied to booleans.")
-        val resultValue = BuiltinCallValue(operation, listOf(
-            lhsValue.value.toIR(),
+        val resultValue = BuiltinCallRawValue(operation, listOf(
+            lhsValue.raw.toIR(),
             FunctionIRNode(FunctionIRNodeVariant.Execute, listOf(
                 rhsBlock.toIR(),
-                rhsValue.value.toIR()
+                rhsValue.raw.toIR()
             ))
         ))
 

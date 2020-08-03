@@ -12,7 +12,7 @@ import xyz.qwewqa.trebla.grammar.trebla.FunctionDeclarationNode
 
 class FunctionDeclaration(
     override val node: FunctionDeclarationNode,
-    override val declaringContext: Context,
+    override val parentContext: Context,
 ) : Declaration, Callable {
     override val type = FunctionType
     override val identifier = node.identifier.value
@@ -22,7 +22,7 @@ class FunctionDeclaration(
         node.parameters.values.map {
             Parameter(
                 it,
-                declaringContext
+                parentContext
             )
         }
     }
@@ -32,7 +32,7 @@ class FunctionDeclaration(
             it.runWithErrorMessage("Receiver parameter type does not exist or is not a struct.") {
                 Parameter(
                     name = it.identifier?.value ?: "this",
-                    type = it.type.applyIn(declaringContext),
+                    type = it.type.applyIn(parentContext),
                     default = null,
                     node = it
                 )
@@ -57,7 +57,7 @@ class FunctionDeclaration(
     It is roughly equivalent to a void return type in some languages.
      */
     val returnType by lazy {
-        node.type?.applyIn(declaringContext) ?: if (node.assigmentBody) AnyType else UnitValue
+        node.type?.applyIn(parentContext) ?: if (node.assigmentBody) AnyType else UnitValue
     }
     val returnsUnit by lazy {
         returnType is UnitValue
@@ -70,15 +70,16 @@ class FunctionDeclaration(
         receiverParameter?.let { Signature.TypedReceiver(it.type) } ?: Signature.Default
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val statements = node.body.value
         val pairedArguments = parameters.pairedWithAndValidated(arguments)
 
+        if (callingContext == null) compileError("Function call requires a context.")
         if (callingContext !is ExecutionContext) {
             // we allow single or zero expressions even in non-execution contexts
             val returnValue = when (statements.size) {
                 0 -> UnitValue
-                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(declaringContext, pairedArguments))
+                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(callingContext, parentContext, pairedArguments))
                 else -> compileError("Invalid location for multi-statement function call.")
             }
             if (returnType == UnitValue) compileError("Invalid location for call to this function.")
@@ -89,7 +90,7 @@ class FunctionDeclaration(
         }
         val functionContext = FunctionExecutionContext(
             callingContext,
-            declaringContext,
+            parentContext,
             pairedArguments
         )
 
@@ -126,7 +127,7 @@ class BoundFunction(
     override val isOperator = function.isOperator
     override val isInfix = function.isInfix
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context) =
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?) =
         function.callWith(
             listOf(
                 ValueArgument(
@@ -141,10 +142,9 @@ fun FunctionDeclaration.boundTo(receiver: Value) =
     BoundFunction(receiver, this)
 
 class FunctionScope(
-    context: Context,
     parent: Scope,
     argumentValues: Map<Parameter, Value>
-) : Scope(context, parent) {
+) : EagerScope(parent) {
     init {
         argumentValues.forEach { (param, value) -> add(value, param.name) }
     }
@@ -156,8 +156,10 @@ class FunctionExecutionContext(
     argumentValues: Map<Parameter, Value>
 ) : ExecutionContext,
     Statement {
+    override val parentContext = callingContext
+
     // the parent of the scope comes from the context where the function was declared, not where it was called
-    override val scope = FunctionScope(this, declarationContext.scope, argumentValues)
+    override val scope = FunctionScope(declarationContext.scope, argumentValues)
 
     override val localAllocator = callingContext.localAllocator
     override val statements = mutableListOf<Statement>()
@@ -168,9 +170,10 @@ class FunctionExecutionContext(
 }
 
 class FunctionSimpleContext(
+    override val parentContext: Context,
     declarationContext: Context,
     argumentValues: Map<Parameter, Value>
 ) : Context {
     // the parent of the scope comes from the context where the function was declared, not where it was called
-    override val scope = FunctionScope(this, declarationContext.scope, argumentValues)
+    override val scope = FunctionScope(declarationContext.scope, argumentValues)
 }

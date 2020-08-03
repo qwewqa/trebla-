@@ -31,7 +31,7 @@ class ValueExpression(val value: Value) :
 }
 
 fun ExpressionNode.tryConstexprEval(context: Context) =
-    (parseAndApplyTo(ReadOnlyContext(context)) as? RawStructValue)?.value?.toIR()?.tryConstexprEvaluate()
+    (parseAndApplyTo(ReadOnlyContext(context)) as? RawStructValue)?.raw?.toIR()?.tryConstexprEvaluate()
 
 fun StatementNode.parseAndApplyTo(context: Context) = parse(context).applyTo(context)
 
@@ -61,7 +61,7 @@ fun StatementNode.parse(context: Context): Expression = when (this) {
 fun literalNumber(value: Double, context: Context) =
     ValueExpression(
         RawStructValue(
-            LiteralValue(value),
+            LiteralRawValue(value),
             context,
             (context.scope.getFullyQualified("std", "Number") as StructDeclaration)
         )
@@ -70,7 +70,7 @@ fun literalNumber(value: Double, context: Context) =
 fun literalBoolean(value: Boolean, context: Context) =
     ValueExpression(
         RawStructValue(
-            LiteralValue(if (value) 1.0 else 0.0),
+            LiteralRawValue(if (value) 1.0 else 0.0),
             context,
             (context.scope.getFullyQualified("std", "Boolean") as StructDeclaration)
         )

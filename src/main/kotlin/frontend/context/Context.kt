@@ -3,9 +3,9 @@ package xyz.qwewqa.trebla.frontend.context
 import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
 import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
 import xyz.qwewqa.trebla.backend.compile.IRNode
+import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
-import xyz.qwewqa.trebla.frontend.declaration.PackageType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Statement
 import xyz.qwewqa.trebla.frontend.expression.Value
@@ -14,6 +14,9 @@ import xyz.qwewqa.trebla.frontend.expression.Value
  * A context contains declarations, which are stored in its scope.
  */
 interface Context : MemberAccessor {
+    val parentContext: Context?
+    val source: Entity? get() = null
+
     override val type: Type get() = ContextType
 
     override fun hasMember(name: String, accessingContext: Context?): Boolean {
@@ -33,30 +36,18 @@ object ContextType : BuiltinType("Context")
  * A context under which a block of expressions may be evaluated.
  */
 interface ExecutionContext : Context {
+    override val scope: EagerScope
     val localAllocator: TemporaryAllocator
     val statements: MutableList<Statement>
 }
 
-/**
- * In some contexts (the file context) it's useful for some checks like type checks to be deferred until
- * later stages of compilation.
- */
-interface DeferrableContext : Context {
-    fun addDeferredCheck(block: () -> Unit)
+class SimpleContext(override val parentContext: Context?) : Context {
+    override val scope = Scope(parentContext?.scope)
 }
 
-fun Context.addDeferredOrRun(block: () -> Unit) {
-    if (this is DeferrableContext) addDeferredCheck(block)
-    else block()
-}
-
-class SimpleContext(parent: Context) : Context {
-    override val scope = Scope(this, parent.scope)
-}
-
-class SimpleExecutionContext(parent: ExecutionContext) : ExecutionContext, Statement {
-    override val scope = Scope(this, parent.scope)
-    override val localAllocator = parent.localAllocator
+class SimpleExecutionContext(override val parentContext: ExecutionContext) : ExecutionContext, Statement {
+    override val scope = EagerScope(parentContext.scope)
+    override val localAllocator = parentContext.localAllocator
     override val statements = mutableListOf<Statement>()
 
     override fun toIR(): IRNode {
@@ -64,16 +55,17 @@ class SimpleExecutionContext(parent: ExecutionContext) : ExecutionContext, State
     }
 }
 
-class InnerExecutionContext(parent: ExecutionContext) : ExecutionContext {
-    override val scope = Scope(this, parent.scope)
-    override val localAllocator = parent.localAllocator
-    override val statements = parent.statements
+class InnerExecutionContext(override val parentContext: ExecutionContext) : ExecutionContext {
+    override val scope = EagerScope(parentContext.scope)
+    override val localAllocator = parentContext.localAllocator
+    override val statements = parentContext.statements
 }
 
-class ReadOnlyContext(parent: Context) : Context {
-    override val scope = ReadOnlyScope(this, parent.scope)
+class ReadOnlyContext(override val parentContext: Context) : Context {
+    override val scope = ReadOnlyScope(parentContext.scope)
 }
 
 class EmptyContext : Context {
-    override val scope = ReadOnlyScope(this)
+    override val parentContext: Context? = null
+    override val scope = ReadOnlyScope()
 }

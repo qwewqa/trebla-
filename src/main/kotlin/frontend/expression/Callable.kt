@@ -13,7 +13,7 @@ interface Callable {
     val isOperator: Boolean get() = false
     val isInfix: Boolean get() = false
     val parameters: List<Parameter>? get() = null
-    fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value
+    fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value
 }
 
 /**

@@ -2,6 +2,7 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.context.visibilityModifiers
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
@@ -11,14 +12,14 @@ import xyz.qwewqa.trebla.grammar.trebla.LetDeclarationNode
 
 class LetDeclaration(
     override val node: LetDeclarationNode,
-    override val declaringContext: Context,
+    override val parentContext: Context,
 ) : Declaration {
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility: Visibility
     override val type = UnitValue
 
-    val typeConstraint = node.type?.applyIn(declaringContext) ?: AnyType
+    val typeConstraint = node.type?.applyIn(parentContext) ?: AnyType
 
     init {
         node.modifiers.parse {
@@ -27,11 +28,14 @@ class LetDeclaration(
     }
 
     override fun applyTo(context: Context): Value {
-        context.scope.addDeferred(identifier, signature, visibility) {
-            val value = node.expression.parseAndApplyTo(context)
-            if (!typeConstraint.accepts(value)) compileError("Expression does not satisfy explicit type.")
-            value
-        }
+        context.scope.add(
+            lazy {
+                val value = node.expression.parseAndApplyTo(context)
+                if (!typeConstraint.accepts(value)) compileError("Expression does not satisfy explicit type.")
+                value
+            },
+            identifier, signature, visibility,
+        )
         return UnitValue
     }
 

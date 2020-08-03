@@ -1,6 +1,8 @@
 package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.expression.LiteralRawValue
+import xyz.qwewqa.trebla.frontend.expression.RawValue
 
 sealed class Allocator {
     abstract fun allocate(): Allocation
@@ -23,12 +25,26 @@ class TemporaryAllocator : Allocator() {
     override fun allocate() = TemporaryAllocation(counter++)
 }
 
+class DynamicAllocator(private val block: RawValue, private val startIndex: RawValue) : Allocator() {
+    private var offset = 0
+    override fun allocate() = DynamicAllocation(
+        block,
+        startIndex,
+        LiteralRawValue((offset++).toDouble())
+    )
+}
+
 sealed class Allocation
 
 /**
- * Represents a specific location in memory.
+ * A specific location in memory known at compile time.
  */
 data class ConcreteAllocation(val block: Int, val index: Int) : Allocation()
+
+/**
+ * A location in memory which may be determined at runtime.
+ */
+data class DynamicAllocation(val block: RawValue, val index: RawValue, val offset: RawValue) : Allocation()
 
 /**
  * Represents some unknown location in memory for a temporary variable.

@@ -9,21 +9,21 @@ import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
  */
 class Package(
     override val identifier: String,
-    override val declaringContext: GlobalAllocatorContext,
+    override val parentContext: GlobalAllocatorContext,
     override val node: TreblaNode? = null,
 ) : GlobalAllocatorContext, MemberAccessor, Declaration {
     override val type = PackageType
     override val visibility = Visibility.PUBLIC
     override val signature = Signature.Default
-    override val scope = Scope(this, declaringContext.scope)
-    override val levelAllocator = declaringContext.levelAllocator
-    override val tempAllocator = declaringContext.tempAllocator
+    override val scope = Scope(parentContext.scope)
+    override val levelAllocator = parentContext.levelAllocator
+    override val tempAllocator = parentContext.tempAllocator
 
     override fun getMember(name: String, accessingContext: Context?) =
-        scope.getNative(name) ?: compileError("No symbol of name $name found")
+        scope.get(name) ?: compileError("No symbol of name $name found")
 
     override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return scope.getNative(name) != null
+        return scope.get(name) != null
     }
 }
 

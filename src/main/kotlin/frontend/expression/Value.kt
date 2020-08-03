@@ -12,28 +12,44 @@ import xyz.qwewqa.trebla.frontend.declaration.Type
  * In short, a value encapsulates data on how to do something, from manipulating memory in the case of struct values,
  * to any declaration like function declarations.
  */
-interface Value : Entity {
+interface Value : Lazy<Value>, Entity {
     val type: Type
+
+    /**
+     * This implements [Lazy] such that it can be used without being wrapped.
+     */
+    override val value get() = this
+    override fun isInitialized() = true
+
+    /**
+     * Performs any final checks to this value, if relevant.
+     */
+    fun finalize() = Unit
 }
 
-interface Allocatable : Value {
-    fun allocateOn(allocator: Allocator, context: Context): Copyable
+interface Allocatable : Type {
+    /**
+     * Creates a new instance of the allocatable type
+     * on the given allocator in the given context.
+     */
+    fun allocateOn(allocator: Allocator, context: Context?): Mutable
 }
 
-interface Copyable : Value {
+interface Mutable : Value {
     /**
      * Copies the value onto new allocations on the allocator.
      */
-    fun copyOn(allocator: Allocator, context: ExecutionContext): Copyable
+    fun copyOn(allocator: Allocator, context: ExecutionContext): Mutable
+
+    /**
+     * Copies the value of the other value into this value.
+     */
+    fun copyFrom(other: Value, context: ExecutionContext)
 
     /**
      * Used for shared/data arrays.
      */
-    fun onBlock(block: Int, offset: RawValue): Copyable
-}
-
-interface Mutable : Value {
-    fun copyFrom(other: Value, context: ExecutionContext)
+    fun reallocate(allocator: Allocator, context: Context?): Mutable
 }
 
 /**

@@ -20,17 +20,18 @@ class LambdaExpression(override val node: LambdaNode, val declaringContext: Cont
         listOf(Parameter("it", AnyType, node = node) )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val statements = node.body
         val pairedArguments =
             if (parameters == defaultParameterList && arguments.isEmpty()) emptyMap()
             else parameters.pairedWithAndValidated(arguments)
 
+        if (callingContext == null) compileError("Requires a context.")
         if (callingContext !is ExecutionContext) {
             // we allow single or zero expressions even in non-execution contexts
             return when (statements.size) {
                 0 -> UnitValue
-                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(declaringContext, pairedArguments))
+                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(callingContext, declaringContext, pairedArguments))
                 else -> compileError("Invalid location for multi-statement function call.")
             }
         }

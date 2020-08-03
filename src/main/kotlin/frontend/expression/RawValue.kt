@@ -4,6 +4,7 @@ import xyz.qwewqa.trebla.backend.compile.*
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.context.Allocation
 import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
+import xyz.qwewqa.trebla.frontend.context.DynamicAllocation
 import xyz.qwewqa.trebla.frontend.context.TemporaryAllocation
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinFunctionVariant
 
@@ -20,31 +21,30 @@ sealed class RawValue {
     abstract fun toIR(): IRNode
 }
 
-class AllocatedValue(val allocation: Allocation) : RawValue() {
+class AllocatedRawValue(val allocation: Allocation) : RawValue() {
     override fun toIR() = when (allocation) {
         is ConcreteAllocation -> FunctionIRNodeVariant.Get.calledWith(
             allocation.block.toValueIRNode(),
             allocation.index.toValueIRNode()
         )
         is TemporaryAllocation -> ReadTempIRNode(allocation.id)
+        is DynamicAllocation -> FunctionIRNodeVariant.GetShifted.calledWith(
+            allocation.block.toIR(),
+            allocation.index.toIR(),
+            allocation.offset.toIR(),
+        )
     }
 }
 
-class DynamicAllocatedValue(val block: IRNode, val offset: IRNode, val index: IRNode) : RawValue() {
-    override fun toIR() = FunctionIRNodeVariant.GetShifted.calledWith(
-        offset,
-        block,
-        index,
-    )
-}
-
-class LiteralValue(val value: Double) : RawValue() {
+class LiteralRawValue(val value: Double) : RawValue() {
     override fun toIR(): IRNode {
         return value.toValueIRNode()
     }
 }
 
-class BuiltinCallValue(val function: BuiltinFunctionVariant, val arguments: List<IRNode>) : RawValue(), Statement {
+fun Number.toLiteralRawValue() = LiteralRawValue(this.toDouble())
+
+class BuiltinCallRawValue(val function: BuiltinFunctionVariant, val arguments: List<IRNode>) : RawValue(), Statement {
     override fun toIR(): IRNode {
         // Doing some simplification here might help with performance but this isn't tested.
         // It's really so initial IR is a bit easier to read when debugging.
@@ -54,7 +54,7 @@ class BuiltinCallValue(val function: BuiltinFunctionVariant, val arguments: List
     }
 }
 
-class AllocatedValueAssignment(val lhs: AllocatedValue, val rhs: RawValue) : Statement {
+class AllocatedValueAssignment(val lhs: AllocatedRawValue, val rhs: RawValue) : Statement {
     override fun toIR() = when (val alloc = lhs.allocation) {
         is ConcreteAllocation -> FunctionIRNodeVariant.Set.calledWith(
             alloc.block.toValueIRNode(),
@@ -62,14 +62,11 @@ class AllocatedValueAssignment(val lhs: AllocatedValue, val rhs: RawValue) : Sta
             rhs.toIR()
         )
         is TemporaryAllocation -> AssignTempIRNode(alloc.id, rhs.toIR())
+        is DynamicAllocation -> FunctionIRNodeVariant.SetShifted.calledWith(
+            alloc.block.toIR(),
+            alloc.index.toIR(),
+            alloc.offset.toIR(),
+            rhs.toIR()
+        )
     }
-}
-
-class DynamicAllocatedValueAssignment(val lhs: DynamicAllocatedValue, val rhs: RawValue) : Statement {
-    override fun toIR() = FunctionIRNodeVariant.SetShifted.calledWith(
-        lhs.offset,
-        lhs.block,
-        lhs.index,
-        rhs.toIR()
-    )
 }

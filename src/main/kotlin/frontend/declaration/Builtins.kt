@@ -2,10 +2,7 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.ExecutionContext
-import xyz.qwewqa.trebla.frontend.context.MemberAccessor
-import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
 /**
@@ -14,7 +11,7 @@ import xyz.qwewqa.trebla.frontend.expression.*
  * which must be of a raw type.
  */
 object Builtins : MemberAccessor, Declaration {
-    override val declaringContext: Context? = null
+    override val parentContext: Context? = null
     override val type = AnyType
 
     override val identifier = "builtins"
@@ -153,21 +150,22 @@ enum class BuiltinFunctionVariant(val returns: Boolean = true, val ir: FunctionI
 class BuiltinFunction(val function: BuiltinFunctionVariant) : Callable, Value {
     override val type = FunctionType
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val argumentValues = arguments.map {
             val parameterValue = it.value
             if (parameterValue !is RawStructValue) compileError("A builtin function must be called with only raw struct arguments.")
-            parameterValue.value.toIR()
+            parameterValue.raw.toIR()
         }
         return if (function.returns) {
+            if (callingContext == null) compileError("Builtin function requires a context.")
             val rawType = callingContext.scope.getFullyQualified(listOf("std", "Raw")) as StructDeclaration
-            RawStructValue(BuiltinCallValue(function, argumentValues), callingContext, rawType)
+            RawStructValue(BuiltinCallRawValue(function, argumentValues), callingContext, rawType)
         } else {
             // If a function does something like draw or play, we don't use the return value, instead
             // we just add it as a statement and return unit.
             // And of course, there's no meaningful way to do this in a context that does not allow execution.
             if (callingContext !is ExecutionContext) compileError("Builtin function $function requires an execution context.")
-            callingContext.statements += BuiltinCallValue(function, argumentValues)
+            callingContext.statements += BuiltinCallRawValue(function, argumentValues)
             UnitValue
         }
     }

@@ -1,7 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.backend.compile.toValueIRNode
-import xyz.qwewqa.trebla.frontend.CompileError
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -9,7 +7,7 @@ import xyz.qwewqa.trebla.grammar.trebla.StructDeclarationNode
 
 class StructDeclaration(
     override val node: StructDeclarationNode,
-    override val declaringContext: Context,
+    override val parentContext: Context,
 ) : Declaration,
     Callable,
     Type,
@@ -24,11 +22,11 @@ class StructDeclaration(
 
     val isRaw: Boolean
 
-    val fields by lazy { node.fields.value.parse(declaringContext) }
+    val fields by lazy { node.fields.value.parse(parentContext) }
     val fieldNames by lazy { fields.map { it.name }.toSet() }
     override val parameters by lazy { fields }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Copyable {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Mutable {
         if (!isRaw) {
             return NormalStructValue(fields.pairedWithAndValidated(arguments).byParameterName(),
                 callingContext,
@@ -39,7 +37,7 @@ class StructDeclaration(
             if (arg.name != null) compileError("A raw struct constructor does not take a named argument.")
             val value = arg.value
             if (value !is RawStructValue) compileError("A raw struct constructor only takes another raw struct.")
-            return RawStructValue(value.value, callingContext, this)
+            return RawStructValue(value.raw, callingContext, this)
         }
     }
 
@@ -47,8 +45,8 @@ class StructDeclaration(
         return other.type == this
     }
 
-    override fun allocateOn(allocator: Allocator, context: Context): Copyable {
-        return if (isRaw) RawStructValue(AllocatedValue(allocator.allocate()), context, this)
+    override fun allocateOn(allocator: Allocator, context: Context?): Mutable {
+        return if (isRaw) RawStructValue(AllocatedRawValue(allocator.allocate()), context, this)
         else callWith(parameters.map {
             ValueArgument(
                 it.name,
@@ -99,7 +97,7 @@ object StructType : BuiltinType("Struct") {
 sealed class StructValue(
     var searchContext: Context?,
     override val type: StructDeclaration,
-) : MemberAccessor, Value, Copyable, Mutable {
+) : MemberAccessor, Value, Mutable {
     override fun getMember(name: String, accessingContext: Context?): Value {
         val searchContextValue = searchContext?.scope?.find(
             name,
@@ -137,7 +135,7 @@ class NormalStructValue(
     override fun copyOn(allocator: Allocator, context: ExecutionContext): StructValue {
         return NormalStructValue(fields.mapValues { (_, value) ->
             when (value) {
-                is Copyable -> value.copyOn(allocator, context)
+                is Mutable -> value.copyOn(allocator, context)
                 !is Mutable -> value
                 else -> compileError("Invalid copy.")
             }
@@ -161,42 +159,31 @@ class NormalStructValue(
         return fields[name] != null || super.hasMember(name, accessingContext)
     }
 
-    override fun onBlock(block: Int, offset: RawValue): Copyable {
-        return NormalStructValue(fields.mapValues { (_, value) ->
-            when (value) {
-                is Copyable -> value.onBlock(block, offset)
-                else -> compileError("Invalid struct for array block conversion.")
-            }
-        }, searchContext, type)
+    override fun reallocate(allocator: Allocator, context: Context?): Mutable {
+        return NormalStructValue((type.allocateOn(allocator, context) as NormalStructValue).fields, searchContext, type)
     }
 }
 
 class RawStructValue(
-    val value: RawValue,
+    val raw: RawValue,
     searchContext: Context?,
     type: StructDeclaration,
 ) : StructValue(searchContext, type) {
     override fun copyOn(allocator: Allocator, context: ExecutionContext): StructValue {
-        val newValue = AllocatedValue(allocator.allocate())
-        context.statements += AllocatedValueAssignment(newValue, value)
+        val newValue = AllocatedRawValue(allocator.allocate())
+        context.statements += AllocatedValueAssignment(newValue, raw)
         return RawStructValue(newValue, searchContext, type)
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
         if (other !is RawStructValue || type != other.type) compileError("Incompatible assigment.")
-        context.statements += when (value) {
-            is AllocatedValue -> AllocatedValueAssignment(value, other.value)
-            is DynamicAllocatedValue -> DynamicAllocatedValueAssignment(value, other.value)
+        context.statements += when (raw) {
+            is AllocatedRawValue -> AllocatedValueAssignment(raw, other.raw)
             else -> compileError("Value is not mutable.")
         }
     }
 
-    override fun onBlock(block: Int, offset: RawValue): Copyable {
-        val index = when {
-            value is AllocatedValue && value.allocation is ConcreteAllocation -> value.allocation.index
-            else -> compileError("Invalid struct for array block conversion.")
-        }
-        val newValue = DynamicAllocatedValue(block.toValueIRNode(), offset.toIR(), index.toValueIRNode())
-        return RawStructValue(newValue, searchContext, type)
+    override fun reallocate(allocator: Allocator, context: Context?): Mutable {
+        return RawStructValue(AllocatedRawValue(allocator.allocate()), searchContext, type)
     }
 }

@@ -6,28 +6,22 @@ import xyz.qwewqa.trebla.grammar.trebla.*
 
 val defaultPackage = listOf("engine")
 
-class TreblaFile(override val node: TreblaFileNode, val globalContext: GlobalContext) : Context, Entity,
-    GlobalAllocatorContext, DeferrableContext {
-    private val pkg = globalContext.getPackage(node.packageHeader?.identifier?.value ?: defaultPackage)
-    override val levelAllocator = globalContext.levelAllocator
-    override val tempAllocator = globalContext.tempAllocator
+class TreblaFile(override val node: TreblaFileNode, override val parentContext: GlobalContext) : Context, Entity,
+    GlobalAllocatorContext {
+    private val pkg = parentContext.getPackage(node.packageHeader?.identifier?.value ?: defaultPackage)
+    override val levelAllocator = parentContext.levelAllocator
+    override val tempAllocator = parentContext.tempAllocator
 
     /*
     A file has its own set of imports and private declarations that are local to the file.
     Non-private declarations are added to the package scope in addition to the local file scope.
      */
-    override val scope = Scope(this, pkg.scope)
+    override val scope = Scope(pkg.scope)
 
     val scripts = mutableListOf<ScriptDeclaration>()
     val archetypes = mutableListOf<ArchetypeDeclaration>()
 
     private val deferredDeclarations = mutableListOf<Declaration>()
-
-    private val deferredChecks = mutableListOf<() -> Unit>()
-
-    override fun addDeferredCheck(block: () -> Unit) {
-        deferredChecks += block
-    }
 
     /**
      * The first part of the file loading process.
@@ -83,23 +77,16 @@ class TreblaFile(override val node: TreblaFileNode, val globalContext: GlobalCon
         importStd()
         importStrict()
         updatePackage()
-        deferredChecks.forEach { it() }
     }
 
     private fun updatePackage() {
-        pkg.scope.import(this.scope, minVisibility = Visibility.INTERNAL, native = true)
+        pkg.scope.mergeIn(this.scope)
     }
 
-    private fun importWildcard(identifier: List<String>) = scope.import(globalContext.getPackage(identifier).scope)
+    private fun importWildcard(identifier: List<String>) = scope.import(parentContext.getPackage(identifier).scope)
 
     private fun importSingle(identifier: List<String>): Boolean {
-        val pkg = identifier.dropLast(1)
-        val name = identifier.last()
-        return if (pkg.isEmpty()) {
-            scope.import(globalContext.scope, filterName = name)
-        } else {
-            scope.import(globalContext.getPackage(pkg).scope, filterName = name)
-        }
+        compileError("Only wildcard imports are supported.")
     }
 
     private fun importStd() {

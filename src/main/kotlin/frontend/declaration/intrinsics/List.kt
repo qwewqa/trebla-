@@ -8,7 +8,7 @@ import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import kotlin.math.roundToInt
 
-class TreblaList(override val declaringContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration,
+class TreblaList(override val parentContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration,
     Callable {
     override val identifier = "List"
     override val type = AnyType
@@ -19,13 +19,13 @@ class TreblaList(override val declaringContext: Context, val projectConfiguratio
     override val parameters by lazy {
         listOf(
             Parameter("type", TypeType),
-            Parameter("size", declaringContext.numberType),
+            Parameter("size", parentContext.numberType),
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val argumentValues = parameters.pairedWithAndValidated(arguments).byParameterName()
-        val size = (argumentValues["size"] as RawStructValue).value.toIR().tryConstexprEvaluate()?.roundToInt()
+        val size = (argumentValues["size"] as RawStructValue).raw.toIR().tryConstexprEvaluate()?.roundToInt()
             ?: compileError("List size must be a compile time constant.")
         val type = (argumentValues["type"] as? Allocatable)
             ?: compileError("List type must be allocatable")
@@ -40,33 +40,38 @@ data class ListType(val size: Int, val containedType: Allocatable) : Type, Alloc
 
     override val type = TypeType
 
-    override fun allocateOn(allocator: Allocator, context: Context): Copyable {
+    override fun allocateOn(allocator: Allocator, context: Context?): Mutable {
+        if (context == null) compileError("Requires a context.")
         return ListValue(context, this, List(size) { containedType.allocateOn(allocator, context) })
     }
 }
 
-class ListValue(val context: Context, override val type: Type, val values: List<Copyable>) : Copyable, MemberAccessor,
+class ListValue(val parentContext: Context, override val type: Type, val values: List<Mutable>) : Mutable, MemberAccessor,
     Callable {
     override val parameters by lazy {
         listOf(
-            Parameter("index", context.numberType),
+            Parameter("index", parentContext.numberType),
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
-        val index = (parameters.pairedWithAndValidated(arguments).values.first() as RawStructValue).value.toIR()
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
+        val index = (parameters.pairedWithAndValidated(arguments).values.first() as RawStructValue).raw.toIR()
             .tryConstexprEvaluate()?.roundToInt()
             ?: compileError("List index must be a compile time constant.")
         if (index !in values.indices) compileError("List index out of range.")
         return values[index]
     }
 
-    override fun onBlock(block: Int, offset: RawValue): Copyable {
-        return ListValue(context, type, values.map { it.onBlock(block, offset) })
+    override fun reallocate(allocator: Allocator, context: Context?): Mutable {
+        return ListValue(parentContext, type, values.map { it.reallocate(allocator, context) })
     }
 
-    override fun copyOn(allocator: Allocator, context: ExecutionContext): Copyable {
+    override fun copyOn(allocator: Allocator, context: ExecutionContext): Mutable {
         return ListValue(context, type, values.map { it.copyOn(allocator, context) })
+    }
+
+    override fun copyFrom(other: Value, context: ExecutionContext) {
+        TODO("Not yet implemented")
     }
 
     override fun hasMember(name: String, accessingContext: Context?): Boolean {
@@ -79,9 +84,9 @@ class ListValue(val context: Context, override val type: Type, val values: List<
 
     private val members: Map<String, Value> by lazy {
         mapOf(
-            "forEach" to ListValueForEach(context, this, false),
-            "forEachIndexed" to ListValueForEach(context, this, true),
-            "get" to ListGet(context, this)
+            "forEach" to ListValueForEach(parentContext, this, false),
+            "forEachIndexed" to ListValueForEach(parentContext, this, true),
+            "get" to ListGet(parentContext, this)
         )
     }
 }
@@ -101,13 +106,13 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val args = parameters.pairedWithAndValidated(arguments).byParameterName()
         val operation = args["operation"] as Callable
-        val start = (args["start"] as? RawStructValue)?.value?.let {
+        val start = (args["start"] as? RawStructValue)?.raw?.let {
             it.toIR().tryConstexprEvaluate() ?: compileError("Start index should be a compile time constant.")
         }?.roundToInt() ?: 0
-        val stop = (args["stop"] as? RawStructValue)?.value?.let {
+        val stop = (args["stop"] as? RawStructValue)?.raw?.let {
             it.toIR().tryConstexprEvaluate() ?: compileError("Start index should be a compile time constant.")
         }?.roundToInt() ?: listValue.values.size
         if (callingContext !is ExecutionContext) compileError("List forEach requires an execution context.")
@@ -115,7 +120,7 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
         listValue.values.subList(start, stop).forEach {
             if (indexed) operation.callWith(
                 listOf(
-                    ValueArgument(null, RawStructValue(LiteralValue(index.toDouble()), context, context.numberType)),
+                    ValueArgument(null, RawStructValue(LiteralRawValue(index.toDouble()), context, context.numberType)),
                     ValueArgument(null, it)
                 ),
                 callingContext,
@@ -140,7 +145,7 @@ class ListGet(val context: Context, val listValue: ListValue) : Callable, Value 
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val index = parameters.pairedWithAndValidated(arguments).byParameterName()["index"] as RawStructValue
         if (callingContext !is ExecutionContext) compileError("Dynamic list get requires an execution context.")
         val types = listValue.values.map { it.type }.toSet()
@@ -149,8 +154,7 @@ class ListGet(val context: Context, val listValue: ListValue) : Callable, Value 
         val type = types.first()
         if (type !is Allocatable) compileError("Dynamic list get is only available for lists with allocatable types.")
         val returns = type.allocateOn(callingContext.localAllocator, callingContext)
-        if (returns !is Mutable) compileError("Dynamic list get is only available for mutable types.")
-        callingContext.statements += BuiltinCallValue(
+        callingContext.statements += BuiltinCallRawValue(
             BuiltinFunctionVariant.SwitchIntegerWithDefault,
             listValue.values.map { value ->
                 SimpleExecutionContext(callingContext).also {
@@ -162,7 +166,7 @@ class ListGet(val context: Context, val listValue: ListValue) : Callable, Value 
                 rather than subtracting one.
                 Out of range access is undefined regardless.
                 */
-                listOf(index.value.toIR()) + it.drop(1) + it.first()
+                listOf(index.raw.toIR()) + it.drop(1) + it.first()
             }
         )
         return returns

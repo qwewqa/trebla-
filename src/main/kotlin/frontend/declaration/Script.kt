@@ -8,20 +8,20 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.grammar.trebla.*
 
-class ScriptDeclaration(override val node: ScriptDeclarationNode, override val declaringContext: TreblaFile) :
+class ScriptDeclaration(override val node: ScriptDeclarationNode, override val parentContext: TreblaFile) :
     Declaration, ScriptContext, Callable {
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
     override val type = ScriptType
-    override val scope = Scope(this, declaringContext.scope)
+    override val scope = EagerScope(parentContext.scope)
     override val memoryAllocator = StandardAllocator(21, 64)
     override val dataAllocator = StandardAllocator(22, 32)
     override val sharedAllocator = StandardAllocator(24, 32)
 
-    var index = declaringContext.globalContext.scriptIndex++
+    var index = parentContext.parentContext.scriptIndex++
 
-    private val initializeCallback = Callback(0, CallbackName.Initialize, this)
+    private val initializeCallback = Callback(this, 0, CallbackName.Initialize, this)
     private val initializationContext = ScriptInitializationContext(this, initializeCallback)
 
     val propertyDeclarations by lazy {
@@ -49,7 +49,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
             .associate { it.identifier to it.applyTo(initializationContext) }
     }
 
-    fun finalize(): ScriptData {
+    fun process(): ScriptData {
         // make sure lazy properties have fired
         spawnProperties
         dataProperties
@@ -79,12 +79,12 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
             identifier,
             index,
             callbacks,
-            dataProperties.mapValues { (_, v) -> ((((v as RawStructValue).value as AllocatedValue).allocation) as ConcreteAllocation).index },
+            dataProperties.mapValues { (_, v) -> ((((v as RawStructValue).raw as AllocatedRawValue).allocation) as ConcreteAllocation).index },
             (memoryAllocator.index until memoryAllocator.size).toList()
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val cells = MutableList<RawValue?>(64) { null }
         arguments.forEach { (name, value) ->
             if (name == null) compileError("Unnamed arguments to script spawns are not allowed.")
@@ -93,9 +93,9 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
         }
         cells.dropLastWhile { it == null }
         if (callingContext !is ExecutionContext) compileError("Script spawns require an execution context.")
-        callingContext.statements += BuiltinCallValue(
+        callingContext.statements += BuiltinCallRawValue(
             BuiltinFunctionVariant.Spawn,
-            listOf(LiteralValue(index.toDouble()).toIR()) + cells.map { it ?: LiteralValue(0.0) }
+            listOf(LiteralRawValue(index.toDouble()).toIR()) + cells.map { it ?: LiteralRawValue(0.0) }
                 .map { it.toIR() }
                 .dropLastWhile { it is ValueIRNode && it.value == 0.0 }
         )
@@ -110,11 +110,11 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val d
         }
     }
 
-    fun setRaw(prop: RawStructValue, value: RawStructValue, cells: MutableList<RawValue?>) {
-        cells[((prop.value as AllocatedValue).allocation as ConcreteAllocation).index] = value.value
+    private fun setRaw(prop: RawStructValue, value: RawStructValue, cells: MutableList<RawValue?>) {
+        cells[((prop.raw as AllocatedRawValue).allocation as ConcreteAllocation).index] = value.raw
     }
 
-    fun setNormal(prop: NormalStructValue, value: NormalStructValue, cells: MutableList<RawValue?>) {
+    private fun setNormal(prop: NormalStructValue, value: NormalStructValue, cells: MutableList<RawValue?>) {
         prop.fields.forEach { (name, field) ->
             set(field, value.fields[name], cells)
         }
@@ -138,11 +138,12 @@ data class ScriptData(
 )
 
 /**
- * Statements directly in a script should updated the scope of the script. However,
+ * Statements directly in a script should update the scope of the script. However,
  * they should add statements to the initialize callback, so this combines the two.
  */
-class ScriptInitializationContext(script: ScriptDeclaration, initializeCallback: Callback) : ExecutionContext,
-    ScriptContext by script {
+class ScriptInitializationContext(script: ScriptDeclaration, initializeCallback: Callback) :
+    ExecutionContext, ScriptContext by script {
+    override val scope = script.scope // Necessary for some reason. Delegate alone won't work.
     override val statements = initializeCallback.statements
     override val localAllocator = initializeCallback.localAllocator
 }

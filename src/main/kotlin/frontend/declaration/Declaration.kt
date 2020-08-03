@@ -2,6 +2,7 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.expression.Expression
 import xyz.qwewqa.trebla.frontend.expression.Value
@@ -29,7 +30,7 @@ interface Declaration : Value, Expression {
     /**
      * The context containing this declaration.
      */
-    val declaringContext: Context?
+    val parentContext: Context?
 
     /**
      * The visibility modifier of this declaration.
@@ -46,15 +47,9 @@ interface Declaration : Value, Expression {
     By default, a declaration adds itself, but not all declarations may do so, like property declarations.
      */
     override fun applyTo(context: Context): Value {
-        context.scope.add(this)
+        context.scope.add(this, identifier, signature, visibility)
         return this
     }
-}
-
-sealed class Signature {
-    object Default : Signature()
-    object Archetype : Signature()
-    data class TypedReceiver(val receiverType: Type) : Signature()
 }
 
 @OptIn(ExperimentalContracts::class)
