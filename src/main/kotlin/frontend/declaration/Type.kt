@@ -9,40 +9,51 @@ import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.TypeNode
 
-/**
- * A type, as used here, is a constraint for a struct member or a function argument or return type.
- * Types exist only at compile time as a constraint.
- */
 interface Type : Value {
-    fun accepts(other: Value): Boolean
+    fun accepts(other: Type): Boolean {
+        return this == other || this in other.bindingHierarchy.flatten()
+    }
+
+    /**
+     * Receiver functions are resolved in order of the hierarchy.
+     * The list contains each layer, in order.
+     * Implicitly, the type itself comes first, and the Any type comes last.
+     * Receiver functions are resolved from the bottom to top layer.
+     * Ambiguity in the same layer will result in an error.
+     */
+    val bindingHierarchy: List<Collection<Type>> get() = emptyList()
 }
 
-abstract class BuiltinType(override val identifier: String) : Type,
-    Declaration {
-    override val type: Type = TypeType
+fun Type.accepts(other: Value) = accepts(other.type)
 
+inline val Type.fullBindingHierarchy get() = listOf(listOf(this)) + bindingHierarchy + listOf(listOf(AnyType))
+
+abstract class BuiltinType(override val identifier: String) : Type, Declaration {
+    override val type: Type = TypeType
+    override val bindingContext: Context? = null
     override val parentContext: Context? = null
 
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
-
-    override fun accepts(other: Value) = other.type == this
-}
-
-class UnionType(val types: List<Type>) : Type {
-    override val type = TypeType
-
-    override fun accepts(other: Value): Boolean {
-        return types.any { it.accepts(other) }
-    }
-}
-
-object TypeType : BuiltinType("Type") {
-    override fun accepts(other: Value): Boolean = other.type == TypeType
 }
 
 object AnyType : BuiltinType("Any") {
-    override fun accepts(other: Value) = true
+    override fun accepts(other: Type) = true
+}
+
+object TypeType : BuiltinType("Type")
+
+/**
+ * A union type, intended as a type constraint for functions where either of
+ * a list of types is acceptable.
+ */
+class UnionType(val types: List<Type>, override val bindingContext: Context? = null) : Type {
+    override val type = TypeType
+    override val bindingHierarchy = listOf(listOf(AnyType))
+
+    override fun accepts(other: Type): Boolean {
+        return types.any { it.accepts(other) } || super.accepts(other)
+    }
 }
 
 fun TypeNode.applyIn(context: Context) =

@@ -17,17 +17,13 @@ interface Context : MemberAccessor {
     val parentContext: Context?
     val source: Entity? get() = null
 
+    val scope: Scope
+
     override val type: Type get() = ContextType
 
-    override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return scope.find(name) != null
-    }
+    override fun getMember(name: String, accessingContext: Context?) = scope.find(name)
 
-    override fun getMember(name: String, accessingContext: Context?): Value {
-        return scope.find(name) ?: compileError("Context has no member with name $name/")
-    }
-
-    val scope: Scope
+    override val bindingContext: Context? get() = parentContext
 }
 
 object ContextType : BuiltinType("Context")

@@ -5,6 +5,7 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.declaration.accepts
 import xyz.qwewqa.trebla.frontend.declaration.applyIn
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.*

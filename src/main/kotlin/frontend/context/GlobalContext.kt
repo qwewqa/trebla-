@@ -7,6 +7,7 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.*
 import xyz.qwewqa.trebla.frontend.expression.Expression
+import xyz.qwewqa.trebla.frontend.expression.LambdaType
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
@@ -97,6 +98,7 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to PackageType,
     listOf("std") to ContextType,
     listOf("std") to LocalContext,
+    listOf("std") to LambdaType,
     listOf("std") to WithContext,
 )
 

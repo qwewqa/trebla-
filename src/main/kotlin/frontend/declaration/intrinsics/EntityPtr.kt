@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.compile.toValueIRNode
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
@@ -28,18 +27,14 @@ class EntityPtr(override val parentContext: Context, val projectConfiguration: C
         val argumentValues = parameters.pairedWithAndValidated(arguments).byParameterName()
         val index = argumentValues["index"] as RawStructValue
         val script = argumentValues["script"] as ScriptDeclaration
-        return EntityPointer(index, script)
+        return EntityPointer(index, script, callingContext)
     }
 }
 
-class EntityPointer(val index: RawStructValue, val script: ScriptDeclaration) : MemberAccessor {
+class EntityPointer(val index: RawStructValue, val script: ScriptDeclaration, override val bindingContext: Context?) : MemberAccessor {
     override val type = AnyType
 
-    override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return name in script.dataProperties || name in script.sharedProperties
-    }
-
-    override fun getMember(name: String, accessingContext: Context?): Value {
+    override fun getMember(name: String, accessingContext: Context?): Value? {
         return when {
             name in script.dataProperties -> {
                 script.dataProperties.getValue(name).offsetReallocate(
@@ -53,7 +48,7 @@ class EntityPointer(val index: RawStructValue, val script: ScriptDeclaration) : 
                     index.raw,
                 )
             }
-            else -> compileError("Unknown script member $name.")
+            else -> null
         }
     }
 }

@@ -13,7 +13,7 @@ import xyz.qwewqa.trebla.grammar.trebla.FunctionDeclarationNode
 class FunctionDeclaration(
     override val node: FunctionDeclarationNode,
     override val parentContext: Context,
-) : Declaration, Callable {
+) : Declaration, Callable, Bindable {
     override val type = FunctionType
     override val identifier = node.identifier.value
     override val visibility: Visibility
@@ -67,7 +67,12 @@ class FunctionDeclaration(
     override val isInfix: Boolean
 
     override val signature by lazy {
-        receiverParameter?.let { Signature.TypedReceiver(it.type) } ?: Signature.Default
+        receiverParameter?.let { Signature.Receiver(it.type) } ?: Signature.Default
+    }
+
+    override fun boundTo(value: Value, context: Context): Value {
+        if (receiverParameter == null) compileError("Not a binding function.")
+        return BoundFunction(context, value, this)
     }
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
@@ -119,6 +124,7 @@ class FunctionDeclaration(
 object FunctionType : BuiltinType("Function")
 
 class BoundFunction(
+    override val bindingContext: Context?,
     val receiver: Value,
     val function: FunctionDeclaration,
 ) : Callable, Entity,
@@ -137,9 +143,6 @@ class BoundFunction(
             ) + arguments, callingContext
         )
 }
-
-fun FunctionDeclaration.boundTo(receiver: Value) =
-    BoundFunction(receiver, this)
 
 class FunctionScope(
     parent: Scope,

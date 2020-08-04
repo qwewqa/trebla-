@@ -7,7 +7,8 @@ import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.grammar.trebla.LambdaNode
 
 class LambdaExpression(override val node: LambdaNode, val declaringContext: Context) : Expression, Callable, Value {
-    override val type = FunctionType
+    override val type = LambdaType
+    override val bindingContext = declaringContext
     override val parameters by lazy {
         node.parameters?.values?.map {
             Parameter(
@@ -54,4 +55,13 @@ class LambdaExpression(override val node: LambdaNode, val declaringContext: Cont
     override fun applyTo(context: Context): Value {
         return this
     }
+}
+
+/**
+ * The type of a lambda expression.
+ * This is distinct from the function type because lambdas are allowed in places like
+ * withContext, whereas a normal function is not.
+ */
+object LambdaType : BuiltinType("Lambda") {
+    override val bindingHierarchy = listOf(listOf(FunctionType))
 }

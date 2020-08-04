@@ -14,6 +14,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
     override val type = ScriptType
+    override val bindingContext = parentContext
     override val scope = EagerScope(parentContext.scope)
     override val memoryAllocator = StandardAllocator(21, 64)
     override val dataAllocator = StandardAllocator(22, 32)

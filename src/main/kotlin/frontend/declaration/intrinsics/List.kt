@@ -29,25 +29,27 @@ class TreblaList(override val parentContext: Context, val projectConfiguration: 
             ?: compileError("List size must be a compile time constant.")
         val type = (argumentValues["type"] as? Allocatable)
             ?: compileError("List type must be allocatable")
-        return ListType(size, type)
+        return ListType(size, type, callingContext)
     }
 }
 
-data class ListType(val size: Int, val containedType: Allocatable) : Type, Allocatable {
-    override fun accepts(other: Value): Boolean {
-        return other.type.let { it is ListType && it == this }
-    }
-
+data class ListType(val size: Int, val containedType: Allocatable, override val bindingContext: Context?) : Type, Allocatable {
     override val type = TypeType
 
     override fun allocateOn(allocator: Allocator, context: Context?): Mutable {
         if (context == null) compileError("Requires a context.")
         return ListValue(context, this, List(size) { containedType.allocateOn(allocator, context) })
     }
+
+    override val allocationSize by lazy {
+        size * containedType.allocationSize
+    }
 }
 
 class ListValue(val parentContext: Context, override val type: Type, val values: List<Mutable>) : Mutable, MemberAccessor,
     Callable {
+    override val bindingContext = parentContext
+
     override val parameters by lazy {
         listOf(
             Parameter("index", parentContext.numberType),
@@ -78,13 +80,7 @@ class ListValue(val parentContext: Context, override val type: Type, val values:
         }
     }
 
-    override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return name in members.keys
-    }
-
-    override fun getMember(name: String, accessingContext: Context?): Value {
-        return members[name] ?: compileError("List does not have member with name $name.")
-    }
+    override fun getMember(name: String, accessingContext: Context?) = members[name]
 
     private val members: Map<String, Value> by lazy {
         mapOf(
@@ -97,6 +93,7 @@ class ListValue(val parentContext: Context, override val type: Type, val values:
 
 class ListValueForEach(val context: Context, val listValue: ListValue, val indexed: Boolean) : Callable, Value {
     override val type = FunctionType
+    override val bindingContext = context
 
     override val parameters by lazy {
         listOf(
@@ -138,6 +135,7 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
 
 class ListGet(val context: Context, val listValue: ListValue) : Callable, Value {
     override val type = FunctionType
+    override val bindingContext = context
 
     override val parameters by lazy {
         listOf(

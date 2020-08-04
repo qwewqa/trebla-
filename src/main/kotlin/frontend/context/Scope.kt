@@ -4,6 +4,7 @@ import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.expression.resolveMember
 
 open class Scope(val parent: Scope?) {
     private val values = mutableMapOf<String, MutableMap<Signature, ValueMetadata>>()
@@ -76,8 +77,7 @@ open class Scope(val parent: Scope?) {
     }
 
     /**
-     * Merges the internal and public members of the [other] scope into
-     * this scope.
+     * Merges the internal and public members of the [other] scope into this scope.
      */
     open fun mergeIn(other: Scope) {
         other.values.forEach { (identifier, bySignature) ->
@@ -95,6 +95,7 @@ open class Scope(val parent: Scope?) {
     /**
      * Checks the lazy values in this scope and finalizes them as it's
      * desirable to detect errors even if they exist in unused values.
+     * TODO: properly implement the above (but things should still work in general without it)
      */
     fun finalize() {
         values.values.forEach { bySignature -> bySignature.forEach { (_, v) -> v.lazyValue.value.finalize() } }
@@ -113,7 +114,7 @@ fun Scope.getFullyQualifiedOrNull(name: List<String>): Entity? {
     return name
         .drop(1)
         .fold(base as Entity) { a, v ->
-            (a as? Context)?.scope?.get(v) ?: (a as? MemberAccessor)?.getMember(v, null) ?: return null
+            (a as? Context)?.scope?.get(v) ?: (a as? MemberAccessor)?.resolveMember(v, null) ?: return null
         }
 }
 
@@ -131,7 +132,7 @@ sealed class Signature {
         override fun toString() = "Archetype"
     }
 
-    data class TypedReceiver(val receiverType: Type) : Signature() {
+    data class Receiver(val receiverType: Type) : Signature() {
         override fun toString() = "Receiver ($receiverType)"
     }
 }
@@ -161,7 +162,21 @@ open class EagerScope(parent: Scope?) : Scope(parent) {
 }
 
 enum class Visibility {
-    PRIVATE, INTERNAL, PUBLIC
+    /**
+     * Accessible only in the declaring file.
+     */
+    PRIVATE,
+
+    /**
+     * Accessible only in the package and child packages.
+     * Not importable.
+     */
+    INTERNAL,
+
+    /**
+     * Accessible anywhere and importable.
+     */
+    PUBLIC,
 }
 
 val visibilityModifiers = mapOf(

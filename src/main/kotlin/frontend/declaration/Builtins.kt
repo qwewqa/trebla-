@@ -18,14 +18,10 @@ object Builtins : MemberAccessor, Declaration {
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
 
-    override fun getMember(name: String, accessingContext: Context?) = try {
+    override fun getMember(name: String, accessingContext: Context?): Value? = try {
         BuiltinFunction(BuiltinFunctionVariant.valueOf(name))
     } catch (e: IllegalArgumentException) {
-        compileError("Unknown builtin function $name.")
-    }
-
-    override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return name in builtinFunctionsByName.keys
+        null
     }
 }
 
@@ -149,6 +145,7 @@ enum class BuiltinFunctionVariant(val returns: Boolean = true, val ir: FunctionI
  */
 class BuiltinFunction(val function: BuiltinFunctionVariant) : Callable, Value {
     override val type = FunctionType
+    override val bindingContext: Context? = null
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
         val argumentValues = arguments.map {

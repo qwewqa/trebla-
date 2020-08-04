@@ -26,17 +26,13 @@ class OptionsAccessor(override val parentContext: Context, projectConfiguration:
         )
     }.toMap()
 
-    override fun getMember(name: String, accessingContext: Context?): Value {
-        val option = options[name] ?: compileError("No option with name '$name'.")
+    override fun getMember(name: String, accessingContext: Context?): Value? {
+        val option = options[name] ?: return null
         return RawStructValue(
             AllocatedRawValue(ConcreteAllocation(2, option.index)),
             accessingContext,
             parentContext.scope.getFullyQualified("std", option.type.structName) as StructDeclaration
         )
-    }
-
-    override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return name in options.keys
     }
 }
 

@@ -11,12 +11,15 @@ class StructDeclaration(
 ) : Declaration,
     Callable,
     Type,
-    MemberAccessor,
     Allocatable {
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility: Visibility
     override val type = TypeType
+
+    // Eventually embedding a struct in another struct might be supported, like in Go
+    // In this case, the binding hierarchy would include it.
+    override val bindingHierarchy = listOf(listOf(StructType))
 
     override val loadEarly = true
 
@@ -41,10 +44,6 @@ class StructDeclaration(
         }
     }
 
-    override fun accepts(other: Value): Boolean {
-        return other.type == this
-    }
-
     override fun allocateOn(allocator: Allocator, context: Context?): Mutable {
         return if (isRaw) RawStructValue(AllocatedRawValue(allocator.allocate()), context, this)
         else callWith(parameters.map {
@@ -56,25 +55,10 @@ class StructDeclaration(
         }, context)
     }
 
-    /**
-     * Using the dot operator on the struct declaration itself returns a value which has a receiver in the accessingContext
-     * unbound, or throws an error.
-     */
-    override fun getMember(name: String, accessingContext: Context?): Value {
-        accessingContext?.scope?.find(
-            name,
-            Signature.TypedReceiver(type)
-        )?.let {
-            return it
+    override val allocationSize by lazy {
+        fields.sumBy {
+            (it.type as? Allocatable)?.allocationSize ?: compileError("Struct has unsized members.")
         }
-        compileError("No receiver function with name $name found.")
-    }
-
-    override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return accessingContext?.scope?.find(
-            name,
-            Signature.TypedReceiver(type)
-        ) != null
     }
 
     init {
@@ -85,53 +69,21 @@ class StructDeclaration(
     }
 }
 
-object StructType : BuiltinType("Struct") {
-    override fun accepts(other: Value): Boolean = other.type is StructDeclaration
-}
+object StructType : BuiltinType("Struct")
 
 /**
  * The value resulting from a struct construction.
- *
- * @property searchContext used for finding methods
  */
 sealed class StructValue(
-    var searchContext: Context?,
+    override var bindingContext: Context?,
     override val type: StructDeclaration,
-) : MemberAccessor, Value, Mutable {
-    override fun getMember(name: String, accessingContext: Context?): Value {
-        val searchContextValue = searchContext?.scope?.find(
-            name,
-            Signature.TypedReceiver(type)
-        )
-        val accessingContextValue = accessingContext?.scope?.find(
-            name,
-            Signature.TypedReceiver(type)
-        )
-        if (searchContextValue != null && accessingContextValue != null && searchContextValue != accessingContextValue)
-            compileError("Ambiguous method name $name.")
-
-        (searchContextValue ?: accessingContextValue)?.let {
-            return if (it is FunctionDeclaration) it.boundTo(this) else it
-        }
-        compileError("Struct has no member or method with name $name.")
-    }
-
-    override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return (searchContext?.scope?.find(
-            name,
-            Signature.TypedReceiver(type)
-        ) ?: accessingContext?.scope?.find(
-            name,
-            Signature.TypedReceiver(type)
-        )) != null
-    }
-}
+) : Value, Mutable
 
 class NormalStructValue(
     val fields: Map<String, Value>,
     searchContext: Context?,
     type: StructDeclaration,
-) : StructValue(searchContext, type) {
+) : StructValue(searchContext, type), MemberAccessor {
     override fun copyOn(allocator: Allocator, context: ExecutionContext): StructValue {
         return NormalStructValue(fields.mapValues { (_, value) ->
             when (value) {
@@ -139,7 +91,7 @@ class NormalStructValue(
                 !is Mutable -> value
                 else -> compileError("Invalid copy.")
             }
-        }, searchContext, type)
+        }, bindingContext, type)
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
@@ -150,21 +102,14 @@ class NormalStructValue(
         }
     }
 
-    override fun getMember(name: String, accessingContext: Context?): Value {
-        fields[name]?.let { return it }
-        return super.getMember(name, accessingContext)
-    }
-
-    override fun hasMember(name: String, accessingContext: Context?): Boolean {
-        return fields[name] != null || super.hasMember(name, accessingContext)
-    }
+    override fun getMember(name: String, accessingContext: Context?): Value? = fields[name]
 
     override fun offsetReallocate(block: RawValue, index: RawValue): Mutable {
         return NormalStructValue(
             fields.mapValues { (_, v) ->
                 (v as? Mutable)?.offsetReallocate(block, index) ?: v
             },
-            searchContext,
+            bindingContext,
             type,
         )
     }
@@ -178,7 +123,7 @@ class RawStructValue(
     override fun copyOn(allocator: Allocator, context: ExecutionContext): StructValue {
         val newValue = AllocatedRawValue(allocator.allocate())
         context.statements += AllocatedValueAssignment(newValue, raw)
-        return RawStructValue(newValue, searchContext, type)
+        return RawStructValue(newValue, bindingContext, type)
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
@@ -194,7 +139,7 @@ class RawStructValue(
             is AllocatedRawValue -> when (raw.allocation) {
                 is ConcreteAllocation -> RawStructValue(
                     AllocatedRawValue(DynamicAllocation(block, index, raw.allocation.index.toLiteralRawValue())),
-                    searchContext,
+                    bindingContext,
                     type
                 )
                 else -> compileError("Reallocation not available for dynamic or temporary allocated raw structs.")

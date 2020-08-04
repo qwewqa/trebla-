@@ -24,8 +24,7 @@ class UnaryFunctionExpression(override val node: UnaryFunctionNode) : Expression
 
     override fun applyTo(context: Context): Value {
         val lhs = node.value.parseAndApplyTo(context)
-        if (lhs !is MemberAccessor) compileError("Unary function not valid.", node)
-        val func = lhs.getMember(functionName, context)
+        val func = lhs.resolveMember(functionName, context)
         if (func !is Callable) compileError("Unary function does not exist.", node)
         return runWithErrorMessage("Error in unary function call") {
             func.callWith(emptyList(), context) // no arguments; receiver should already be bound
@@ -48,8 +47,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
             doAssignment(lhs, rhs, context)
             return UnitValue
         }
-        if (lhs !is MemberAccessor) compileError("Operator '${node.op}' not applicable.")
-        val func = lhs.getMember(functionName, context)
+        val func = lhs.resolveMember(functionName, context)
         if (func !is Callable) compileError("Operator '${node.op}' ($functionName) not defined by a function.")
         if (isOperator && !func.isOperator) compileError("Operator '${node.op}' ($functionName) has a function but is not marked as operator.")
         if (!isOperator && !func.isInfix) compileError("$functionName is a function but is not marked as infix.")

@@ -16,6 +16,11 @@ interface Value : Lazy<Value>, Entity {
     val type: Type
 
     /**
+     * The context to search for receiver functions, apart from the accessing context.
+     */
+    val bindingContext: Context?
+
+    /**
      * This implements [Lazy] such that it can be used without being wrapped.
      */
     override val value get() = this
@@ -33,6 +38,11 @@ interface Allocatable : Type {
      * on the given allocator in the given context.
      */
     fun allocateOn(allocator: Allocator, context: Context?): Mutable
+
+    /**
+     * The size this allocatable takes.
+     */
+    val allocationSize: Int
 }
 
 interface Mutable : Value {
