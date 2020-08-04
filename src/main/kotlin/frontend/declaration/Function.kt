@@ -38,7 +38,6 @@ class FunctionDeclaration(
                 )
             }
         }?.also {
-            if (it.type !is StructDeclaration) compileError("Method receiver must be a struct.")
             if ((it.type as? StructDeclaration)?.fieldNames?.contains(identifier) == true)
                 compileError("Method has same name as member of receiver struct.", node.identifier)
         }
