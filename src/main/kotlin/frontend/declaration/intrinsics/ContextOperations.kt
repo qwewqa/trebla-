@@ -4,7 +4,7 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.Declaration
-import xyz.qwewqa.trebla.frontend.declaration.FunctionType
+import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.expression.*
 
 object LocalContext : Declaration, Callable {
@@ -32,7 +32,7 @@ object WithContext : Declaration, Callable {
 
     override val parameters: List<Parameter> = listOf(
         Parameter("context", ContextType),
-        Parameter("op", FunctionType),
+        Parameter("op", CallableType),
     )
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {

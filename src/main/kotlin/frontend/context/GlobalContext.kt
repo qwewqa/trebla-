@@ -94,7 +94,7 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to AnyType,
     listOf("std") to UnitValue,
     listOf("std") to StructType,
-    listOf("std") to FunctionType,
+    listOf("std") to CallableType,
     listOf("std") to PackageType,
     listOf("std") to ContextType,
     listOf("std") to LocalContext,

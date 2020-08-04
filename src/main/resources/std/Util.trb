@@ -24,5 +24,9 @@ func judgeSimple(
     max3: Number,
 ) = Number(builtins.JudgeSimple(src, dst, max1, max2, max3))
 
-func run(block: Function): Any = block()
-func where(value: Any, block: Function) = block(value)
+func run(block: Callable): Any = block()
+func Any.ref(block: Callable) = block(this)
+func Any.also(block: Callable): Any {
+    block(this)
+    this
+}

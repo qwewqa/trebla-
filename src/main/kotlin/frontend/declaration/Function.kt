@@ -14,7 +14,7 @@ class FunctionDeclaration(
     override val node: FunctionDeclarationNode,
     override val parentContext: Context,
 ) : Declaration, Callable, Bindable {
-    override val type = FunctionType
+    override val type = CallableType
     override val identifier = node.identifier.value
     override val visibility: Visibility
 
@@ -120,7 +120,7 @@ class FunctionDeclaration(
     }
 }
 
-object FunctionType : BuiltinType("Function")
+object CallableType : BuiltinType("Callable")
 
 class BoundFunction(
     override val bindingContext: Context?,
@@ -128,7 +128,7 @@ class BoundFunction(
     val function: FunctionDeclaration,
 ) : Callable, Entity,
     Value {
-    override val type = FunctionType
+    override val type = CallableType
     override val isOperator = function.isOperator
     override val isInfix = function.isInfix
 

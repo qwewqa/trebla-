@@ -144,7 +144,7 @@ enum class BuiltinFunctionVariant(val returns: Boolean = true, val ir: FunctionI
  * Builtin functions are part of Sonolus.
  */
 class BuiltinFunction(val function: BuiltinFunctionVariant) : Callable, Value {
-    override val type = FunctionType
+    override val type = CallableType
     override val bindingContext: Context? = null
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {

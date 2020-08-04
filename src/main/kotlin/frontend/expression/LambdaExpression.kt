@@ -63,5 +63,5 @@ class LambdaExpression(override val node: LambdaNode, val declaringContext: Cont
  * withContext, whereas a normal function is not.
  */
 object LambdaType : BuiltinType("Lambda") {
-    override val bindingHierarchy = listOf(listOf(FunctionType))
+    override val bindingHierarchy = listOf(listOf(CallableType))
 }

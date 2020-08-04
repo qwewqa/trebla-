@@ -92,7 +92,7 @@ class ListValue(val parentContext: Context, override val type: Type, val values:
 }
 
 class ListValueForEach(val context: Context, val listValue: ListValue, val indexed: Boolean) : Callable, Value {
-    override val type = FunctionType
+    override val type = CallableType
     override val bindingContext = context
 
     override val parameters by lazy {
@@ -103,7 +103,7 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
             Parameter("stop",
                 UnionType(listOf(UnitValue, context.numberType)),
                 DefaultParameter(ValueExpression(UnitValue), context)),
-            Parameter("operation", FunctionType),
+            Parameter("operation", CallableType),
         )
     }
 
@@ -134,7 +134,7 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
 }
 
 class ListGet(val context: Context, val listValue: ListValue) : Callable, Value {
-    override val type = FunctionType
+    override val type = CallableType
     override val bindingContext = context
 
     override val parameters by lazy {
