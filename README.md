@@ -1,4 +1,6 @@
 # Trebla
+[![Native Image](https://github.com/qwewqa/trebla/workflows/Native%20Image/badge.svg?event=push)](https://github.com/qwewqa/trebla/actions?query=workflow%3A%22Native+Image%22)
+
 A programming language and compiler for creating rhythm game engines on [Sonolus](https://sonolus.com).
 
 ## Quick Start
