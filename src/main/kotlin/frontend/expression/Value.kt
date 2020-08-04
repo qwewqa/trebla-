@@ -30,6 +30,8 @@ interface Value : Lazy<Value>, Entity {
      * Performs any final checks to this value, if relevant.
      */
     fun finalize() = Unit
+
+    fun repr() = toString()
 }
 
 interface Allocatable : Type {

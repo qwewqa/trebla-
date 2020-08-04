@@ -1,37 +1,32 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
-import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.*
-import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ENTITY_DATA_ARRAY
+import xyz.qwewqa.trebla.frontend.context.ENTITY_SHARED_MEMORY_ARRAY
+import xyz.qwewqa.trebla.frontend.context.MemberAccessor
+import xyz.qwewqa.trebla.frontend.declaration.AnyType
+import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.frontend.declaration.ScriptDeclaration
+import xyz.qwewqa.trebla.frontend.declaration.ScriptType
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.expression.toLiteralRawValue
 
-class EntityPtr(override val parentContext: Context, val projectConfiguration: CompilerConfiguration) : Declaration,
-    Callable {
-    override val identifier = "entityOffsetPtr"
-    override val type = AnyType
+class EntityPtr(parentContext: Context, val projectConfiguration: CompilerConfiguration) :
+    IntrinsicCallable by IntrinsicCallableDSL(
+        parentContext,
+        "entityOffsetPtr",
+        {
+            "index" type NumberType
+            "script" type ScriptType
+        },
+        { callingContext ->
+            EntityPointer("index".cast(), "script".cast(), callingContext)
+        },
+    )
 
-    override val signature = Signature.Default
-    override val visibility = Visibility.PUBLIC
-
-    override val parameters by lazy {
-        listOf(
-            // The index of the start of the entity, i.e. entity index * 32 for some blocks
-            // Done this way to save a bit of performance
-            Parameter("index", parentContext.numberType),
-            Parameter("script", ScriptType),
-        )
-    }
-
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
-        val argumentValues = parameters.pairedWithAndValidated(arguments).byParameterName()
-        val index = argumentValues["index"] as RawStructValue
-        val script = argumentValues["script"] as ScriptDeclaration
-        return EntityPointer(index, script, callingContext)
-    }
-}
-
-class EntityPointer(val index: RawStructValue, val script: ScriptDeclaration, override val bindingContext: Context?) : MemberAccessor {
+class EntityPointer(val index: RawStructValue, val script: ScriptDeclaration, override val bindingContext: Context?) :
+    MemberAccessor {
     override val type = AnyType
 
     override fun getMember(name: String, accessingContext: Context?): Value? {

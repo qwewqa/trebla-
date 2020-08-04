@@ -61,7 +61,7 @@ class ReadOnlyContext(override val parentContext: Context) : Context {
     override val scope = ReadOnlyScope(parentContext.scope)
 }
 
-class EmptyContext : Context {
+object EmptyContext : Context {
     override val parentContext: Context? = null
     override val scope = ReadOnlyScope()
 }
