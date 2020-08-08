@@ -1,9 +1,9 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
-import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
-import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
-import xyz.qwewqa.trebla.backend.compile.ValueIRNode
+import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
+import xyz.qwewqa.trebla.backend.compile.IRValue
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.Statement
@@ -55,9 +55,9 @@ class Callback(
 
     var returnValue: Value? = null
 
-    fun toIR(): FunctionIRNode {
-        val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR() ?: ValueIRNode(0.0)
-        return FunctionIRNodeVariant.Execute.calledWith(statements.map { it.toIR() } + listOf(returnIRValue))
+    fun toIR(): IRFunction {
+        val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR() ?: IRValue(0.0)
+        return IRFunctionVariant.Execute.calledWith(statements.map { it.toIR() } + listOf(returnIRValue))
     }
 }
 

@@ -6,22 +6,22 @@ package xyz.qwewqa.trebla.backend.compile
  */
 sealed class IRNode
 
-data class ValueIRNode(val value: Double) : IRNode() {
+data class IRValue(val value: Double) : IRNode() {
     override fun toString() = "$value"
 }
 
-fun Number.toValueIRNode() = ValueIRNode(this.toDouble())
-fun Boolean.toValueIRNode() = ValueIRNode(if (this) 1.0 else 0.0)
+fun Number.toIR() = IRValue(this.toDouble())
+fun Boolean.toIR() = IRValue(if (this) 1.0 else 0.0)
 
-data class ReadTempIRNode(val id: Int) : IRNode() {
+data class IRTempRead(val id: Int) : IRNode() {
     override fun toString() = "$$id"
 }
 
-data class AssignTempIRNode(val id: Int, val rhs: IRNode) : IRNode() {
+data class IRTempAssign(val id: Int, val rhs: IRNode) : IRNode() {
     override fun toString() = "$$id <- $rhs"
 }
 
-data class FunctionIRNode(val variant: FunctionIRNodeVariant, var arguments: List<IRNode>) : IRNode() {
+data class IRFunction(val variant: IRFunctionVariant, var arguments: List<IRNode>) : IRNode() {
     override fun toString() = "$variant${
         arguments.map { it.toString() }.let {
             if (it.joinToString(", ").length > 120)

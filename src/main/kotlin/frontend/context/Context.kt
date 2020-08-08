@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
-import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
 import xyz.qwewqa.trebla.backend.compile.IRNode
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.Entity
@@ -50,7 +50,7 @@ class SimpleExecutionContext(override val parentContext: ExecutionContext) : Exe
     override val statements = mutableListOf<Statement>()
 
     override fun toIR(): IRNode {
-        return FunctionIRNode(FunctionIRNodeVariant.Execute, statements.map { it.toIR() })
+        return IRFunction(IRFunctionVariant.Execute, statements.map { it.toIR() })
     }
 }
 

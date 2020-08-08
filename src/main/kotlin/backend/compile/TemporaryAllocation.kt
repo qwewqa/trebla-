@@ -16,25 +16,25 @@ private fun IRNode.processTemporaryAllocations(
     mapping: MutableMap<Int, Int>,
 ): IRNode {
     return when (this) {
-        is ValueIRNode -> this
-        is ReadTempIRNode -> {
-            FunctionIRNodeVariant.Get.calledWith(
-                TEMPORARY_MEMORY_BLOCK.toValueIRNode(),
+        is IRValue -> this
+        is IRTempRead -> {
+            IRFunctionVariant.Get.calledWith(
+                TEMPORARY_MEMORY_BLOCK.toIR(),
                 mapping.getOrPut(id) {
                     remainingIndexes.removeFirstOrNull() ?: backendError("Temporary Allocations Full")
-                }.toValueIRNode()
+                }.toIR()
             )
         }
-        is AssignTempIRNode -> {
-            FunctionIRNodeVariant.Set.calledWith(
-                TEMPORARY_MEMORY_BLOCK.toValueIRNode(),
+        is IRTempAssign -> {
+            IRFunctionVariant.Set.calledWith(
+                TEMPORARY_MEMORY_BLOCK.toIR(),
                 mapping.getOrPut(id) {
                     remainingIndexes.removeFirstOrNull() ?: backendError("Temporary Allocations Full")
-                }.toValueIRNode(),
+                }.toIR(),
                 rhs.processTemporaryAllocations(config, remainingIndexes, mapping)
             )
         }
-        is FunctionIRNode -> {
+        is IRFunction -> {
             copy(
                 arguments = arguments.map { it.processTemporaryAllocations(config, remainingIndexes, mapping) }
             )

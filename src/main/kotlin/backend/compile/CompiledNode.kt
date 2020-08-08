@@ -32,14 +32,14 @@ fun combineCallbackNodes(entryNodes: List<CompiledNode>): CompiledNodeData {
 data class CompiledNodeData(val orderedNodes: List<Map<String, Any>>, val indexes: Map<CompiledNode, Int>)
 
 fun IRNode.toCompiledNode(): CompiledNode = when (this) {
-    is ValueIRNode -> CompiledValueNode(value)
-    is FunctionIRNode -> when (variant) {
-        FunctionIRNodeVariant.Execute -> {
+    is IRValue -> CompiledValueNode(value)
+    is IRFunction -> when (variant) {
+        IRFunctionVariant.Execute -> {
             if (arguments.isEmpty()) CompiledValueNode(0.0)
             else CompiledFunctionNode(variant.name, arguments.map { it.toCompiledNode() })
         }
         else -> CompiledFunctionNode(variant.name, arguments.map { it.toCompiledNode() })
     }
-    is ReadTempIRNode -> backendError("Unresolved temporary variable.")
-    is AssignTempIRNode -> backendError("Unresolved temporary variable.")
+    is IRTempRead -> backendError("Unresolved temporary variable.")
+    is IRTempAssign -> backendError("Unresolved temporary variable.")
 }

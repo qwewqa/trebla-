@@ -5,6 +5,6 @@ import xyz.qwewqa.trebla.backend.compile.IRNode
 /**
  * A statement which directly translates to code.
  */
-interface Statement {
+fun interface Statement {
     fun toIR(): IRNode
 }

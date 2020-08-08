@@ -1,12 +1,11 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.compile.FunctionIRNode
-import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.trebla.frontend.declaration.BuiltinFunctionVariant
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
@@ -37,8 +36,8 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
 
     override fun applyTo(context: Context): Value = runWithErrorMessage("Error in infix expression.") {
         when (functionName) {
-            "||" -> return doShortCircuitingBoolean(BuiltinFunctionVariant.Or, context)
-            "&&" -> return doShortCircuitingBoolean(BuiltinFunctionVariant.And, context)
+            "||" -> return doShortCircuitingBoolean(IRFunctionVariant.Or, context)
+            "&&" -> return doShortCircuitingBoolean(IRFunctionVariant.And, context)
         }
         val lhs = node.lhs.parseAndApplyTo(context)
         val rhs = node.rhs.parseAndApplyTo(context)
@@ -60,7 +59,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
     }
 
     private fun doShortCircuitingBoolean(
-        operation: BuiltinFunctionVariant,
+        operation: IRFunctionVariant,
         context: Context,
     ): Value {
         val booleanType = context.booleanType
@@ -77,9 +76,9 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         val rhsValue = node.rhs.parseAndApplyTo(rhsBlock)
         if (rhsValue !is RawStructValue || rhsValue.type != context.booleanType)
             compileError("Short circuiting operators can only be applied to booleans.")
-        val resultValue = BuiltinCallRawValue(operation, listOf(
+        val resultValue = IRFunction(operation, listOf(
             lhsValue.raw.toIR(),
-            FunctionIRNode(FunctionIRNodeVariant.Execute, listOf(
+            IRFunction(IRFunctionVariant.Execute, listOf(
                 rhsBlock.toIR(),
                 rhsValue.raw.toIR()
             ))
@@ -89,7 +88,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         // must be copied into a temporary variable.
         // Otherwise, the action would be rerun each time the value was accessed (or not at all if never accessed).
         // In simpler cases, it's up to the backend to optimize (at least once implemented).
-        return RawStructValue(resultValue, context, booleanType).copyOn(context.localAllocator, context)
+        return RawStructValue(IRRawValue(resultValue), context, booleanType).copyOn(context.localAllocator, context)
     }
 }
 

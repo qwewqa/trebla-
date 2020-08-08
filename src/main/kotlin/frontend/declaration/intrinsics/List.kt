@@ -1,5 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
+import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
@@ -158,21 +160,23 @@ class ListGet(val context: Context, val listValue: ListValue) : Callable, Value 
         val type = types.first()
         if (type !is Allocatable) compileError("Dynamic list get is only available for lists with allocatable types.")
         val returns = type.allocateOn(callingContext.localAllocator, callingContext)
-        callingContext.statements += BuiltinCallRawValue(
-            BuiltinFunctionVariant.SwitchIntegerWithDefault,
-            listValue.values.map { value ->
-                SimpleExecutionContext(callingContext).also {
-                    returns.copyFrom(value, it)
-                }.toIR()
-            }.let {
-                /*
-                Switch is one indexed but lists are zero indexed, so we can put the first value as the final, default value
-                rather than subtracting one.
-                Out of range access is undefined regardless.
-                */
-                listOf(index.raw.toIR()) + it.drop(1) + it.first()
-            }
-        )
+        callingContext.statements += Statement {
+            IRFunction(
+                IRFunctionVariant.SwitchIntegerWithDefault,
+                listValue.values.map { value ->
+                    SimpleExecutionContext(callingContext).also {
+                        returns.copyFrom(value, it)
+                    }.toIR()
+                }.let {
+                    /*
+                    Switch is one indexed but lists are zero indexed, so we can put the first value as the final, default value
+                    rather than subtracting one.
+                    Out of range access is undefined regardless.
+                    */
+                    listOf(index.raw.toIR()) + it.drop(1) + it.first()
+                }
+            )
+        }
         return returns
     }
 }

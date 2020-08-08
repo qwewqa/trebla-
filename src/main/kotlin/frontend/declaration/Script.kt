@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
-import xyz.qwewqa.trebla.backend.compile.ValueIRNode
+import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -94,10 +94,9 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         cells.dropLastWhile { it == null }
         if (callingContext !is ExecutionContext) compileError("Script spawns require an execution context.")
         callingContext.statements += BuiltinCallRawValue(
-            BuiltinFunctionVariant.Spawn,
-            listOf(LiteralRawValue(index.toDouble()).toIR()) + cells.map { it ?: LiteralRawValue(0.0) }
-                .map { it.toIR() }
-                .dropLastWhile { it is ValueIRNode && it.value == 0.0 }
+            IRFunctionVariant.Spawn,
+            listOf(LiteralRawValue(index.toDouble())) + cells.map { it ?: LiteralRawValue(0.0) }
+                .dropLastWhile { it is LiteralRawValue && it.value == 0.0 }
         )
         return UnitValue
     }

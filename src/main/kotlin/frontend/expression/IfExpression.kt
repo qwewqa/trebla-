@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
+import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
@@ -46,9 +46,9 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
 
 class IfElseStatement(val condition: RawValue, val tbranch: ExecutionContext, val fbranch: ExecutionContext) :
     Statement {
-    override fun toIR() = FunctionIRNodeVariant.If.calledWith(
+    override fun toIR() = IRFunctionVariant.If.calledWith(
         condition.toIR(),
-        FunctionIRNodeVariant.Execute.calledWith(tbranch.statements.map { it.toIR() }),
-        FunctionIRNodeVariant.Execute.calledWith(fbranch.statements.map { it.toIR() })
+        IRFunctionVariant.Execute.calledWith(tbranch.statements.map { it.toIR() }),
+        IRFunctionVariant.Execute.calledWith(fbranch.statements.map { it.toIR() })
     )
 }

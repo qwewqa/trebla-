@@ -6,7 +6,6 @@ import xyz.qwewqa.trebla.frontend.context.Allocation
 import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
 import xyz.qwewqa.trebla.frontend.context.DynamicAllocation
 import xyz.qwewqa.trebla.frontend.context.TemporaryAllocation
-import xyz.qwewqa.trebla.frontend.declaration.BuiltinFunctionVariant
 
 /**
  * Either a location in memory, or a literal. Should generally appear within a raw struct except
@@ -23,12 +22,12 @@ sealed class RawValue {
 
 class AllocatedRawValue(val allocation: Allocation) : RawValue() {
     override fun toIR() = when (allocation) {
-        is ConcreteAllocation -> FunctionIRNodeVariant.Get.calledWith(
-            allocation.block.toValueIRNode(),
-            allocation.index.toValueIRNode()
+        is ConcreteAllocation -> IRFunctionVariant.Get.calledWith(
+            allocation.block.toIR(),
+            allocation.index.toIR()
         )
-        is TemporaryAllocation -> ReadTempIRNode(allocation.id)
-        is DynamicAllocation -> FunctionIRNodeVariant.GetShifted.calledWith(
+        is TemporaryAllocation -> IRTempRead(allocation.id)
+        is DynamicAllocation -> IRFunctionVariant.GetShifted.calledWith(
             allocation.block.toIR(),
             allocation.index.toIR(),
             allocation.offset.toIR(),
@@ -38,31 +37,40 @@ class AllocatedRawValue(val allocation: Allocation) : RawValue() {
 
 class LiteralRawValue(val value: Double) : RawValue() {
     override fun toIR(): IRNode {
-        return value.toValueIRNode()
+        return value.toIR()
     }
 }
 
 fun Number.toLiteralRawValue() = LiteralRawValue(this.toDouble())
 
-class BuiltinCallRawValue(val function: BuiltinFunctionVariant, val arguments: List<IRNode>) : RawValue(), Statement {
+class BuiltinCallRawValue(val function: IRFunctionVariant, val arguments: List<RawValue>) : RawValue(), Statement {
     override fun toIR(): IRNode {
         // Doing some simplification here might help with performance but this isn't tested.
         // It's really so initial IR is a bit easier to read when debugging.
-        return FunctionIRNode(function.ir, arguments).let { func ->
-            func.tryConstexprEvaluate()?.let { ValueIRNode(it) } ?: func
+        return IRFunction(function, arguments.map { it.toIR() }).let { func ->
+            func.tryConstexprEvaluate()?.let { IRValue(it) } ?: func
         }
+    }
+}
+
+/**
+ * Wraps an IRNode directly as raw value.
+ */
+class IRRawValue(val value: IRNode) : RawValue(), Statement {
+    override fun toIR(): IRNode {
+        return value
     }
 }
 
 class AllocatedValueAssignment(val lhs: AllocatedRawValue, val rhs: RawValue) : Statement {
     override fun toIR() = when (val alloc = lhs.allocation) {
-        is ConcreteAllocation -> FunctionIRNodeVariant.Set.calledWith(
-            alloc.block.toValueIRNode(),
-            alloc.index.toValueIRNode(),
+        is ConcreteAllocation -> IRFunctionVariant.Set.calledWith(
+            alloc.block.toIR(),
+            alloc.index.toIR(),
             rhs.toIR()
         )
-        is TemporaryAllocation -> AssignTempIRNode(alloc.id, rhs.toIR())
-        is DynamicAllocation -> FunctionIRNodeVariant.SetShifted.calledWith(
+        is TemporaryAllocation -> IRTempAssign(alloc.id, rhs.toIR())
+        is DynamicAllocation -> IRFunctionVariant.SetShifted.calledWith(
             alloc.block.toIR(),
             alloc.index.toIR(),
             alloc.offset.toIR(),
