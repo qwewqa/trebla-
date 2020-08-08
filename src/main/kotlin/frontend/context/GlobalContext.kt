@@ -112,4 +112,5 @@ val intrinsics: List<Pair<List<String>, (Context, CompilerConfiguration) -> Expr
     listOf("std") to ::TreblaList,
     listOf("std") to ::LocalContext,
     listOf("std") to ::WithContext,
+    listOf("std") to ::ExecuteBuiltin,
 )

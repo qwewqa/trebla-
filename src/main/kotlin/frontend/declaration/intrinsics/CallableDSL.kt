@@ -38,7 +38,7 @@ class IntrinsicCallableDSL(
 interface IntrinsicCallable : Callable, Declaration
 
 data class IntrinsicParameter(val name: String, val type: Type, val default: Value?)
-class IntrinsicParameterDSLContext(val context: Context?) {
+class IntrinsicParameterDSLContext(val context: Context) {
     private val params = mutableListOf<IntrinsicParameter>()
 
     private var managed = true
@@ -54,8 +54,8 @@ class IntrinsicParameterDSLContext(val context: Context?) {
     infix fun String.type(type: IntrinsicType) =
         IntrinsicParameter(
             this,
-            context?.run(type.accessor) ?: error("Number and Boolean intrinsic types require a context"),
-            null
+            context.run(type.accessor),
+            null,
         ).also { params += it }
 
     infix fun IntrinsicParameter.default(value: Value) =

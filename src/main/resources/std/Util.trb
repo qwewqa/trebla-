@@ -30,3 +30,5 @@ func Any.also(block: Callable): Any {
     block(this)
     this
 }
+
+func Raw.execute() = executeBuiltin(this)

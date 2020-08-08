@@ -15,7 +15,7 @@ func draw(
         x3, y3,
         x4, y4,
         z, alpha,
-    )
+    ).execute()
 }
 
 struct Drawable(quad: Quad, id: Number, z: Number, alpha: Number = 1)

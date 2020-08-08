@@ -3,17 +3,17 @@ package std
 struct Clip(id: Number)
 
 func Clip.play(minEffectTime: Number = 0) {
-    builtins.Play(this.id, minEffectTime)
+    builtins.Play(this.id, minEffectTime).execute()
 }
 
 func Clip.playScheduled(time: Number, dist: Number = 0) {
-    builtins.PlayScheduled(this.id, time, dist)
+    builtins.PlayScheduled(this.id, time, dist).execute()
 }
 
 func Clip.playSFX(minEffectTime: Number = 0) {
-    if (options.`#EFFECT`) builtins.Play(this.id, minEffectTime)
+    if (options.`#EFFECT`) builtins.Play(this.id, minEffectTime).execute()
 }
 
 func Clip.playScheduledSFX(time: Number, dist: Number = 0) {
-    if (options.`#EFFECT`) builtins.PlayScheduled(this.id, time, dist)
+    if (options.`#EFFECT`) builtins.PlayScheduled(this.id, time, dist).execute()
 }
