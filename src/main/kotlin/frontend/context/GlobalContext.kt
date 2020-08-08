@@ -11,15 +11,19 @@ import xyz.qwewqa.trebla.frontend.expression.LambdaType
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
+import java.util.concurrent.atomic.AtomicInteger
 
-class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAllocatorContext {
+class GlobalContext(override val configuration: CompilerConfiguration) : GlobalAllocatorContext {
     override val parentContext: Context? = null
     override val scope = Scope(null)
     override val levelAllocator = StandardAllocator(0, 256)
     override val tempAllocator = StandardAllocator(100, 16)
 
     private val files = mutableListOf<TreblaFile>()
-    var scriptIndex = 0
+
+    // Not currently multithreading apart from parsing,
+    // But this acts as a wrapper and is atomic.
+    var scriptIndex = AtomicInteger(0)
 
     fun process(): CompileData {
         with(files) {
@@ -72,7 +76,7 @@ class GlobalContext(val compileConfiguration: CompilerConfiguration) : GlobalAll
         intrinsicObjects.forEach { (pkg, declaration) -> declaration.applyTo(getPackage(pkg)) }
         intrinsics.forEach { (pkg, declaration) ->
             val target = getPackage(pkg)
-            declaration(target, compileConfiguration).applyTo(target)
+            declaration(target, configuration).applyTo(target)
         }
     }
 }

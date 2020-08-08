@@ -13,6 +13,7 @@ class Package(
     override val parentContext: GlobalAllocatorContext,
     override val node: TreblaNode? = null,
 ) : GlobalAllocatorContext, MemberAccessor, Declaration {
+    override val configuration = parentContext.configuration
     override val type = PackageType
     override val bindingContext: Context = parentContext
     override val visibility = Visibility.PUBLIC

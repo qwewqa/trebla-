@@ -35,47 +35,6 @@ fun ExpressionNode.tryConstexprEval(context: Context) =
 
 fun StatementNode.parseAndApplyTo(context: Context) = parse(context).applyTo(context)
 
-fun StatementNode.parse(context: Context): Expression = when (this) {
-    is NumberLiteralNode -> literalNumber(this.value, context)
-    is BooleanLiteralNode -> literalBoolean(this.value, context)
-    is SimpleIdentifierNode -> SimpleIdentifierExpression(this)
-    is IfExpressionNode -> IfExpression(this)
-    is WhileExpressionNode -> WhileExpression(this)
-    is ForExpressionNode -> ForExpression(this)
-    is UnaryFunctionNode -> when (this.op) {
-        is MemberAccessNode -> MemberAccessExpression(this)
-        is PrefixUnaryFunctionNode -> UnaryFunctionExpression(this)
-        is PostfixUnaryFunctionNode -> UnaryFunctionExpression(this)
-        is FunctionCallNode -> CallExpression(this)
-    }
-    is InfixFunctionNode -> InfixFunctionExpression(this)
-    is FunctionDeclarationNode -> FunctionDeclaration(this, context)
-    is StructDeclarationNode -> StructDeclaration(this, context)
-    is PropertyDeclarationNode -> PropertyDeclaration(this, context)
-    is LetDeclarationNode -> LetDeclaration(this, context)
-    is LambdaNode -> LambdaExpression(this, context)
-    // Should not actually happen, but no sealed interfaces, so this has to be here
-    else -> throw UnsupportedOperationException("Unknown statement or expression.")
-}
-
-fun literalNumber(value: Double, context: Context) =
-    ValueExpression(
-        RawStructValue(
-            LiteralRawValue(value),
-            context,
-            (context.scope.getFullyQualified("std", "Number") as StructDeclaration)
-        )
-    )
-
-fun literalBoolean(value: Boolean, context: Context) =
-    ValueExpression(
-        RawStructValue(
-            LiteralRawValue(if (value) 1.0 else 0.0),
-            context,
-            (context.scope.getFullyQualified("std", "Boolean") as StructDeclaration)
-        )
-    )
-
 val Context.booleanType get() = scope.getFullyQualified("std", "Boolean") as StructDeclaration
 val Context.numberType get() = scope.getFullyQualified("std", "Number") as StructDeclaration
 val Context.rawType get() = scope.getFullyQualified("std", "Raw") as StructDeclaration

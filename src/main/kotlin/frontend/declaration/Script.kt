@@ -2,14 +2,14 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
 import xyz.qwewqa.trebla.backend.compile.ValueIRNode
-import xyz.qwewqa.trebla.frontend.TreblaFile
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.grammar.trebla.*
 
-class ScriptDeclaration(override val node: ScriptDeclarationNode, override val parentContext: TreblaFile) :
+class ScriptDeclaration(override val node: ScriptDeclarationNode, override val parentContext: Context) :
     Declaration, ScriptContext, Callable {
+    override val configuration = parentContext.configuration
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
@@ -20,7 +20,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     override val dataAllocator = StandardAllocator(22, 32)
     override val sharedAllocator = StandardAllocator(24, 32)
 
-    var index = parentContext.parentContext.scriptIndex++
+    var index = parentContext.configuration.sharedState.scriptIndex.getAndIncrement()
 
     private val initializeCallback = Callback(this, 0, CallbackName.Initialize, this)
     private val initializationContext = ScriptInitializationContext(this, initializeCallback)
@@ -29,7 +29,6 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         node.body.value
             .filterIsInstance<PropertyDeclarationNode>()
             .map { it.parse(initializationContext) }
-            .filterIsInstance<PropertyDeclaration>()
     }
 
     val spawnProperties by lazy {

@@ -8,6 +8,7 @@ val defaultPackage = listOf("engine")
 
 class TreblaFile(override val node: TreblaFileNode, override val parentContext: GlobalContext) : Context, Entity,
     GlobalAllocatorContext {
+    override val configuration = parentContext.configuration
     private val pkg = parentContext.getPackage(node.packageHeader?.identifier?.value ?: defaultPackage)
     override val levelAllocator = parentContext.levelAllocator
     override val tempAllocator = parentContext.tempAllocator
@@ -23,6 +24,8 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
 
     private val deferredDeclarations = mutableListOf<Declaration>()
 
+    val scriptIndex = parentContext.scriptIndex
+
     /**
      * The first part of the file loading process.
      * Processes each top level statement but only applies it if it is declared early.
@@ -34,15 +37,7 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
         node.topLevelObjects
             .asSequence()
             .map {
-                when (it) {
-                    is ArchetypeDeclarationNode -> ArchetypeDeclaration(it, this)
-                    is ScriptDeclarationNode -> ScriptDeclaration(it, this)
-                    is FunctionDeclarationNode -> FunctionDeclaration(it, this)
-                    is StructDeclarationNode -> StructDeclaration(it, this)
-                    is PropertyDeclarationNode -> PropertyDeclaration(it, this)
-                    is LetDeclarationNode -> LetDeclaration(it, this)
-                    else -> error("Unknown top level object.") // should not happen
-                }.also { declr ->
+                it.parse(this).also { declr ->
                     when (declr) {
                         is ScriptDeclaration -> scripts += declr
                         is ArchetypeDeclaration -> archetypes += declr

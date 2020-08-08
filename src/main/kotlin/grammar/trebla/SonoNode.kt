@@ -1,6 +1,10 @@
 package xyz.qwewqa.trebla.grammar.trebla
 
 import org.antlr.v4.runtime.tree.ParseTree
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.getFullyQualified
+import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.expression.*
 
 /**
  * This contains the original context for use in error messages as well as the original filename,
@@ -35,7 +39,7 @@ data class ImportHeaderNode(
 ) :
     TreblaNode
 
-interface TopLevelObjectNode : StatementNode
+interface TopLevelObjectNode : DeclarationNode
 
 data class FunctionDeclarationNode(
     override val context: ParseTree,
@@ -47,7 +51,9 @@ data class FunctionDeclarationNode(
     val type: TypeNode?,
     val body: BlockNode,
     val assigmentBody: Boolean,
-) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
+    override fun parse(context: Context) = FunctionDeclaration(this, context)
+}
 
 data class FunctionReceiverNode(
     override val context: ParseTree,
@@ -59,8 +65,7 @@ data class FunctionReceiverNode(
 data class FunctionValueParametersNode(
     override val context: ParseTree,
     override val filename: String, val values: List<ParameterNode>,
-) :
-    TreblaNode
+) : TreblaNode
 
 data class PropertyDeclarationNode(
     override val context: ParseTree,
@@ -70,7 +75,9 @@ data class PropertyDeclarationNode(
     val identifier: SimpleIdentifierNode,
     val expression: ExpressionNode?,
     val type: TypeNode?,
-) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
+    override fun parse(context: Context) = PropertyDeclaration(this, context)
+}
 
 data class LetDeclarationNode(
     override val context: ParseTree,
@@ -79,7 +86,9 @@ data class LetDeclarationNode(
     val identifier: SimpleIdentifierNode,
     val expression: ExpressionNode,
     val type: TypeNode?,
-) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
+    override fun parse(context: Context) = LetDeclaration(this, context)
+}
 
 data class StructDeclarationNode(
     override val context: ParseTree,
@@ -87,20 +96,24 @@ data class StructDeclarationNode(
     val modifiers: ModifierListNode,
     val identifier: SimpleIdentifierNode,
     val fields: StructFieldsNode,
-) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
+    override fun parse(context: Context) = StructDeclaration(this, context)
+}
 
 data class StructFieldsNode(
     override val context: ParseTree,
     override val filename: String,
     val value: List<ParameterNode>,
-) : TreblaNode
+) : TreblaNode {}
 
 data class ScriptDeclarationNode(
     override val context: ParseTree,
     override val filename: String,
     val identifier: SimpleIdentifierNode,
     val body: ScriptBodyNode,
-) : TreblaNode, TopLevelObjectNode
+) : TreblaNode, TopLevelObjectNode {
+    override fun parse(context: Context) = ScriptDeclaration(this, context)
+}
 
 data class ScriptBodyNode(
     override val context: ParseTree,
@@ -116,7 +129,9 @@ data class ArchetypeDeclarationNode(
     val isInput: Boolean,
     val script: SimpleIdentifierNode,
     val defaults: ArchetypeDefaultsNode,
-) : TreblaNode, TopLevelObjectNode
+) : TreblaNode, TopLevelObjectNode {
+    override fun parse(context: Context) = ArchetypeDeclaration(this, context)
+}
 
 data class ArchetypeDefaultsNode(
     override val context: ParseTree,
@@ -157,8 +172,13 @@ data class BlockNode(
     override val filename: String, val value: List<StatementNode>,
 ) : TreblaNode
 
-interface StatementNode : TreblaNode
-interface DeclarationNode : StatementNode
+interface StatementNode : TreblaNode {
+    fun parse(context: Context): Expression
+}
+
+interface DeclarationNode : StatementNode {
+    override fun parse(context: Context): Declaration
+}
 interface ExpressionNode : StatementNode
 
 data class InfixFunctionNode(
@@ -167,13 +187,21 @@ data class InfixFunctionNode(
     val lhs: ExpressionNode,
     val rhs: ExpressionNode,
     val op: String,
-) : ExpressionNode
+) : ExpressionNode {
+    override fun parse(context: Context) = InfixFunctionExpression(this)
+}
 
 data class UnaryFunctionNode(
     override val context: ParseTree,
     override val filename: String, val value: ExpressionNode, val op: UnaryOperation,
-) :
-    ExpressionNode
+) : ExpressionNode {
+    override fun parse(context: Context) = when (op) {
+        is MemberAccessNode -> MemberAccessExpression(this)
+        is PrefixUnaryFunctionNode -> UnaryFunctionExpression(this)
+        is PostfixUnaryFunctionNode -> UnaryFunctionExpression(this)
+        is FunctionCallNode -> CallExpression(this)
+    }
+}
 
 sealed class UnaryOperation : TreblaNode
 data class PrefixUnaryFunctionNode(
@@ -201,7 +229,7 @@ data class ValueArgumentsNode(
     override val context: ParseTree,
     override val filename: String,
     val arguments: List<ValueArgumentNode>,
-    val tailLambda: LambdaNode?
+    val tailLambda: LambdaNode?,
 ) : TreblaNode
 
 data class ValueArgumentNode(
@@ -217,14 +245,18 @@ data class IfExpressionNode(
     val expression: ExpressionNode,
     val tbranch: BlockNode,
     val fbranch: BlockNode?,
-) : ExpressionNode
+) : ExpressionNode {
+    override fun parse(context: Context) = IfExpression(this)
+}
 
 data class WhileExpressionNode(
     override val context: ParseTree,
     override val filename: String,
     val condition: ExpressionNode,
     val body: BlockNode,
-) : ExpressionNode
+) : ExpressionNode {
+    override fun parse(context: Context) = WhileExpression(this)
+}
 
 data class ForExpressionNode(
     override val context: ParseTree,
@@ -233,7 +265,9 @@ data class ForExpressionNode(
     val condition: ExpressionNode?,
     val afterthought: ExpressionNode?,
     val body: BlockNode,
-) : ExpressionNode
+) : ExpressionNode {
+    override fun parse(context: Context) = ForExpression(this)
+}
 
 data class ModifierListNode(
     override val context: ParseTree,
@@ -260,26 +294,46 @@ interface LiteralConstantNode : AtomicLiteralNode
 data class NumberLiteralNode(
     override val context: ParseTree,
     override val filename: String, val value: Double,
-) : LiteralConstantNode
+) : LiteralConstantNode{
+    override fun parse(context: Context) = ValueExpression(
+        RawStructValue(
+            LiteralRawValue(this.value),
+            context,
+            (context.scope.getFullyQualified("std", "Number") as StructDeclaration)
+        )
+    )
+}
 
 data class BooleanLiteralNode(
     override val context: ParseTree,
     override val filename: String, val value: Boolean,
-) : LiteralConstantNode
+) : LiteralConstantNode{
+    override fun parse(context: Context) = ValueExpression(
+        RawStructValue(
+            LiteralRawValue(if (this.value) 1.0 else 0.0),
+            context,
+            (context.scope.getFullyQualified("std", "Boolean") as StructDeclaration)
+        )
+    )
+}
 
 data class SimpleIdentifierNode(
     override val context: ParseTree,
     override val filename: String, val value: String,
-) : ExpressionNode
+) : ExpressionNode{
+    override fun parse(context: Context) = SimpleIdentifierExpression(this)
+}
 
 data class IdentifierNode(
     override val context: ParseTree,
     override val filename: String, val value: List<String>,
-) : ExpressionNode
+) : TreblaNode
 
 data class LambdaNode(
     override val context: ParseTree,
     override val filename: String,
     val parameters: FunctionValueParametersNode?,
     val body: List<StatementNode>,
-) : ExpressionNode
+) : ExpressionNode{
+    override fun parse(context: Context) = LambdaExpression(this, context)
+}

@@ -1,5 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
+import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
@@ -51,20 +52,22 @@ object WithContext : Declaration, Callable {
     }
 }
 
-class CombinedContext(private val outer: Context, private val inner: Context) : Context {
+class CombinedContext(outer: Context, inner: Context) : Context {
     override val parentContext = outer
+    override val configuration: CompilerConfiguration = outer.configuration
     override val scope = CombinedScope(outer.scope, inner.scope)
 }
 
-class CombinedExecutionContext(private val outer: ExecutionContext, private val inner: Context) : ExecutionContext {
+class CombinedExecutionContext(outer: ExecutionContext, inner: Context) : ExecutionContext {
     override val parentContext = outer
+    override val configuration: CompilerConfiguration = outer.configuration
     override val scope = CombinedScope(outer.scope, inner.scope)
 
     override val localAllocator = outer.localAllocator
     override val statements = outer.statements
 }
 
-class CombinedScope(private val outer: Scope, private val inner: Scope) : EagerScope(inner) {
+class CombinedScope(private val outer: Scope, inner: Scope) : EagerScope(inner) {
     override fun find(
         identifier: String,
         signature: Signature,

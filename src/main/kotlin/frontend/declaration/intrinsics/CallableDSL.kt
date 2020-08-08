@@ -3,7 +3,6 @@ package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.EmptyContext
 import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.declaration.CallableType
@@ -13,7 +12,7 @@ import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.*
 
 class IntrinsicCallableDSL(
-    override val parentContext: Context? = null,
+    override val parentContext: Context,
     override val identifier: String,
     parameters: IntrinsicParameterDSLContext.() -> Unit,
     private val operation: IntrinsicFunctionDSLContext.(callingContext: Context?) -> Value,
@@ -26,7 +25,7 @@ class IntrinsicCallableDSL(
         IntrinsicParameterDSLContext(parentContext).apply(parameters).get()?.map { p ->
             Parameter(p.name,
                 p.type,
-                p.default?.let { DefaultParameter(ValueExpression(it), parentContext ?: EmptyContext) })
+                p.default?.let { DefaultParameter(ValueExpression(it), parentContext) })
         }
     }
 
