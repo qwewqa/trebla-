@@ -8,7 +8,6 @@ import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
 import xyz.qwewqa.trebla.project.BuildConfiguration
 import xyz.qwewqa.trebla.project.build
-import xyz.qwewqa.trebla.project.generateLevels
 
 const val PROJECT_CONFIGURATION_FILENAME = "treblaproj.yaml"
 

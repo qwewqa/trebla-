@@ -2,7 +2,9 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.frontend.expression.Allocatable
+import xyz.qwewqa.trebla.frontend.expression.Mutable
+import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.PropertyDeclarationNode
 

@@ -104,7 +104,7 @@ data class StructFieldsNode(
     override val context: ParseTree,
     override val filename: String,
     val value: List<ParameterNode>,
-) : TreblaNode {}
+) : TreblaNode
 
 data class ScriptDeclarationNode(
     override val context: ParseTree,
@@ -179,6 +179,7 @@ interface StatementNode : TreblaNode {
 interface DeclarationNode : StatementNode {
     override fun parse(context: Context): Declaration
 }
+
 interface ExpressionNode : StatementNode
 
 data class InfixFunctionNode(
@@ -294,7 +295,7 @@ interface LiteralConstantNode : AtomicLiteralNode
 data class NumberLiteralNode(
     override val context: ParseTree,
     override val filename: String, val value: Double,
-) : LiteralConstantNode{
+) : LiteralConstantNode {
     override fun parse(context: Context) = ValueExpression(
         RawStructValue(
             LiteralRawValue(this.value),
@@ -307,7 +308,7 @@ data class NumberLiteralNode(
 data class BooleanLiteralNode(
     override val context: ParseTree,
     override val filename: String, val value: Boolean,
-) : LiteralConstantNode{
+) : LiteralConstantNode {
     override fun parse(context: Context) = ValueExpression(
         RawStructValue(
             LiteralRawValue(if (this.value) 1.0 else 0.0),
@@ -320,7 +321,7 @@ data class BooleanLiteralNode(
 data class SimpleIdentifierNode(
     override val context: ParseTree,
     override val filename: String, val value: String,
-) : ExpressionNode{
+) : ExpressionNode {
     override fun parse(context: Context) = SimpleIdentifierExpression(this)
 }
 
@@ -334,6 +335,6 @@ data class LambdaNode(
     override val filename: String,
     val parameters: FunctionValueParametersNode?,
     val body: List<StatementNode>,
-) : ExpressionNode{
+) : ExpressionNode {
     override fun parse(context: Context) = LambdaExpression(this, context)
 }

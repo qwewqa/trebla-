@@ -3,9 +3,11 @@ package xyz.qwewqa.trebla.frontend.declaration
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.frontend.expression.AllocatedRawValue
+import xyz.qwewqa.trebla.frontend.expression.Value
 
-class OptionsAccessor(override val parentContext: Context, projectConfiguration: CompilerConfiguration) : Declaration, MemberAccessor {
+class OptionsAccessor(override val parentContext: Context, projectConfiguration: CompilerConfiguration) : Declaration,
+    MemberAccessor {
     override val identifier = "options"
     override val type = AnyType
     override val signature = Signature.Default

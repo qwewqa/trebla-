@@ -101,9 +101,7 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to CallableType,
     listOf("std") to PackageType,
     listOf("std") to ContextType,
-    listOf("std") to LocalContext,
     listOf("std") to LambdaType,
-    listOf("std") to WithContext,
 )
 
 // constructors for intrinsics that require the context
@@ -112,4 +110,6 @@ val intrinsics: List<Pair<List<String>, (Context, CompilerConfiguration) -> Expr
     listOf("std") to ::OptionsAccessor,
     listOf("std") to ::EntityPtr,
     listOf("std") to ::TreblaList,
+    listOf("std") to ::LocalContext,
+    listOf("std") to ::WithContext,
 )

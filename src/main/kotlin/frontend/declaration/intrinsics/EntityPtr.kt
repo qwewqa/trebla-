@@ -20,7 +20,7 @@ class EntityPtr(parentContext: Context, val projectConfiguration: CompilerConfig
             "index" type NumberType
             "script" type ScriptType
         },
-        { callingContext ->
+        {
             EntityPointer("index".cast(), "script".cast(), callingContext)
         },
     )

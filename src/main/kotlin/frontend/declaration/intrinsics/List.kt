@@ -33,7 +33,8 @@ class TreblaList(override val parentContext: Context, val projectConfiguration: 
     }
 }
 
-data class ListType(val size: Int, val containedType: Allocatable, override val bindingContext: Context?) : Type, Allocatable {
+data class ListType(val size: Int, val containedType: Allocatable, override val bindingContext: Context?) : Type,
+    Allocatable {
     override val type = TypeType
 
     override fun allocateOn(allocator: Allocator, context: Context?): Mutable {
@@ -46,7 +47,8 @@ data class ListType(val size: Int, val containedType: Allocatable, override val 
     }
 }
 
-class ListValue(val parentContext: Context, override val type: Type, val values: List<Mutable>) : Mutable, MemberAccessor,
+class ListValue(val parentContext: Context, override val type: Type, val values: List<Mutable>) : Mutable,
+    MemberAccessor,
     Callable {
     override val bindingContext = parentContext
 

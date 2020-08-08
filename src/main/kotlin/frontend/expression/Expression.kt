@@ -5,8 +5,10 @@ import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ReadOnlyContext
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
-import xyz.qwewqa.trebla.frontend.declaration.*
-import xyz.qwewqa.trebla.grammar.trebla.*
+import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.frontend.declaration.StructDeclaration
+import xyz.qwewqa.trebla.grammar.trebla.ExpressionNode
+import xyz.qwewqa.trebla.grammar.trebla.StatementNode
 
 /**
  * Expressions are evaluated to compute their value.

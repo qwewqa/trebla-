@@ -5,7 +5,6 @@ import xyz.qwewqa.trebla.backend.compile.FunctionIRNodeVariant
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
-import xyz.qwewqa.trebla.frontend.context.MemberAccessor
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinFunctionVariant
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue

@@ -17,7 +17,7 @@ class Memref(parentContext: Context, val projectConfiguration: CompilerConfigura
             "block" type NumberType
             "index" type NumberType
         },
-        { callingContext ->
+        {
             val block = "block".number
             val index = "index".number
             if (block.toInt().toDouble() != block || index.toInt().toDouble() != index)

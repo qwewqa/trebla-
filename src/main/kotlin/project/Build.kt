@@ -68,6 +68,6 @@ suspend fun build(buildConfig: BuildConfiguration): Boolean {
 class BuildConfiguration(
     val path: File,
     val verbose: Boolean,
-    val allowSkip: Boolean
+    val allowSkip: Boolean,
 )
 

@@ -84,7 +84,8 @@ class FunctionDeclaration(
             // we allow single or zero expressions even in non-execution contexts
             val returnValue = when (statements.size) {
                 0 -> UnitValue
-                1 -> statements.first().parseAndApplyTo(FunctionSimpleContext(callingContext, parentContext, pairedArguments))
+                1 -> statements.first()
+                    .parseAndApplyTo(FunctionSimpleContext(callingContext, parentContext, pairedArguments))
                 else -> compileError("Invalid location for multi-statement function call.")
             }
             if (returnType == UnitValue) compileError("Invalid location for call to this function.")
@@ -146,7 +147,7 @@ class BoundFunction(
 
 class FunctionScope(
     parent: Scope,
-    argumentValues: Map<Parameter, Value>
+    argumentValues: Map<Parameter, Value>,
 ) : EagerScope(parent) {
     init {
         argumentValues.forEach { (param, value) -> add(value, param.name) }
@@ -156,7 +157,7 @@ class FunctionScope(
 class FunctionExecutionContext(
     callingContext: ExecutionContext,
     declarationContext: Context,
-    argumentValues: Map<Parameter, Value>
+    argumentValues: Map<Parameter, Value>,
 ) : ExecutionContext,
     Statement {
     override val parentContext = callingContext
@@ -176,7 +177,7 @@ class FunctionExecutionContext(
 class FunctionSimpleContext(
     override val parentContext: Context,
     declarationContext: Context,
-    argumentValues: Map<Parameter, Value>
+    argumentValues: Map<Parameter, Value>,
 ) : Context {
     override val configuration: CompilerConfiguration = parentContext.configuration
 

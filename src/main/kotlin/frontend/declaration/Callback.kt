@@ -42,7 +42,12 @@ class CallbackDeclaration(
     }
 }
 
-class Callback(override val parentContext: ScriptContext, val order: Int, val name: CallbackName, script: ScriptDeclaration) : ExecutionContext {
+class Callback(
+    override val parentContext: ScriptContext,
+    val order: Int,
+    val name: CallbackName,
+    script: ScriptDeclaration,
+) : ExecutionContext {
     override val scope = EagerScope(script.scope)
     override val configuration = parentContext.configuration
     override val localAllocator = TemporaryAllocator()

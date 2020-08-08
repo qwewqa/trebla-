@@ -23,7 +23,9 @@ fun compileEngine(
     }.map { sc ->
         CompiledScript(
             sc.callbacks.map { cb ->
-                CompiledCallback(cb.name.compiledName, cb.order, nodeData.indexes.getValue(callbackNodesByCallback.getValue(cb)))
+                CompiledCallback(cb.name.compiledName,
+                    cb.order,
+                    nodeData.indexes.getValue(callbackNodesByCallback.getValue(cb)))
             },
             sc.arguments
         )

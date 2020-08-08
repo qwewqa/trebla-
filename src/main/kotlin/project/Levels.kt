@@ -31,7 +31,8 @@ suspend fun generateLevels(path: File) {
     if (!engineFile.exists()) {
         error("Engine not built. Run build first to generate the engine file.")
     }
-    @Suppress("UNCHECKED_CAST") val engine = EngineData.fromMap(Gson().fromJson(engineFile.bufferedReader(), Map::class.java) as Map<String, Any>)
+    @Suppress("UNCHECKED_CAST") val engine =
+        EngineData.fromMap(Gson().fromJson(engineFile.bufferedReader(), Map::class.java) as Map<String, Any>)
     val levelDir = path.resolve(projectConfig.levels)
     if (!levelDir.exists()) levelDir.mkdirs()
     if (!levelDir.isDirectory) error("Level directory is not a directory.")

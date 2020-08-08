@@ -15,7 +15,7 @@ class IntrinsicCallableDSL(
     override val parentContext: Context,
     override val identifier: String,
     parameters: IntrinsicParameterDSLContext.() -> Unit,
-    private val operation: IntrinsicFunctionDSLContext.(callingContext: Context?) -> Value,
+    private val operation: IntrinsicFunctionDSLContext.() -> Value,
 ) : IntrinsicCallable {
     override val type: Type = CallableType
     override val signature: Signature = Signature.Default
@@ -31,8 +31,8 @@ class IntrinsicCallableDSL(
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value =
         parameters?.let {
-            IntrinsicFunctionDSLContext(it.pairedWithAndValidated(arguments), null).operation(callingContext)
-        } ?: IntrinsicFunctionDSLContext(null, arguments).operation(callingContext)
+            IntrinsicFunctionDSLContext(it.pairedWithAndValidated(arguments), null, callingContext).operation()
+        } ?: IntrinsicFunctionDSLContext(null, arguments, callingContext).operation()
 }
 
 interface IntrinsicCallable : Callable, Declaration
@@ -80,6 +80,7 @@ object TreblaBooleanType : IntrinsicType(Context::booleanType)
 class IntrinsicFunctionDSLContext(
     private val _parameters: Map<Parameter, Value>?,
     private val _arguments: List<ValueArgument>?,
+    val callingContext: Context?
 ) {
     val String.number
         get() = cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()

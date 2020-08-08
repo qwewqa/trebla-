@@ -48,7 +48,12 @@ fun List<ValueArgumentNode>.applyAllIn(context: Context) = map { it.applyIn(cont
 /**
  * A parameter which is often, but not always, derived from a [ParameterNode].
  */
-class Parameter(val name: String, val type: Type, val default: DefaultParameter? = null, override val node: TreblaNode? = null) : Entity {
+class Parameter(
+    val name: String,
+    val type: Type,
+    val default: DefaultParameter? = null,
+    override val node: TreblaNode? = null,
+) : Entity {
     constructor(node: ParameterNode, context: Context) : this(
         node.identifier.value,
         node.type?.applyIn(context) ?: AnyType,
@@ -104,12 +109,15 @@ fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): Map<Parameter
             ?: compileError("No parameter with name ${it.name} exists or has already been supplied as an ordered argument.")
         param to it
     }
-    val usedParams: Set<Parameter> = ordered.map { (param, _) -> param }.toSet() + named.map { (param, _) -> param } + tailArgument.map { (param, _) -> param }
+    val usedParams: Set<Parameter> = ordered.map { (param, _) -> param }
+        .toSet() + named.map { (param, _) -> param } + tailArgument.map { (param, _) -> param }
     val defaults = this.filter { it !in usedParams }.associateWith {
         (it.default?.get() ?: compileError("Parameter ${it.name} was not provided an argument and has no default."))
     }
     return (ordered + named + tailArgument).also {
-        if (ordered.map { (param, _) -> param }.toSet().intersect(named.map { (param, _) -> param }.toSet()).isNotEmpty())
+        if (ordered.map { (param, _) -> param }.toSet().intersect(named.map { (param, _) -> param }.toSet())
+                .isNotEmpty()
+        )
             compileError("Duplicate named and ordered parameters.")
     }.associate { (param, arg) -> param to arg.value } + defaults
 }

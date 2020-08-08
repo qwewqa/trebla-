@@ -1,8 +1,13 @@
 package xyz.qwewqa.trebla.frontend
 
-import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.*
-import xyz.qwewqa.trebla.grammar.trebla.*
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.GlobalAllocatorContext
+import xyz.qwewqa.trebla.frontend.context.GlobalContext
+import xyz.qwewqa.trebla.frontend.context.Scope
+import xyz.qwewqa.trebla.frontend.declaration.ArchetypeDeclaration
+import xyz.qwewqa.trebla.frontend.declaration.Declaration
+import xyz.qwewqa.trebla.frontend.declaration.ScriptDeclaration
+import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 
 val defaultPackage = listOf("engine")
 
