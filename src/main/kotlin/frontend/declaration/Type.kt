@@ -11,7 +11,7 @@ import xyz.qwewqa.trebla.grammar.trebla.TypeNode
 
 interface Type : Value {
     fun accepts(other: Type): Boolean {
-        return this == other || this in other.bindingHierarchy.flatten()
+        return this == other || other.bindingHierarchy.flatten().any { accepts(it) }
     }
 
     /**
@@ -25,8 +25,6 @@ interface Type : Value {
 }
 
 fun Type.accepts(other: Value) = accepts(other.type)
-
-inline val Type.fullBindingHierarchy get() = listOf(listOf(this)) + bindingHierarchy + listOf(listOf(AnyType))
 
 abstract class BuiltinType(override val identifier: String) : Type, Declaration {
     override val type: Type = TypeType

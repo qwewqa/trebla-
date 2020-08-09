@@ -4,8 +4,8 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.MemberAccessor
 import xyz.qwewqa.trebla.frontend.context.Signature
+import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.declaration.fullBindingHierarchy
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.MemberAccessNode
 import xyz.qwewqa.trebla.grammar.trebla.UnaryFunctionNode
@@ -33,26 +33,29 @@ class MemberAccessExpression(override val node: UnaryFunctionNode) : Expression 
  */
 fun Value.resolveMember(name: String, context: Context?) =
     (this as? MemberAccessor)?.getMember(name, context)
-        ?: context?.let { (this as? Type)?.fullBindingHierarchy?.resolveBinding(name, it) }
-        ?: context?.let { type.fullBindingHierarchy.resolveBinding(name, it)?.tryBind(this, context) }
+        ?: context?.let { (this as? Type)?.resolveBinding(name, it) }
+        ?: context?.let { type.resolveBinding(name, it)?.tryBind(this, context) }
         ?: this.bindingContext?.let { bindingContext ->
-            context?.let { type.fullBindingHierarchy.resolveBinding(name, bindingContext)?.tryBind(this, it) }
+            context?.let { type.resolveBinding(name, bindingContext)?.tryBind(this, it) }
         }
 
-fun List<Collection<Type>>.resolveBinding(name: String, context: Context) =
-    this.asSequence()
-        .mapNotNull { layer ->
-            layer.map { type ->
-                context.scope.find(name, Signature.Receiver(type))
-            }.toSet().let {
-                when (it.size) {
-                    0 -> null
-                    1 -> it.first()
-                    else -> compileError("Ambiguous bind.")
-                }
+fun Type.resolveBinding(name: String, context: Context): Value? =
+    context.scope.find(name, Signature.Receiver(this))
+        ?: this.bindingHierarchy.asSequence()
+            .mapNotNull { layer ->
+                layer
+                    .map { type -> type.resolveBinding(name, context) }
+                    .toSet()
+                    .let {
+                        when (it.size) {
+                            0 -> null
+                            1 -> it.first()
+                            else -> compileError("Ambiguous bind.")
+                        }
+                    }
             }
-        }
-        .firstOrNull()
+            .firstOrNull()
+        ?: context.scope.find(name, Signature.Receiver(AnyType))
 
 private fun Value.tryBind(toValue: Value, context: Context) =
     (this as? Bindable)?.boundTo(toValue, context) ?: this
