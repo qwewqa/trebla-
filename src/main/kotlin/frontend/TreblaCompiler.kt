@@ -12,8 +12,8 @@ import xyz.qwewqa.trebla.grammar.generated.TreblaLexer
 import xyz.qwewqa.trebla.grammar.generated.TreblaParser
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileVisitor
-import java.io.File
-import java.io.InputStream
+import java.io.*
+import java.util.zip.ZipInputStream
 
 class TreblaCompiler(val configuration: CompilerConfiguration) : CoroutineScope by CoroutineScope(Dispatchers.Default) {
     private val context = GlobalContext(configuration)
@@ -105,26 +105,19 @@ class TreblaCompiler(val configuration: CompilerConfiguration) : CoroutineScope 
     }
 
     init {
-        stdFilenames.forEach { filename ->
-            loadFile(javaClass.getResourceAsStream(stdPrefix + filename), "StdLib:$filename")
+        ZipInputStream(javaClass.getResourceAsStream("/std.zip")).use {
+            while (true) {
+                val entry = it.nextEntry ?: break
+                if (entry.isDirectory) {
+                    it.closeEntry()
+                    continue
+                }
+                loadFile(it.readAllBytes().inputStream(), entry.name)
+                it.closeEntry()
+            }
         }
     }
 }
-
-const val stdPrefix = "/std/"
-val stdFilenames = listOf(
-    "Boolean.trb",
-    "BlockData.trb",
-    "Effect.trb",
-    "Draw.trb",
-    "Easing.trb",
-    "Number.trb",
-    "Options.trb",
-    "Point.trb",
-    "Raw.trb",
-    "Transform.trb",
-    "Util.trb",
-)
 
 class LogErrorListener(private val filename: String) : BaseErrorListener() {
     val errors = mutableListOf<SyntaxError>()

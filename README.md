@@ -23,13 +23,9 @@ Trebla was built and tested with JDK 11, but JDK 8 or higher should suffice.
     See `gradlew tasks` for other options.
     
 ## GraalVM Native Image
-Updating Native Image Configuration (configuration in META-INF/native-image)
-```
-java -agentlib:native-image-agent=config-merge-dir=path/to/save/folder trebla.jar build [project]
-```
 Generating Native Image
 ```
-native-image trebla.jar -H:+AddAllCharsets
+native-image -jar trebla.jar -H:+AddAllCharsets
 ```
     
 ### Documentation

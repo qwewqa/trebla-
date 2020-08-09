@@ -45,6 +45,14 @@ tasks {
             languageVersion = "1.4"
         }
         dependsOn += generateGrammarSource
+        dependsOn += "stdZip"
+    }
+
+    register<Zip>("stdZip") {
+        from("std")
+        include("**/*")
+        archiveFileName.set("std.zip")
+        destinationDirectory.set(file("src/main/resources"))
     }
 }
 
