@@ -39,8 +39,7 @@ data class ListType(val size: Int, val containedType: Allocatable, override val 
     Allocatable {
     override val type = TypeType
 
-    override fun allocateOn(allocator: Allocator, context: Context?): Mutable {
-        if (context == null) compileError("Requires a context.")
+    override fun allocateOn(allocator: Allocator, context: Context): Mutable {
         return ListValue(context, this, List(size) { containedType.allocateOn(allocator, context) })
     }
 
@@ -49,7 +48,7 @@ data class ListType(val size: Int, val containedType: Allocatable, override val 
     }
 }
 
-class ListValue(val parentContext: Context, override val type: Type, val values: List<Mutable>) : Mutable,
+class ListValue(val parentContext: Context, override val type: Allocatable, val values: List<Mutable>) : Mutable,
     MemberAccessor,
     Callable {
     override val bindingContext = parentContext
@@ -72,8 +71,8 @@ class ListValue(val parentContext: Context, override val type: Type, val values:
         return ListValue(parentContext, type, values.map { it.offsetReallocate(block, index) })
     }
 
-    override fun copyOn(allocator: Allocator, context: ExecutionContext): Mutable {
-        return ListValue(context, type, values.map { it.copyOn(allocator, context) })
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): Mutable {
+        return ListValue(context, type, values.map { it.copyTo(allocator, context) })
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {

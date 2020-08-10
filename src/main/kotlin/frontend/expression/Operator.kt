@@ -88,7 +88,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         // must be copied into a temporary variable.
         // Otherwise, the action would be rerun each time the value was accessed (or not at all if never accessed).
         // In simpler cases, it's up to the backend to optimize (at least once implemented).
-        return RawStructValue(IRRawValue(resultValue), context, booleanType).copyOn(context.localAllocator, context)
+        return RawStructValue(IRRawValue(resultValue), context, booleanType).copyTo(context.localAllocator, context)
     }
 }
 

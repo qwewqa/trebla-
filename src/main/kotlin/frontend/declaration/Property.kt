@@ -76,7 +76,7 @@ class PropertyDeclaration(
                     val rhsValue = initializer.applyTo(context)
                     if (rhsValue !is Mutable)
                         compileError("Invalid initializer. Should be a struct.")
-                    rhsValue.copyOn(allocator, context as ExecutionContext)
+                    rhsValue.copyTo(allocator, context as ExecutionContext)
                 }
             }
             else -> {

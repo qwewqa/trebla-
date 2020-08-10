@@ -15,7 +15,15 @@ class StandardAllocator(val block: Int, val size: Int) : Allocator() {
     override fun allocate() =
         if (index == size) compileError("Allocator is full.")
         else ConcreteAllocation(block, index++)
+
+    fun allocateContiguous(size: Int) =
+        AllocationPointer(block, index).also {
+            this.index += size
+            if (index >= this.size) compileError("Allocator is full.")
+        }
 }
+
+data class AllocationPointer(val block: Int, val index: Int)
 
 // size is indeterminate; backend may move around or eliminate some of these
 // this will usually end up as part of entity memory, though the door is technically open

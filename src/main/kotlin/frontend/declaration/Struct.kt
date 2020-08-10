@@ -44,7 +44,7 @@ class StructDeclaration(
         }
     }
 
-    override fun allocateOn(allocator: Allocator, context: Context?): Mutable {
+    override fun allocateOn(allocator: Allocator, context: Context): Mutable {
         return if (isRaw) RawStructValue(AllocatedRawValue(allocator.allocate()), context, this)
         else callWith(parameters.map {
             ValueArgument(
@@ -56,9 +56,12 @@ class StructDeclaration(
     }
 
     override val allocationSize by lazy {
-        fields.sumBy {
-            (it.type as? Allocatable)?.allocationSize ?: compileError("Struct has unsized members.")
-        }
+        getSize()
+    }
+
+    // lazy delegate won't allow directly using isRaw
+    private fun getSize() = if (this.isRaw) 1 else fields.sumBy {
+        (it.type as? Allocatable)?.allocationSize ?: compileError("Struct has unsized members.")
     }
 
     init {
@@ -84,10 +87,10 @@ class NormalStructValue(
     searchContext: Context?,
     type: StructDeclaration,
 ) : StructValue(searchContext, type), MemberAccessor {
-    override fun copyOn(allocator: Allocator, context: ExecutionContext): StructValue {
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): StructValue {
         return NormalStructValue(fields.mapValues { (_, value) ->
             when (value) {
-                is Mutable -> value.copyOn(allocator, context)
+                is Mutable -> value.copyTo(allocator, context)
                 !is Mutable -> value
                 else -> compileError("Invalid copy.")
             }
@@ -120,7 +123,7 @@ class RawStructValue(
     searchContext: Context?,
     type: StructDeclaration,
 ) : StructValue(searchContext, type) {
-    override fun copyOn(allocator: Allocator, context: ExecutionContext): StructValue {
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): RawStructValue {
         val newValue = AllocatedRawValue(allocator.allocate())
         context.statements += AllocatedValueAssignment(newValue, raw)
         return RawStructValue(newValue, bindingContext, type)
@@ -134,7 +137,7 @@ class RawStructValue(
         }
     }
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): Mutable {
+    override fun offsetReallocate(block: RawValue, index: RawValue): RawStructValue {
         return when (raw) {
             is AllocatedRawValue -> when (raw.allocation) {
                 is ConcreteAllocation -> RawStructValue(
