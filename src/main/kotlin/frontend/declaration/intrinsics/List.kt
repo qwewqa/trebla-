@@ -33,7 +33,7 @@ class TreblaList(parentContext: Context, val projectConfiguration: CompilerConfi
     ),
     Type
 
-data class SpecificListType(val size: Int, val containedType: Allocatable, override val bindingContext: Context) : Type,
+class SpecificListType(val size: Int, val containedType: Allocatable, override val bindingContext: Context) : Type,
     Allocatable {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "List") as Type))
@@ -44,6 +44,15 @@ data class SpecificListType(val size: Int, val containedType: Allocatable, overr
 
     override val allocationSize by lazy {
         size * containedType.allocationSize
+    }
+
+    override fun equals(other: Any?): Boolean =
+        other is SpecificListType && size == other.size && containedType == other.containedType
+
+    override fun hashCode(): Int {
+        var result = size
+        result = 31 * result + containedType.hashCode()
+        return result
     }
 }
 
