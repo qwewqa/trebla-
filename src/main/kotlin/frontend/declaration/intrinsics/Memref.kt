@@ -5,14 +5,20 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
+import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.StructDeclaration
 import xyz.qwewqa.trebla.frontend.expression.AllocatedRawValue
+import xyz.qwewqa.trebla.frontend.expression.Callable
 
 class Memref(parentContext: Context, val projectConfiguration: CompilerConfiguration) :
-    IntrinsicCallable by IntrinsicCallableDSL(
+    SimpleDeclaration(
         parentContext,
         "memref",
+        CallableType
+    ),
+    Callable by CallableDSL(
+        parentContext,
         {
             "block" type NumberType
             "index" type NumberType

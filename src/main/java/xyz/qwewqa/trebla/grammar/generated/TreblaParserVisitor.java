@@ -283,6 +283,12 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCallSuffix(TreblaParser.CallSuffixContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TreblaParser#subscriptingSuffix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubscriptingSuffix(TreblaParser.SubscriptingSuffixContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TreblaParser#lambda}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

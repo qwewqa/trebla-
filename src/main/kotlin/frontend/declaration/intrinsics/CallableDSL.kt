@@ -11,15 +11,19 @@ import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.*
 
-class IntrinsicCallableDSL(
-    override val parentContext: Context,
+open class SimpleDeclaration(
+    override val parentContext: Context?,
     override val identifier: String,
+    override val type: Type,
+    override val signature: Signature = Signature.Default,
+    override val visibility: Visibility = Visibility.PUBLIC,
+) : Declaration
+
+class CallableDSL(
+    val parentContext: Context,
     parameters: IntrinsicParameterDSLContext.() -> Unit,
     private val operation: IntrinsicFunctionDSLContext.() -> Value,
-) : IntrinsicCallable {
-    override val type: Type = CallableType
-    override val signature: Signature = Signature.Default
-    override val visibility: Visibility = Visibility.PUBLIC
+) : Callable {
 
     override val parameters by lazy {
         IntrinsicParameterDSLContext(parentContext).apply(parameters).get()?.map { p ->
@@ -35,7 +39,25 @@ class IntrinsicCallableDSL(
         } ?: IntrinsicFunctionDSLContext(null, arguments, callingContext).operation()
 }
 
-interface IntrinsicCallable : Callable, Declaration
+class SubscriptableDSL(
+    val parentContext: Context,
+    parameters: IntrinsicParameterDSLContext.() -> Unit,
+    private val operation: IntrinsicFunctionDSLContext.() -> Value,
+) : Subscriptable {
+
+    override val subscriptParameters by lazy {
+        IntrinsicParameterDSLContext(parentContext).apply(parameters).get()?.map { p ->
+            Parameter(p.name,
+                p.type,
+                p.default?.let { DefaultParameter(ValueExpression(it), parentContext) })
+        }
+    }
+
+    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context?): Value =
+        subscriptParameters?.let {
+            IntrinsicFunctionDSLContext(it.pairedWithAndValidated(arguments), null, callingContext).operation()
+        } ?: IntrinsicFunctionDSLContext(null, arguments, callingContext).operation()
+}
 
 data class IntrinsicParameter(val name: String, val type: Type, val default: Value?)
 class IntrinsicParameterDSLContext(val context: Context) {

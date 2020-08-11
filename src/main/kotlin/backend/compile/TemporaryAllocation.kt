@@ -18,7 +18,7 @@ private fun IRNode.processTemporaryAllocations(
     return when (this) {
         is IRValue -> this
         is IRTempRead -> {
-            IRFunctionVariant.Get.calledWith(
+            IRFunction.Get.calledWith(
                 TEMPORARY_MEMORY_BLOCK.toIR(),
                 mapping.getOrPut(id) {
                     remainingIndexes.removeFirstOrNull() ?: backendError("Temporary Allocations Full")
@@ -26,7 +26,7 @@ private fun IRNode.processTemporaryAllocations(
             )
         }
         is IRTempAssign -> {
-            IRFunctionVariant.Set.calledWith(
+            IRFunction.Set.calledWith(
                 TEMPORARY_MEMORY_BLOCK.toIR(),
                 mapping.getOrPut(id) {
                     remainingIndexes.removeFirstOrNull() ?: backendError("Temporary Allocations Full")
@@ -34,7 +34,7 @@ private fun IRNode.processTemporaryAllocations(
                 rhs.processTemporaryAllocations(config, remainingIndexes, mapping)
             )
         }
-        is IRFunction -> {
+        is IRFunctionCall -> {
             copy(
                 arguments = arguments.map { it.processTemporaryAllocations(config, remainingIndexes, mapping) }
             )

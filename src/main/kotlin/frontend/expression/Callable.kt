@@ -17,13 +17,18 @@ interface Callable {
     fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value
 }
 
+interface Subscriptable {
+    val subscriptParameters: List<Parameter>? get() = null
+    fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context?): Value
+}
+
 /**
  * A value argument is passed into a function call.
  */
 data class ValueArgument(val name: String?, val value: Value, val isTailLambda: Boolean = false)
 
-class CallExpression(override val node: UnaryFunctionNode) : Expression {
-    private val arguments = (node.op as? FunctionCallNode)?.arguments ?: error("Not a call expression.")
+class CallExpression(override val node: UnaryFunctionNode, op: FunctionCallNode) : Expression {
+    private val arguments = op.arguments
     private val argumentNodes = arguments.arguments
     private val lambdaNode = arguments.tailLambda
 
@@ -36,6 +41,19 @@ class CallExpression(override val node: UnaryFunctionNode) : Expression {
         if (callable !is Callable) compileError("Not a callable.", node)
         return runWithErrorMessage("Error in call expression.") {
             callable.callWith(arguments, context)
+        }
+    }
+}
+
+class SubscriptExpression(override val node: UnaryFunctionNode, op: SubscriptNode) : Expression {
+    private val arguments = op.arguments
+
+    override fun applyTo(context: Context): Value {
+        val arguments = arguments.applyAllIn(context)
+        val subscriptable = node.value.parseAndApplyTo(context)
+        if (subscriptable !is Subscriptable) compileError("Not a callable.", node)
+        return runWithErrorMessage("Error in subscript expression.") {
+            subscriptable.subscriptWith(arguments, context)
         }
     }
 }

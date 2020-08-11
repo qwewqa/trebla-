@@ -3,10 +3,7 @@ package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.AnyType
-import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
-import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
-import xyz.qwewqa.trebla.frontend.declaration.TypeType
+import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
 open class PointerValue(
@@ -14,7 +11,7 @@ open class PointerValue(
     val insideType: Allocatable,
     val block: RawStructValue,
     val index: RawStructValue,
-) : Mutable, MemberAccessor {
+) : Mutable, MemberAccessor, Dereferenceable {
     override val type = PointerType(insideType)
 
     override fun getMember(name: String, accessingContext: Context?): Value? = when (name) {
@@ -45,7 +42,11 @@ open class PointerValue(
         index.copyTo(allocator, context),
     )
 
-    fun deref(context: Context) = insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+    override fun deref(context: Context) = insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+}
+
+interface Dereferenceable {
+    fun deref(context: Context): Mutable
 }
 
 /**
@@ -59,32 +60,42 @@ class ImmutablePointer(bindingContext: Context, insideType: Allocatable, block: 
     }
 }
 
-class DerefFunction(parentContext: Context, config: CompilerConfiguration) : IntrinsicCallable by IntrinsicCallableDSL(
-    parentContext,
-    "deref",
-    {
-        "pointer" type AnyType
-    },
-    {
-        if (callingContext == null) compileError("Deref requires a context.")
-        val value = ("pointer".cast<Value>() as? PointerValue) ?: compileError("Not a pointer.")
-        value.deref(callingContext)
-    }
-)
+class DerefFunction(parentContext: Context, config: CompilerConfiguration) :
+    SimpleDeclaration(
+        parentContext,
+        "deref",
+        CallableType
+    ),
+    Callable by CallableDSL(
+        parentContext,
+        {
+            "pointer" type AnyType
+        },
+        {
+            if (callingContext == null) compileError("Deref requires a context.")
+            val value = ("pointer".cast<Value>() as? PointerValue) ?: compileError("Not a pointer.")
+            value.deref(callingContext)
+        }
+    )
 
-class BoxFunction(parentContext: Context, config: CompilerConfiguration) : IntrinsicCallable by IntrinsicCallableDSL(
-    parentContext,
-    "box",
-    {
-        "value" type AnyType
-    },
-    {
-        if (callingContext == null) compileError("Box requires a context.")
-        val value = "value".cast<Value>()
-        if (value !is Mutable) compileError("Only mutable values can be boxed.")
-        TransientBoxValue(callingContext, value)
-    }
-)
+class BoxFunction(parentContext: Context, config: CompilerConfiguration) :
+    SimpleDeclaration(
+        parentContext,
+        "box",
+        CallableType
+    ),
+    Callable by CallableDSL(
+        parentContext,
+        {
+            "value" type AnyType
+        },
+        {
+            if (callingContext == null) compileError("Box requires a context.")
+            val value = "value".cast<Value>()
+            if (value !is Mutable) compileError("Only mutable values can be boxed.")
+            TransientBoxValue(callingContext, value)
+        }
+    )
 
 data class PointerType(val insideType: Allocatable) : Allocatable {
     override val type = TypeType

@@ -10,8 +10,8 @@ import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.MemberAccessNode
 import xyz.qwewqa.trebla.grammar.trebla.UnaryFunctionNode
 
-class MemberAccessExpression(override val node: UnaryFunctionNode) : Expression {
-    val name = (node.op as? MemberAccessNode)?.identifier?.value ?: error("Not a member access.")
+class MemberAccessExpression(override val node: UnaryFunctionNode, op: MemberAccessNode) : Expression {
+    val name = op.identifier.value
 
     override fun applyTo(context: Context): Value {
         val lhs = node.value.parseAndApplyTo(context)

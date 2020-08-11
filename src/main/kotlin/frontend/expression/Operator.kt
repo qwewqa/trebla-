@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.frontend.expression
 
+import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.compile.IRFunction
-import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
@@ -41,8 +41,8 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
 
     override fun applyTo(context: Context): Value = runWithErrorMessage("Error in infix expression.") {
         when (functionName) {
-            "||" -> return doShortCircuitingBoolean(IRFunctionVariant.Or, context)
-            "&&" -> return doShortCircuitingBoolean(IRFunctionVariant.And, context)
+            "||" -> return doShortCircuitingBoolean(IRFunction.Or, context)
+            "&&" -> return doShortCircuitingBoolean(IRFunction.And, context)
         }
         val lhs = node.lhs.parseAndApplyTo(context)
         val rhs = node.rhs.parseAndApplyTo(context)
@@ -64,7 +64,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
     }
 
     private fun doShortCircuitingBoolean(
-        operation: IRFunctionVariant,
+        operation: IRFunction,
         context: Context,
     ): Value {
         val booleanType = context.booleanType
@@ -81,9 +81,9 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         val rhsValue = node.rhs.parseAndApplyTo(rhsBlock)
         if (rhsValue !is RawStructValue || rhsValue.type != context.booleanType)
             compileError("Short circuiting operators can only be applied to booleans.")
-        val resultValue = IRFunction(operation, listOf(
+        val resultValue = IRFunctionCall(operation, listOf(
             lhsValue.raw.toIR(),
-            IRFunction(IRFunctionVariant.Execute, listOf(
+            IRFunctionCall(IRFunction.Execute, listOf(
                 rhsBlock.toIR(),
                 rhsValue.raw.toIR()
             ))
@@ -103,13 +103,13 @@ val infixOperatorNames = mapOf(
     "*" to "times",
     "/" to "div",
     "%" to "mod",
-    "**" to "pow",
+    "^" to "pow",
     "+=" to "plusAssign",
     "-=" to "minusAssign",
     "*=" to "timesAssign",
     "/=" to "divAssign",
     "%=" to "modAssign",
-    "**=" to "powAssign",
+    "^=" to "powAssign",
     "==" to "equals",
     "!=" to "notEquals",
     ">" to "greater",

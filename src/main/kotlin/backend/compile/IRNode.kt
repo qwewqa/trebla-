@@ -21,7 +21,7 @@ data class IRTempAssign(val id: Int, val rhs: IRNode) : IRNode() {
     override fun toString() = "$$id <- $rhs"
 }
 
-data class IRFunction(val variant: IRFunctionVariant, var arguments: List<IRNode>) : IRNode() {
+data class IRFunctionCall(val variant: IRFunction, var arguments: List<IRNode>) : IRNode() {
     override fun toString() = "$variant${
         arguments.map { it.toString() }.let {
             if (it.joinToString(", ").length > 120)

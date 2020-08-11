@@ -5,17 +5,19 @@ import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ENTITY_DATA_ARRAY
 import xyz.qwewqa.trebla.frontend.context.ENTITY_SHARED_MEMORY_ARRAY
 import xyz.qwewqa.trebla.frontend.context.MemberAccessor
-import xyz.qwewqa.trebla.frontend.declaration.AnyType
-import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
-import xyz.qwewqa.trebla.frontend.declaration.ScriptDeclaration
-import xyz.qwewqa.trebla.frontend.declaration.ScriptType
+import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.expression.Callable
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.toLiteralRawValue
 
 class EntityPtr(parentContext: Context, val projectConfiguration: CompilerConfiguration) :
-    IntrinsicCallable by IntrinsicCallableDSL(
+    SimpleDeclaration(
         parentContext,
         "entityOffsetPtr",
+        CallableType,
+    ),
+    Callable by CallableDSL(
+        parentContext,
         {
             "index" type NumberType
             "script" type ScriptType

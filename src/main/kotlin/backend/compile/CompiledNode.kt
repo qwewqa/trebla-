@@ -33,8 +33,8 @@ data class CompiledNodeData(val orderedNodes: List<Map<String, Any>>, val indexe
 
 fun IRNode.toCompiledNode(): CompiledNode = when (this) {
     is IRValue -> CompiledValueNode(value)
-    is IRFunction -> when (variant) {
-        IRFunctionVariant.Execute -> {
+    is IRFunctionCall -> when (variant) {
+        IRFunction.Execute -> {
             if (arguments.isEmpty()) CompiledValueNode(0.0)
             else CompiledFunctionNode(variant.name, arguments.map { it.toCompiledNode() })
         }

@@ -327,6 +327,8 @@ simpleIdentifier
     | TEMP
     | ARCHETYPE
     | NOTE
+    | SETTER
+    | GETTER
     ;
 
 literalConstant

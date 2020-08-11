@@ -197,7 +197,7 @@ data class UnaryFunctionNode(
     override val filename: String, val value: ExpressionNode, val op: UnaryOperation,
 ) : ExpressionNode {
     override fun parse(context: Context) = when (op) {
-        is MemberAccessNode -> MemberAccessExpression(this)
+        is MemberAccessNode -> MemberAccessExpression(this, op)
         is PrefixUnaryFunctionNode -> UnaryFunctionExpression(this)
         is PostfixUnaryFunctionNode -> UnaryFunctionExpression(this)
         is FunctionCallNode -> CallExpression(this)

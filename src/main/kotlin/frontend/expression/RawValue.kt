@@ -22,12 +22,12 @@ sealed class RawValue {
 
 class AllocatedRawValue(val allocation: Allocation) : RawValue() {
     override fun toIR() = when (allocation) {
-        is ConcreteAllocation -> IRFunctionVariant.Get.calledWith(
+        is ConcreteAllocation -> IRFunction.Get.calledWith(
             allocation.block.toIR(),
             allocation.index.toIR()
         )
         is TemporaryAllocation -> IRTempRead(allocation.id)
-        is DynamicAllocation -> IRFunctionVariant.GetShifted.calledWith(
+        is DynamicAllocation -> IRFunction.GetShifted.calledWith(
             allocation.block.toIR(),
             allocation.index.toIR(),
             allocation.offset.toIR(),
@@ -43,11 +43,11 @@ class LiteralRawValue(val value: Double) : RawValue() {
 
 fun Number.toLiteralRawValue() = LiteralRawValue(this.toDouble())
 
-class BuiltinCallRawValue(val function: IRFunctionVariant, val arguments: List<RawValue>) : RawValue(), Statement {
+class BuiltinCallRawValue(val function: IRFunction, val arguments: List<RawValue>) : RawValue(), Statement {
     override fun toIR(): IRNode {
         // Doing some simplification here might help with performance but this isn't tested.
         // It's really so initial IR is a bit easier to read when debugging.
-        return IRFunction(function, arguments.map { it.toIR() }).let { func ->
+        return IRFunctionCall(function, arguments.map { it.toIR() }).let { func ->
             func.tryConstexprEvaluate()?.let { IRValue(it) } ?: func
         }
     }
@@ -64,13 +64,13 @@ class IRRawValue(val value: IRNode) : RawValue(), Statement {
 
 class AllocatedValueAssignment(val lhs: AllocatedRawValue, val rhs: RawValue) : Statement {
     override fun toIR() = when (val alloc = lhs.allocation) {
-        is ConcreteAllocation -> IRFunctionVariant.Set.calledWith(
+        is ConcreteAllocation -> IRFunction.Set.calledWith(
             alloc.block.toIR(),
             alloc.index.toIR(),
             rhs.toIR()
         )
         is TemporaryAllocation -> IRTempAssign(alloc.id, rhs.toIR())
-        is DynamicAllocation -> IRFunctionVariant.SetShifted.calledWith(
+        is DynamicAllocation -> IRFunction.SetShifted.calledWith(
             alloc.block.toIR(),
             alloc.index.toIR(),
             alloc.offset.toIR(),

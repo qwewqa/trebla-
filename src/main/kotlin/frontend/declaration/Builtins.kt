@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
+import xyz.qwewqa.trebla.backend.compile.IRFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -19,7 +19,7 @@ object Builtins : MemberAccessor, Declaration {
     override val visibility = Visibility.PUBLIC
 
     override fun getMember(name: String, accessingContext: Context?): Value? = try {
-        BuiltinFunction(IRFunctionVariant.valueOf(name))
+        BuiltinFunction(IRFunction.valueOf(name))
     } catch (e: IllegalArgumentException) {
         null
     }
@@ -29,7 +29,7 @@ object Builtins : MemberAccessor, Declaration {
  * A builtin function.
  * Builtin functions are part of Sonolus.
  */
-class BuiltinFunction(val function: IRFunctionVariant) : Callable, Value {
+class BuiltinFunction(val function: IRFunction) : Callable, Value {
     override val type = CallableType
     override val bindingContext: Context? = null
 

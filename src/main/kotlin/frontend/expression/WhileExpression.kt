@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.compile.IRFunctionVariant
+import xyz.qwewqa.trebla.backend.compile.IRFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
@@ -23,7 +23,7 @@ class WhileExpression(override val node: WhileExpressionNode) : Expression {
 }
 
 class WhileStatement(val condition: RawStructValue, val body: SimpleExecutionContext) : Statement {
-    override fun toIR() = IRFunctionVariant.While.calledWith(
+    override fun toIR() = IRFunction.While.calledWith(
         condition.raw.toIR(),
         body.toIR(),
     )

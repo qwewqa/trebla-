@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.backend.compile
 
-enum class IRFunctionVariant {
+enum class IRFunction {
     Execute,
     If,
     Switch,
@@ -105,6 +105,6 @@ enum class IRFunctionVariant {
     EaseOutInElastic,
     ;
 
-    fun calledWith(arguments: List<IRNode>) = IRFunction(this, arguments)
+    fun calledWith(arguments: List<IRNode>) = IRFunctionCall(this, arguments)
     fun calledWith(vararg arguments: IRNode) = calledWith(arguments.toList())
 }
