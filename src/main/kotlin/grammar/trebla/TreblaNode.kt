@@ -200,7 +200,8 @@ data class UnaryFunctionNode(
         is MemberAccessNode -> MemberAccessExpression(this, op)
         is PrefixUnaryFunctionNode -> UnaryFunctionExpression(this)
         is PostfixUnaryFunctionNode -> UnaryFunctionExpression(this)
-        is FunctionCallNode -> CallExpression(this)
+        is FunctionCallNode -> CallExpression(this, op)
+        is SubscriptNode -> SubscriptExpression(this, op)
     }
 }
 
@@ -219,6 +220,12 @@ data class FunctionCallNode(
     override val context: ParseTree,
     override val filename: String,
     val arguments: ValueArgumentsNode,
+) : UnaryOperation()
+
+data class SubscriptNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val arguments: List<ValueArgumentNode>,
 ) : UnaryOperation()
 
 data class MemberAccessNode(

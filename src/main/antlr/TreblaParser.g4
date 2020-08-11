@@ -231,6 +231,10 @@ callSuffix
     : valueArguments
     ;
 
+subscriptingSuffix
+    : LSQUARE (valueArgument (COMMA valueArgument)* COMMA?)? RSQUARE
+    ;
+
 lambda
     : LCURL NL* (functionValueParameters NL* ARROW)? NL* anysemi* (statement (anysemi+ statement?)*)? RCURL
     ;
@@ -359,6 +363,7 @@ prefixUnaryOperation
 postfixUnaryOperation
     : INCR | DECR | EXCL EXCL
     | callSuffix
+    | subscriptingSuffix
     | NL* memberAccessOperator simpleIdentifier
     ;
 

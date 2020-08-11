@@ -271,6 +271,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
                 (children.removeFirst() as TreblaParser.PostfixUnaryOperationContext).let {
                     when {
                         it.callSuffix().exist -> it.callSuffix().visit() as FunctionCallNode
+                        it.subscriptingSuffix().exist -> it.subscriptingSuffix().visit() as SubscriptNode
                         it.simpleIdentifier().exist -> MemberAccessNode(ctx,
                             filename,
                             it.simpleIdentifier().visit() as SimpleIdentifierNode)
@@ -280,6 +281,10 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
             )
         }
         return expr
+    }
+
+    override fun visitSubscriptingSuffix(ctx: TreblaParser.SubscriptingSuffixContext): TreblaNode {
+        return SubscriptNode(ctx, filename, ctx.valueArgument().visit() as List<ValueArgumentNode>)
     }
 
     override fun visitIfExpression(ctx: TreblaParser.IfExpressionContext): TreblaNode {
