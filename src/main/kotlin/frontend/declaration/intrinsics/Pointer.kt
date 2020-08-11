@@ -9,7 +9,7 @@ import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.TypeType
 import xyz.qwewqa.trebla.frontend.expression.*
 
-class PointerValue(
+open class PointerValue(
     override val bindingContext: Context,
     val insideType: Allocatable,
     val block: RawStructValue,
@@ -46,6 +46,17 @@ class PointerValue(
     )
 
     fun deref(context: Context) = insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+}
+
+/**
+ * An immutable pointer, resulting from a property initialized with a box.
+ * Just gives a slightly more helpful error message.
+ */
+class ImmutablePointer(bindingContext: Context, insideType: Allocatable, block: RawStructValue, index: RawStructValue) :
+    PointerValue(bindingContext, insideType, block, index) {
+    override fun copyFrom(other: Value, context: ExecutionContext) {
+        compileError("Pointer is immutable.")
+    }
 }
 
 class DerefFunction(parentContext: Context, config: CompilerConfiguration) : IntrinsicCallable by IntrinsicCallableDSL(
@@ -90,8 +101,13 @@ data class PointerType(val insideType: Allocatable) : Allocatable {
     }
 }
 
+/**
+ * A box is a special value, which when used as a property initializer,
+ * allocates itself on the respective block and returns an immutable pointer (location known at compile time),
+ * which the property takes as its value.
+ */
 class TransientBoxValue(override val bindingContext: Context, val inside: Mutable) : Mutable {
-    override val type = TransientBox
+    override val type = TransientBoxType
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Mutable {
         val ptr = when (allocator) {
@@ -100,7 +116,7 @@ class TransientBoxValue(override val bindingContext: Context, val inside: Mutabl
         }
         val dyn = DynamicAllocator(ptr.block.toLiteralRawValue(), ptr.index.toLiteralRawValue())
         val new = inside.copyTo(dyn, context)
-        return PointerValue(
+        return ImmutablePointer(
             bindingContext,
             new.type,
             RawStructValue(ptr.block.toLiteralRawValue(), bindingContext, context.numberType),
@@ -119,7 +135,7 @@ class TransientBoxValue(override val bindingContext: Context, val inside: Mutabl
     }
 }
 
-object TransientBox : BuiltinType("TransientBox"), Allocatable {
+object TransientBoxType : BuiltinType("TransientBox"), Allocatable {
     override val allocationSize: Int
         get() = compileError("A transient box is not sized.")
 

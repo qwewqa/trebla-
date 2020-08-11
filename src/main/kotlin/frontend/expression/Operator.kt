@@ -7,6 +7,7 @@ import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.PointerValue
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
 import xyz.qwewqa.trebla.grammar.trebla.PostfixUnaryFunctionNode
@@ -22,8 +23,12 @@ class UnaryFunctionExpression(override val node: UnaryFunctionNode) : Expression
 
     override fun applyTo(context: Context): Value {
         val lhs = node.value.parseAndApplyTo(context)
+        if (lhs is PointerValue && functionName == "deref") {
+            return lhs.deref(context)
+        }
         val func = lhs.resolveMember(functionName, context)
-        if (func !is Callable) compileError("Unary function does not exist.", node)
+        if (func !is Callable) compileError("Unary function is not implemented.", node)
+        if (!func.isOperator) compileError("Unary function is not marked operator.", node)
         return runWithErrorMessage("Error in unary function call") {
             func.callWith(emptyList(), context) // no arguments; receiver should already be bound
         }
@@ -118,7 +123,8 @@ val prefixOperatorNames = mapOf(
     "-" to "unaryMinus",
     "!" to "not",
     "++" to "preIncrement",
-    "--" to "preDecrement"
+    "--" to "preDecrement",
+    "*" to "deref"
 )
 
 val postfixOperatorNames = mapOf(

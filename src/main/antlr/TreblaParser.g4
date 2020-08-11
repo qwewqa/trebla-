@@ -351,6 +351,7 @@ prefixUnaryOperation
     | ADD
     | SUB
     | EXCL
+    | MULT
     ;
 
 postfixUnaryOperation

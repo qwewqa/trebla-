@@ -39,7 +39,7 @@ LSQUARE: '[' -> pushMode(Inside) ;
 RSQUARE: ']' ;
 LCURL: '{' -> pushMode(DEFAULT_MODE) ; // important for lambdas inside parens
 RCURL: '}' -> popMode ;
-POW: '**' ;
+POW: '^' ;
 MULT: '*' ;
 MOD: '%' ;
 DIV: '/' ;
@@ -59,7 +59,7 @@ SUB_ASSIGNMENT: '-=' ;
 MULT_ASSIGNMENT: '*=' ;
 DIV_ASSIGNMENT: '/=' ;
 MOD_ASSIGNMENT: '%=' ;
-POW_ASSIGNMENT: '**=' ;
+POW_ASSIGNMENT: '^=' ;
 HASH: '#' ;
 AT: '@' ;
 LANGLE: '<' ;
