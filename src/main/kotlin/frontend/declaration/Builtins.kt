@@ -33,13 +33,12 @@ class BuiltinFunction(val function: IRFunction) : Callable, Value {
     override val type = CallableType
     override val bindingContext: Context? = null
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val argumentValues = arguments.map {
             val parameterValue = it.value
             if (parameterValue !is RawStructValue) compileError("A builtin function must be called with only raw struct arguments.")
             parameterValue.raw
         }
-        if (callingContext == null) compileError("Builtin function requires a context.")
         val rawType = callingContext.scope.getFullyQualified(listOf("std", "Raw")) as StructDeclaration
         return RawStructValue(BuiltinCallRawValue(function, argumentValues), callingContext, rawType)
     }

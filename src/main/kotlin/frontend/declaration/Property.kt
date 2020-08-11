@@ -3,7 +3,7 @@ package xyz.qwewqa.trebla.frontend.declaration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.Allocatable
-import xyz.qwewqa.trebla.frontend.expression.Mutable
+import xyz.qwewqa.trebla.frontend.expression.Allocated
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.PropertyDeclarationNode
@@ -30,7 +30,7 @@ class PropertyDeclaration(
         }
     }
 
-    override fun applyTo(context: Context): Mutable = runWithErrorMessage("Error in property declaration.") {
+    override fun applyTo(context: Context): Allocated = runWithErrorMessage("Error in property declaration.") {
         val initializer = node.expression?.parse(context)
         val typeConstraint = typeConstraint // loads lazy delegate and allows smart casts
         val allocator = when (variant) {
@@ -74,7 +74,7 @@ class PropertyDeclaration(
                     typeConstraint.allocateOn(allocator, context)
                 } else {
                     val rhsValue = initializer.applyTo(context)
-                    if (rhsValue !is Mutable)
+                    if (rhsValue !is Allocated)
                         compileError("Invalid initializer. Should be a struct.")
                     rhsValue.copyTo(allocator, context as ExecutionContext)
                 }

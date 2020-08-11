@@ -6,14 +6,14 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.AllocatedRawValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 
-class OptionsAccessor(override val parentContext: Context, projectConfiguration: CompilerConfiguration) : Declaration,
+class OptionsAccessor(override val parentContext: Context) : Declaration,
     MemberAccessor {
     override val identifier = "options"
     override val type = AnyType
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
 
-    private val options = projectConfiguration.projectConfig.options.mapIndexed { i, option ->
+    private val options = parentContext.configuration.projectConfig.options.mapIndexed { i, option ->
         val name = option["name"]
         val type = option["type"]
         if (name !is String) compileError("Option name invalid or does not exist.")

@@ -7,6 +7,7 @@ import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.PointerValue
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
@@ -23,7 +24,7 @@ class UnaryFunctionExpression(override val node: UnaryFunctionNode) : Expression
 
     override fun applyTo(context: Context): Value {
         val lhs = node.value.parseAndApplyTo(context)
-        if (lhs is PointerValue && functionName == "deref") {
+        if (lhs is Dereferenceable && functionName == "deref") {
             return lhs.deref(context)
         }
         val func = lhs.resolveMember(functionName, context)
@@ -58,7 +59,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
     }
 
     private fun doAssignment(lhs: Value, rhs: Value, context: Context) {
-        if (lhs !is Mutable) compileError("Invalid assignment.")
+        if (lhs !is Allocated) compileError("Invalid assignment.")
         if (context !is ExecutionContext) compileError("Invalid location for assignment.")
         lhs.copyFrom(rhs, context)
     }

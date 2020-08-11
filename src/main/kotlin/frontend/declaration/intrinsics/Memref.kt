@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
 import xyz.qwewqa.trebla.frontend.context.Context
@@ -11,14 +10,14 @@ import xyz.qwewqa.trebla.frontend.declaration.StructDeclaration
 import xyz.qwewqa.trebla.frontend.expression.AllocatedRawValue
 import xyz.qwewqa.trebla.frontend.expression.Callable
 
-class Memref(parentContext: Context, val projectConfiguration: CompilerConfiguration) :
+class Memref(context: Context) :
     SimpleDeclaration(
-        parentContext,
+        context,
         "memref",
         CallableType
     ),
     Callable by CallableDSL(
-        parentContext,
+        context,
         {
             "block" type NumberType
             "index" type NumberType
@@ -31,7 +30,7 @@ class Memref(parentContext: Context, val projectConfiguration: CompilerConfigura
             RawStructValue(
                 AllocatedRawValue(ConcreteAllocation(block.toInt(), index.toInt())),
                 callingContext,
-                parentContext.scope.getFullyQualified("std", "Raw") as StructDeclaration
+                context.scope.getFullyQualified("std", "Raw") as StructDeclaration
             )
         }
     )

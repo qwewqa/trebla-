@@ -6,7 +6,7 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.expression.*
 
-class LocalContext(context: Context, compilerConfiguration: CompilerConfiguration) :
+class LocalContext(context: Context) :
     SimpleDeclaration(
         context,
         "localContext",
@@ -16,11 +16,11 @@ class LocalContext(context: Context, compilerConfiguration: CompilerConfiguratio
         context,
         {},
         {
-            callingContext ?: compileError("No local context.")
+            callingContext
         }
     )
 
-class WithContext(context: Context, compilerConfiguration: CompilerConfiguration) :
+class WithContext(context: Context) :
     SimpleDeclaration(
         context,
         "withContext",
@@ -37,7 +37,6 @@ class WithContext(context: Context, compilerConfiguration: CompilerConfiguration
             val op = "op".cast<LambdaExpression>()
             val newContext =
                 when (callingContext) {
-                    null -> compileError("Requires a context.")
                     is ExecutionContext -> CombinedExecutionContext(callingContext, innerContext)
                     else -> CombinedContext(callingContext, innerContext)
                 }

@@ -84,7 +84,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val cells = MutableList<RawValue?>(64) { null }
         arguments.forEach { (name, value) ->
             if (name == null) compileError("Unnamed arguments to script spawns are not allowed.")

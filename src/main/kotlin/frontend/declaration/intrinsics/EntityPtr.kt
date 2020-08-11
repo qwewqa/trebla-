@@ -10,7 +10,7 @@ import xyz.qwewqa.trebla.frontend.expression.Callable
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.toLiteralRawValue
 
-class EntityPtr(parentContext: Context, val projectConfiguration: CompilerConfiguration) :
+class EntityPtr(parentContext: Context) :
     SimpleDeclaration(
         parentContext,
         "entityOffsetPtr",

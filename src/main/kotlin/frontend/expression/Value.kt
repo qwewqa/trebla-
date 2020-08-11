@@ -39,7 +39,7 @@ interface Allocatable : Type {
      * Creates a new instance of the allocatable type
      * on the given allocator in the given context.
      */
-    fun allocateOn(allocator: Allocator, context: Context): Mutable
+    fun allocateOn(allocator: Allocator, context: Context): Allocated
 
     /**
      * The size this allocatable takes.
@@ -47,13 +47,13 @@ interface Allocatable : Type {
     val allocationSize: Int
 }
 
-interface Mutable : Value {
+interface Allocated : Value {
     override val type: Allocatable
 
     /**
      * Copies the value onto new allocations on the allocator.
      */
-    fun copyTo(allocator: Allocator, context: ExecutionContext): Mutable
+    fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated
 
     /**
      * Copies the value of the other value into this value.
@@ -63,7 +63,7 @@ interface Mutable : Value {
     /**
      * Used for shared/data arrays.
      */
-    fun offsetReallocate(block: RawValue, index: RawValue): Mutable
+    fun offsetReallocate(block: RawValue, index: RawValue): Allocated
 }
 
 /**

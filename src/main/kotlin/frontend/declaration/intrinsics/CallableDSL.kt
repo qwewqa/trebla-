@@ -5,7 +5,6 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
-import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.declaration.Declaration
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.Type
@@ -33,7 +32,7 @@ class CallableDSL(
         }
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value =
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value =
         parameters?.let {
             IntrinsicFunctionDSLContext(it.pairedWithAndValidated(arguments), null, callingContext).operation()
         } ?: IntrinsicFunctionDSLContext(null, arguments, callingContext).operation()
@@ -53,7 +52,7 @@ class SubscriptableDSL(
         }
     }
 
-    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context?): Value =
+    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context): Value =
         subscriptParameters?.let {
             IntrinsicFunctionDSLContext(it.pairedWithAndValidated(arguments), null, callingContext).operation()
         } ?: IntrinsicFunctionDSLContext(null, arguments, callingContext).operation()
@@ -102,7 +101,7 @@ object TreblaBooleanType : IntrinsicType(Context::booleanType)
 class IntrinsicFunctionDSLContext(
     private val _parameters: Map<Parameter, Value>?,
     private val _arguments: List<ValueArgument>?,
-    val callingContext: Context?
+    val callingContext: Context
 ) {
     val String.number
         get() = cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()

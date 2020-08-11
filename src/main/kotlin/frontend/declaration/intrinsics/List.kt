@@ -3,14 +3,13 @@ package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 import xyz.qwewqa.trebla.backend.compile.IRFunction
 import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import kotlin.math.roundToInt
 
-class TreblaList(parentContext: Context, val projectConfiguration: CompilerConfiguration) :
+class TreblaList(parentContext: Context) :
     SimpleDeclaration(
         parentContext,
         "List",
@@ -23,26 +22,51 @@ class TreblaList(parentContext: Context, val projectConfiguration: CompilerConfi
             "size" type NumberType
         },
         {
-            if (callingContext == null) compileError("Requires a context.")
-            val type = ("type".cast<Type>() as? Allocatable)
-                ?: compileError("List type must be allocatable")
+            val type = "type".cast<Type>()
             val size = "size".cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()?.roundToInt()
                 ?: compileError("List size must be a compile time constant.")
             SpecificListType(size, type, callingContext)
-        }
+        },
     ),
     Type
 
-class SpecificListType(val size: Int, val containedType: Allocatable, override val bindingContext: Context) : Type,
+class ListOf(context: Context) :
+    SimpleDeclaration(
+        context,
+        "listOf",
+        CallableType
+    ),
+    Callable by CallableDSL(
+        context,
+        {
+            unmanaged
+        },
+        {
+            if (arguments.any { it.name != null }) compileError("listOf requires only unnamed arguments.")
+            val values = arguments.map { it.value }
+            val type = values.map { it.type }.toSet().let {
+                if (it.size == 1) it.first() else AnyType
+            }
+            ListValue(callingContext, SpecificListType(arguments.size, type, callingContext), values)
+        },
+    )
+
+class SpecificListType(val size: Int, val containedType: Type, override val bindingContext: Context) : Type,
     Allocatable {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "List") as Type))
 
-    override fun allocateOn(allocator: Allocator, context: Context): Mutable {
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated {
+        if (containedType !is Allocatable) {
+            compileError("List allocation is only possible for lists with allocatable types.")
+        }
         return ListValue(context, this, List(size) { containedType.allocateOn(allocator, context) })
     }
 
     override val allocationSize by lazy {
+        if (containedType !is Allocatable) {
+            compileError("List not sized because the contained type is not sized.")
+        }
         size * containedType.allocationSize
     }
 
@@ -56,7 +80,7 @@ class SpecificListType(val size: Int, val containedType: Allocatable, override v
     }
 }
 
-class ListValue(val parentContext: Context, override val type: Allocatable, val values: List<Mutable>) : Mutable,
+class ListValue(val parentContext: Context, override val type: Allocatable, val values: List<Value>) : Allocated,
     MemberAccessor,
     Subscriptable {
     override val bindingContext = parentContext
@@ -67,7 +91,7 @@ class ListValue(val parentContext: Context, override val type: Allocatable, val 
         )
     }
 
-    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
+    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val index = (subscriptParameters.pairedWithAndValidated(arguments).values.first() as RawStructValue).raw.toIR()
             .tryConstexprEvaluate()?.roundToInt()
             ?: compileError("List index must be a compile time constant.")
@@ -75,17 +99,32 @@ class ListValue(val parentContext: Context, override val type: Allocatable, val 
         return values[index]
     }
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): Mutable {
-        return ListValue(parentContext, type, values.map { it.offsetReallocate(block, index) })
-    }
+    override fun offsetReallocate(block: RawValue, index: RawValue): Allocated =
+        ListValue(
+            parentContext,
+            type,
+            values.map {
+                (it as? Allocated)?.offsetReallocate(block, index)
+                    ?: compileError("Reallocation not possible for lists containing non-allocated values")
+            }
+        )
 
-    override fun copyTo(allocator: Allocator, context: ExecutionContext): Mutable {
-        return ListValue(context, type, values.map { it.copyTo(allocator, context) })
-    }
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated =
+        ListValue(
+            context,
+            type,
+            values.map {
+                (it as? Allocated)?.copyTo(allocator, context)
+                    ?: compileError("Copying not possible for lists containing non-allocated values")
+            }
+        )
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
         if (other is ListValue && other.type == type) {
-            values.zip(other.values).forEach { (v, o) -> v.copyFrom(o, context) }
+            values.zip(other.values).forEach { (v, o) ->
+                if (v !is Allocated || o !is Allocated) compileError("Assignment not possible for non-allocated values.")
+                v.copyFrom(o, context)
+            }
         } else {
             compileError("Incompatible assignment.")
         }
@@ -118,7 +157,7 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val args = parameters.pairedWithAndValidated(arguments).byParameterName()
         val operation = args["operation"] as Callable
         val start = (args["start"] as? RawStructValue)?.raw?.let {
@@ -158,7 +197,7 @@ class ListGet(val context: Context, val listValue: ListValue) : Callable, Value 
         )
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val index = parameters.pairedWithAndValidated(arguments).byParameterName()["index"] as RawStructValue
         if (callingContext !is ExecutionContext) compileError("Dynamic list get requires an execution context.")
         val types = listValue.values.map { it.type }.toSet()

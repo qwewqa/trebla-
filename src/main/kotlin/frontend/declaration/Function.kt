@@ -75,11 +75,10 @@ class FunctionDeclaration(
         return BoundFunction(context, value, this)
     }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val statements = node.body.value
         val pairedArguments = parameters.pairedWithAndValidated(arguments)
 
-        if (callingContext == null) compileError("Function call requires a context.")
         if (callingContext !is ExecutionContext) {
             // we allow single or zero expressions even in non-execution contexts
             val returnValue = when (statements.size) {
@@ -134,7 +133,7 @@ class BoundFunction(
     override val isOperator = function.isOperator
     override val isInfix = function.isInfix
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?) =
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context) =
         function.callWith(
             listOf(
                 ValueArgument(

@@ -1,19 +1,16 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
-open class PointerValue(
+class PointerValue(
     override val bindingContext: Context,
-    val insideType: Allocatable,
+    override val type: SpecificPointerType,
     val block: RawStructValue,
     val index: RawStructValue,
-) : Mutable, MemberAccessor, Dereferenceable {
-    override val type = PointerType(insideType)
-
+) : Allocated, MemberAccessor, Dereferenceable {
     override fun getMember(name: String, accessingContext: Context?): Value? = when (name) {
         "block" -> this.block
         "index" -> this.index
@@ -21,136 +18,127 @@ open class PointerValue(
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
-        if (other !is PointerValue || other.insideType != insideType) {
+        if (other !is PointerValue || other.type != type) {
             compileError("Incompatible assignment.")
         }
         block.copyFrom(other.block, context)
         index.copyFrom(other.index, context)
     }
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): Mutable = PointerValue(
+    override fun offsetReallocate(block: RawValue, index: RawValue): Allocated = PointerValue(
         bindingContext,
-        insideType,
+        type,
         this.block.offsetReallocate(block, index),
         this.index.offsetReallocate(block, index),
     )
 
-    override fun copyTo(allocator: Allocator, context: ExecutionContext): Mutable = PointerValue(
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = PointerValue(
         bindingContext,
-        insideType,
+        type,
         block.copyTo(allocator, context),
         index.copyTo(allocator, context),
     )
 
-    override fun deref(context: Context) = insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+    override fun deref(context: Context): Value = type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
 }
 
 interface Dereferenceable {
-    fun deref(context: Context): Mutable
+    fun deref(context: Context): Value
 }
 
-/**
- * An immutable pointer, resulting from a property initialized with a box.
- * Just gives a slightly more helpful error message.
- */
-class ImmutablePointer(bindingContext: Context, insideType: Allocatable, block: RawStructValue, index: RawStructValue) :
-    PointerValue(bindingContext, insideType, block, index) {
-    override fun copyFrom(other: Value, context: ExecutionContext) {
-        compileError("Pointer is immutable.")
-    }
-}
-
-class DerefFunction(parentContext: Context, config: CompilerConfiguration) :
+class Deref(context: Context) :
     SimpleDeclaration(
-        parentContext,
+        context,
         "deref",
         CallableType
     ),
     Callable by CallableDSL(
-        parentContext,
+        context,
         {
             "pointer" type AnyType
         },
         {
-            if (callingContext == null) compileError("Deref requires a context.")
             val value = ("pointer".cast<Value>() as? PointerValue) ?: compileError("Not a pointer.")
             value.deref(callingContext)
         }
     )
 
-class BoxFunction(parentContext: Context, config: CompilerConfiguration) :
+class BoxCallable(context: Context) :
     SimpleDeclaration(
-        parentContext,
+        context,
         "box",
         CallableType
     ),
     Callable by CallableDSL(
-        parentContext,
+        context,
         {
             "value" type AnyType
         },
         {
-            if (callingContext == null) compileError("Box requires a context.")
             val value = "value".cast<Value>()
-            if (value !is Mutable) compileError("Only mutable values can be boxed.")
+            if (value !is Allocated) compileError("Only mutable values can be boxed.")
             TransientBoxValue(callingContext, value)
         }
     )
 
-data class PointerType(val insideType: Allocatable) : Allocatable {
-    override val type = TypeType
-    override val bindingContext: Context? = null
-    override val allocationSize = 2
+class Pointer(context: Context) :
+    SimpleDeclaration(
+        context,
+        "Pointer",
+        TypeType
+    ),
+    Subscriptable by SubscriptableDSL(
+        context,
+        {
+            "type" type TypeType
+        },
+        {
+            val type =
+                ("type".cast<Type>() as? Allocatable) ?: compileError("Only pointers to allocatable types are allowed.")
+            SpecificPointerType(callingContext, type)
+        }
+    ),
+    Type
 
-    override fun allocateOn(allocator: Allocator, context: Context): Mutable {
+class SpecificPointerType(context: Context, val insideType: Allocatable) :
+    Callable,
+    Allocatable {
+    val callableDelegate = CallableDSL(
+        context,
+        {
+            "block" type NumberType
+            "index" type NumberType
+        },
+        {
+            PointerValue(
+                context,
+                this@SpecificPointerType, // this not exposed in delegation through the by keyword
+                "block".cast(),
+                "index".cast(),
+            )
+        }
+    )
+
+    override val parameters: List<Parameter>?
+        get() = callableDelegate.parameters
+
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context) =
+        callableDelegate.callWith(arguments, callingContext)
+
+    override val type = TypeType
+    override val bindingContext = context
+    override val allocationSize = 2
+    override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "Pointer") as Type))
+
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         return PointerValue(
             context,
-            insideType,
+            this,
             RawStructValue(AllocatedRawValue(allocator.allocate()), context, context.numberType),
             RawStructValue(AllocatedRawValue(allocator.allocate()), context, context.numberType),
         )
     }
-}
 
-/**
- * A box is a special value, which when used as a property initializer,
- * allocates itself on the respective block and returns an immutable pointer (location known at compile time),
- * which the property takes as its value.
- */
-class TransientBoxValue(override val bindingContext: Context, val inside: Mutable) : Mutable {
-    override val type = TransientBoxType
-
-    override fun copyTo(allocator: Allocator, context: ExecutionContext): Mutable {
-        val ptr = when (allocator) {
-            is StandardAllocator -> allocator.allocateContiguous(inside.type.allocationSize)
-            else -> compileError("Invalid location or property type for box.")
-        }
-        val dyn = DynamicAllocator(ptr.block.toLiteralRawValue(), ptr.index.toLiteralRawValue())
-        val new = inside.copyTo(dyn, context)
-        return ImmutablePointer(
-            bindingContext,
-            new.type,
-            RawStructValue(ptr.block.toLiteralRawValue(), bindingContext, context.numberType),
-            RawStructValue(ptr.index.toLiteralRawValue(), bindingContext, context.numberType),
-        )
-    }
-
-    override fun copyFrom(other: Value, context: ExecutionContext) {
-        compileError("Assignment to a transient box is not allowed.")
-    }
-
-    override fun offsetReallocate(block: RawValue, index: RawValue): Mutable {
-        // The only place this should be called is as the result of a property
-        // But after copying (copyOn), this should have turned into a normal box
-        error("Unexpected call.")
-    }
-}
-
-object TransientBoxType : BuiltinType("TransientBox"), Allocatable {
-    override val allocationSize: Int
-        get() = compileError("A transient box is not sized.")
-
-    override fun allocateOn(allocator: Allocator, context: Context): Mutable {
-        compileError("A transient box cannot be allocated.")
-    }
+    override fun equals(other: Any?) = other is SpecificPointerType && other.insideType == insideType
+    override fun hashCode() = insideType.hashCode()
 }

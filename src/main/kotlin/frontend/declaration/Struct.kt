@@ -29,7 +29,7 @@ class StructDeclaration(
     val fieldNames by lazy { fields.map { it.name }.toSet() }
     override val parameters by lazy { fields }
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context?): Mutable {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Allocated {
         if (!isRaw) {
             return NormalStructValue(fields.pairedWithAndValidated(arguments).byParameterName(),
                 callingContext,
@@ -44,7 +44,7 @@ class StructDeclaration(
         }
     }
 
-    override fun allocateOn(allocator: Allocator, context: Context): Mutable {
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         return if (isRaw) RawStructValue(AllocatedRawValue(allocator.allocate()), context, this)
         else callWith(parameters.map {
             ValueArgument(
@@ -80,7 +80,7 @@ object StructType : BuiltinType("Struct")
 sealed class StructValue(
     override var bindingContext: Context?,
     override val type: StructDeclaration,
-) : Value, Mutable
+) : Value, Allocated
 
 class NormalStructValue(
     val fields: Map<String, Value>,
@@ -90,8 +90,8 @@ class NormalStructValue(
     override fun copyTo(allocator: Allocator, context: ExecutionContext): StructValue {
         return NormalStructValue(fields.mapValues { (_, value) ->
             when (value) {
-                is Mutable -> value.copyTo(allocator, context)
-                !is Mutable -> value
+                is Allocated -> value.copyTo(allocator, context)
+                !is Allocated -> value
                 else -> compileError("Invalid copy.")
             }
         }, bindingContext, type)
@@ -100,17 +100,17 @@ class NormalStructValue(
     override fun copyFrom(other: Value, context: ExecutionContext) {
         if (other !is NormalStructValue || type != other.type) compileError("Incompatible assigment.")
         fields.forEach { (name, value) ->
-            if (value is Mutable) value.copyFrom(other.fields.getValue(name), context)
+            if (value is Allocated) value.copyFrom(other.fields.getValue(name), context)
             else if (value != other.fields.getValue(name)) compileError("Invalid assigment.")
         }
     }
 
     override fun getMember(name: String, accessingContext: Context?): Value? = fields[name]
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): Mutable {
+    override fun offsetReallocate(block: RawValue, index: RawValue): Allocated {
         return NormalStructValue(
             fields.mapValues { (_, v) ->
-                (v as? Mutable)?.offsetReallocate(block, index) ?: v
+                (v as? Allocated)?.offsetReallocate(block, index) ?: v
             },
             bindingContext,
             type,

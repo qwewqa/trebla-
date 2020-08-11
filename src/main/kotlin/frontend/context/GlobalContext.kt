@@ -76,7 +76,7 @@ class GlobalContext(override val configuration: CompilerConfiguration) : GlobalA
         intrinsicObjects.forEach { (pkg, declaration) -> declaration.applyTo(getPackage(pkg)) }
         intrinsics.forEach { (pkg, declaration) ->
             val target = getPackage(pkg)
-            declaration(target, configuration).applyTo(target)
+            declaration(target).applyTo(target)
         }
     }
 }
@@ -105,7 +105,7 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
 )
 
 // constructors for intrinsics that require the context
-val intrinsics: List<Pair<List<String>, (Context, CompilerConfiguration) -> Expression>> = listOf(
+val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::Memref,
     listOf("std") to ::OptionsAccessor,
     listOf("std") to ::EntityPtr,
@@ -113,6 +113,11 @@ val intrinsics: List<Pair<List<String>, (Context, CompilerConfiguration) -> Expr
     listOf("std") to ::LocalContext,
     listOf("std") to ::WithContext,
     listOf("std") to ::ExecuteBuiltin,
-    listOf("std") to ::BoxFunction,
-    listOf("std") to ::DerefFunction,
+    listOf("std") to ::BoxCallable,
+    listOf("std") to ::Deref,
+    listOf("std") to ::Pointer,
+    listOf("std") to ::ListOf,
+    listOf("std") to ::Box,
+    listOf("std") to ::ResolveBoxPointer,
+    listOf("std") to ::ResolveLocalBoxPointer,
 )

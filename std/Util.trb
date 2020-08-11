@@ -32,3 +32,8 @@ func Any.also(block: Callable): Any {
 }
 
 func Raw.execute() = executeBuiltin(this)
+
+operator func Type.deref() = Pointer[this]
+
+func Box.pointer() = resolveBoxPointer(this, entityIndex)
+func Box.localPointer() = resolveLocalBoxPointer(this)
