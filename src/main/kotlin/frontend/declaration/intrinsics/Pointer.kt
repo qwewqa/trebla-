@@ -5,83 +5,6 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
-class PointerValue(
-    override val bindingContext: Context,
-    override val type: SpecificPointerType,
-    val block: RawStructValue,
-    val index: RawStructValue,
-) : Allocated, MemberAccessor, Dereferenceable {
-    override fun getMember(name: String, accessingContext: Context?): Value? = when (name) {
-        "block" -> this.block
-        "index" -> this.index
-        else -> null
-    }
-
-    override fun copyFrom(other: Value, context: ExecutionContext) {
-        if (other !is PointerValue || other.type != type) {
-            compileError("Incompatible assignment.")
-        }
-        block.copyFrom(other.block, context)
-        index.copyFrom(other.index, context)
-    }
-
-    override fun offsetReallocate(block: RawValue, index: RawValue): Allocated = PointerValue(
-        bindingContext,
-        type,
-        this.block.offsetReallocate(block, index),
-        this.index.offsetReallocate(block, index),
-    )
-
-    override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = PointerValue(
-        bindingContext,
-        type,
-        block.copyTo(allocator, context),
-        index.copyTo(allocator, context),
-    )
-
-    override fun deref(context: Context): Value =
-        type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
-}
-
-interface Dereferenceable {
-    fun deref(context: Context): Value
-}
-
-class Deref(context: Context) :
-    SimpleDeclaration(
-        context,
-        "deref",
-        CallableType
-    ),
-    Callable by CallableDSL(
-        context,
-        {
-            "pointer" type AnyType
-        },
-        {
-            val value = ("pointer".cast<Value>() as? PointerValue) ?: compileError("Not a pointer.")
-            value.deref(callingContext)
-        }
-    )
-
-class BoxCallable(context: Context) :
-    SimpleDeclaration(
-        context,
-        "box",
-        CallableType
-    ),
-    Callable by CallableDSL(
-        context,
-        {
-            "value" type AnyType
-        },
-        {
-            val value = "value".cast<Value>()
-            if (value !is Allocated) compileError("Only mutable values can be boxed.")
-            TransientBoxValue(callingContext, value)
-        }
-    )
-
 class Pointer(context: Context) :
     SimpleDeclaration(
         context,
@@ -143,3 +66,65 @@ class SpecificPointerType(context: Context, val insideType: Allocatable) :
     override fun equals(other: Any?) = other is SpecificPointerType && other.insideType == insideType
     override fun hashCode() = insideType.hashCode()
 }
+
+class PointerValue(
+    override val bindingContext: Context,
+    override val type: SpecificPointerType,
+    val block: RawStructValue,
+    val index: RawStructValue,
+) : Allocated, MemberAccessor, Dereferenceable {
+    override fun getMember(name: String, accessingContext: Context?): Value? = when (name) {
+        "block" -> this.block
+        "index" -> this.index
+        else -> null
+    }
+
+    override fun copyFrom(other: Value, context: ExecutionContext) {
+        if (other !is PointerValue || other.type != type) {
+            compileError("Incompatible assignment.")
+        }
+        block.copyFrom(other.block, context)
+        index.copyFrom(other.index, context)
+    }
+
+    // In the case of local pointers, accessing this won't exactly give a meaningful result
+    // (Entity Memory is different if you access the pointer from another entity)
+    // Global pointers (to shared/data) are still meaningful, so this is allowed.
+    override fun offsetReallocate(offset: RawValue): Allocated = PointerValue(
+        bindingContext,
+        type,
+        this.block.offsetReallocate(offset),
+        this.index.offsetReallocate(offset),
+    )
+
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = PointerValue(
+        bindingContext,
+        type,
+        block.copyTo(allocator, context),
+        index.copyTo(allocator, context),
+    )
+
+    override fun deref(context: Context): Value =
+        type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+}
+
+interface Dereferenceable {
+    fun deref(context: Context): Value
+}
+
+class Deref(context: Context) :
+    SimpleDeclaration(
+        context,
+        "deref",
+        CallableType
+    ),
+    Callable by CallableDSL(
+        context,
+        {
+            "pointer" type AnyType
+        },
+        {
+            val value = ("pointer".cast<Value>() as? PointerValue) ?: compileError("Not a pointer.")
+            value.deref(callingContext)
+        }
+    )

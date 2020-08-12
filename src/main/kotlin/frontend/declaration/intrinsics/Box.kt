@@ -41,7 +41,9 @@ class BoxValue(
     }
 
     override fun deref(context: Context): Value =
-        type.insideType.allocateOn(DynamicAllocator(blockStruct.raw, indexStruct.raw), context)
+        type.insideType.allocateOn(StandardAllocator(block,
+            64 /* will point to a valid struct anyways, so size doesn't matter */,
+            index), context)
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated {
         compileError("Box cannot be copied.")
@@ -51,8 +53,33 @@ class BoxValue(
         compileError("Box cannot be mutated.")
     }
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): Allocated {
-        compileError("Box cannot be reallocated.")
+    override fun offsetReallocate(offset: RawValue): Allocated {
+        // Returns a pointer, since a box is really only meaningful when local.
+        // Effectively does the same thing as turning this into a (nonlocal) pointer
+        return PointerValue(
+            bindingContext,
+            SpecificPointerType(bindingContext, type.insideType),
+            RawStructValue(
+                when (block) {
+                    ENTITY_SHARED_MEMORY -> ENTITY_SHARED_MEMORY_ARRAY
+                    ENTITY_DATA -> ENTITY_DATA_ARRAY
+                    else -> compileError("Only data and shared allocated structs can be reallocated.")
+                }.toLiteralRawValue(),
+                bindingContext,
+                bindingContext.numberType
+            ),
+            RawStructValue(
+                BuiltinCallRawValue(
+                    IRFunction.Add,
+                    listOf(
+                        offset,
+                        index.toLiteralRawValue()
+                    )
+                ),
+                bindingContext,
+                bindingContext.numberType
+            )
+        )
     }
 }
 
@@ -99,7 +126,6 @@ class ResolveBoxPointer(context: Context) :
                 ENTITY_SHARED_MEMORY -> ENTITY_SHARED_MEMORY_ARRAY
                 else -> compileError("Box pointer only exists for data and shared memory.")
             }
-            val coef = 32 // same for both arrays, currently
             PointerValue(
                 callingContext,
                 SpecificPointerType(callingContext, box.type.insideType),
@@ -112,7 +138,7 @@ class ResolveBoxPointer(context: Context) :
                                 IRFunction.Multiply,
                                 listOf(
                                     entityIndex.raw,
-                                    coef.toLiteralRawValue()
+                                    SHARED_BLOCK_SIZE.toLiteralRawValue()
                                 )
                             ),
                             box.index.toLiteralRawValue()
@@ -174,7 +200,7 @@ class TransientBoxValue(override val bindingContext: Context, val inside: Alloca
         compileError("Assignment to a transient box is not allowed.")
     }
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): Allocated {
+    override fun offsetReallocate(offset: RawValue): Allocated {
         // The only place this should be called is as the result of a property
         // But after copying (copyOn), this should have turned into a normal box
         error("Unexpected call.")
@@ -189,3 +215,21 @@ object TransientBoxType : BuiltinType("TransientBox"), Allocatable {
         compileError("A transient box cannot be allocated.")
     }
 }
+
+class BoxCallable(context: Context) :
+    SimpleDeclaration(
+        context,
+        "box",
+        CallableType
+    ),
+    Callable by CallableDSL(
+        context,
+        {
+            "value" type AnyType
+        },
+        {
+            val value = "value".cast<Value>()
+            if (value !is Allocated) compileError("Only mutable values can be boxed.")
+            TransientBoxValue(callingContext, value)
+        }
+    )

@@ -22,6 +22,18 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
 
     var index = parentContext.configuration.sharedState.scriptIndex.getAndIncrement()
 
+    /*
+    There are 3 contexts here:
+    - initializationContext: scope is script, executes in initialize callback
+    - initializeCallback: scope is initialize callback, executes in initialize callback
+    - this (script): scope is script, no execution
+
+    Properties can use initializationContext because the update the scope of the script,
+    but won't leak temporary variables since they copy.
+    Other declarations (that is, let declarations), however, must not leak temporary variables,
+    and thus cannot have an execution context.
+     */
+
     private val initializeCallback = Callback(this, 0, CallbackName.Initialize, this)
     private val initializationContext = ScriptInitializationContext(this, initializeCallback)
 
@@ -49,26 +61,26 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
             .associate { it.identifier to it.applyTo(initializationContext) }
     }
 
+    val letDeclarations by lazy {
+        node.body.value
+            .filterIsInstance<LetDeclarationNode>()
+            .map { it.parse(initializationContext) }
+            .let { exprs ->
+                exprs.forEach { it.applyTo(this) }
+                exprs.associate { it.identifier to this.scope.get(it.identifier) }
+            }
+    }
+
     fun process(): ScriptData {
         // make sure lazy properties have fired
         spawnProperties
         dataProperties
         sharedProperties
+        letDeclarations
 
         val callbacks = mutableListOf(initializeCallback)
         val propertyDeclarationsByNode = propertyDeclarations.associateBy { it.node }
         node.body.value.forEach { memberNode ->
-            /*
-            There are 3 contexts here:
-            - initializationContext: scope is script, executes in initialize callback
-            - initializeCallback: scope is initialize callback, executes in initialize callback
-            - this (script): scope is script, no execution
-
-            Properties can use initializationContext because the update the scope of the script,
-            but won't leak temporary variables since they copy.
-            Other declarations (that is, let declarations), however, must not leak temporary variables,
-            and thus cannot have an execution context.
-             */
             when (memberNode) {
                 is PropertyDeclarationNode -> {
                     propertyDeclarationsByNode[memberNode]?.let {
@@ -77,6 +89,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
                         )
                     }
                 }
+                is LetDeclarationNode -> {} // Already dealt with in the letDeclarations property
                 is InitBlockNode -> memberNode.body.value.forEach { it.parseAndApplyTo(initializeCallback) }
                 is CallbackDeclarationNode -> CallbackDeclaration(memberNode, this).let {
                     it.applyTo(this)

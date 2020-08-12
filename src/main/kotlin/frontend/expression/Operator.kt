@@ -58,7 +58,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
     }
 
     private fun doAssignment(lhs: Value, rhs: Value, context: Context) {
-        if (lhs !is Allocated) compileError("Invalid assignment.")
+        if (lhs !is Allocated) compileError("Invalid assignment. Left hand side is not allocated.")
         if (context !is ExecutionContext) compileError("Invalid location for assignment.")
         lhs.copyFrom(rhs, context)
     }

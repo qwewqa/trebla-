@@ -26,7 +26,7 @@ interface Type : Value {
 
 fun Type.accepts(other: Value) = accepts(other.type)
 
-abstract class BuiltinType(override val identifier: String) : Type, Declaration {
+open class BuiltinType(override val identifier: String) : Type, Declaration {
     override val type: Type = TypeType
     override val bindingContext: Context? = null
     override val parentContext: Context? = null

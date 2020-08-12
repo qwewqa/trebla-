@@ -1,5 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
+import xyz.qwewqa.trebla.backend.constexpr.constexprEvaluate
+import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -107,10 +109,10 @@ class NormalStructValue(
 
     override fun getMember(name: String, accessingContext: Context?): Value? = fields[name]
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): Allocated {
+    override fun offsetReallocate(offset: RawValue): Allocated {
         return NormalStructValue(
             fields.mapValues { (_, v) ->
-                (v as? Allocated)?.offsetReallocate(block, index) ?: v
+                (v as? Allocated)?.offsetReallocate(offset) ?: v
             },
             bindingContext,
             type,
@@ -131,23 +133,38 @@ class RawStructValue(
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
         if (other !is RawStructValue || type != other.type) compileError("Incompatible assigment.")
-        context.statements += when (raw) {
-            is AllocatedRawValue -> AllocatedValueAssignment(raw, other.raw)
-            else -> compileError("Value is not mutable.")
+        when (raw) {
+            is AllocatedRawValue -> context.statements += AllocatedValueAssignment(raw, other.raw)
+            else -> {
+                val thisValue = raw.toIR().tryConstexprEvaluate()
+                val otherValue = other.raw.toIR().tryConstexprEvaluate()
+                if (thisValue == null || thisValue != otherValue) compileError("Value is not mutable.")
+            }
         }
     }
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): RawStructValue {
+    override fun offsetReallocate(offset: RawValue): RawStructValue {
         return when (raw) {
             is AllocatedRawValue -> when (raw.allocation) {
                 is ConcreteAllocation -> RawStructValue(
-                    AllocatedRawValue(DynamicAllocation(block, index, raw.allocation.index.toLiteralRawValue())),
+                    AllocatedRawValue(
+                        DynamicAllocation(
+                            when (this.raw.allocation.block) {
+                                ENTITY_SHARED_MEMORY -> ENTITY_SHARED_MEMORY_ARRAY
+                                ENTITY_DATA -> ENTITY_DATA_ARRAY
+                                else -> compileError("Only data and shared allocated structs can be reallocated.")
+                            }.toLiteralRawValue(),
+                            offset,
+                            raw.allocation.index.toLiteralRawValue()
+                        )
+                    ),
                     bindingContext,
                     type
                 )
                 else -> compileError("Reallocation not available for dynamic or temporary allocated raw structs.")
             }
-            else -> compileError("Reallocation not available for non-allocated raw structs.")
+            is LiteralRawValue -> this
+            else -> compileError("Reallocation only available for allocated or constant raw structs.")
         }
     }
 }

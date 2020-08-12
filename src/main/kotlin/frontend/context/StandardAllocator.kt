@@ -8,8 +8,8 @@ sealed class Allocator {
     abstract fun allocate(): Allocation
 }
 
-class StandardAllocator(val block: Int, val size: Int) : Allocator() {
-    var index = 0
+class StandardAllocator(val block: Int, val size: Int, startIndex: Int = 0) : Allocator() {
+    var index = startIndex
         private set
 
     override fun allocate() =
@@ -77,3 +77,4 @@ const val ENTITY_INPUT = 23
 const val ENTITY_SHARED_MEMORY = 24
 const val TEMPORARY_MEMORY = 100
 const val TEMPORARY_DATA = 101
+const val SHARED_BLOCK_SIZE = 32

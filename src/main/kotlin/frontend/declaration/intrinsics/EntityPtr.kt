@@ -1,50 +1,113 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.ENTITY_DATA_ARRAY
-import xyz.qwewqa.trebla.frontend.context.ENTITY_SHARED_MEMORY_ARRAY
-import xyz.qwewqa.trebla.frontend.context.MemberAccessor
+import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
-import xyz.qwewqa.trebla.frontend.expression.Callable
-import xyz.qwewqa.trebla.frontend.expression.Value
-import xyz.qwewqa.trebla.frontend.expression.toLiteralRawValue
+import xyz.qwewqa.trebla.frontend.expression.*
 
-class EntityPtr(parentContext: Context) :
+class EntityPointer(context: Context) :
     SimpleDeclaration(
-        parentContext,
-        "entityOffsetPtr",
-        CallableType,
+        context,
+        "EntityPointer",
+        TypeType
     ),
-    Callable by CallableDSL(
-        parentContext,
+    Subscriptable by SubscriptableDSL(
+        context,
         {
-            "index" type NumberType
             "script" type ScriptType
         },
         {
-            EntityPointer("index".cast(), "script".cast(), callingContext)
+            SpecificEntityPointerType(callingContext, "script".cast())
+        }
+    ),
+    Type
+
+class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration) :
+    Callable,
+    Allocatable {
+    val callableDelegate = CallableDSL(
+        context,
+        {
+            "index" type NumberType
+        },
+        {
+            EntityPointerValue(
+                RawStructValue(
+                    BuiltinCallRawValue(
+                        IRFunction.Multiply,
+                        listOf(
+                            "index".cast<RawStructValue>().raw,
+                            SHARED_BLOCK_SIZE.toLiteralRawValue()
+                        )
+                    ),
+                    callingContext,
+                    context.numberType
+                ),
+                this@SpecificEntityPointerType,
+                callingContext
+            )
         },
     )
 
-class EntityPointer(val index: RawStructValue, val script: ScriptDeclaration, override val bindingContext: Context?) :
-    MemberAccessor {
-    override val type = AnyType
+    override val parameters: List<Parameter>?
+        get() = callableDelegate.parameters
+
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context) =
+        callableDelegate.callWith(arguments, callingContext)
+
+    override val type = TypeType
+    override val bindingContext = context
+    override val allocationSize = 1
+    override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "EntityPointer") as Type))
+
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated {
+        return EntityPointerValue(
+            RawStructValue(AllocatedRawValue(allocator.allocate()), context, context.numberType),
+            this,
+            context
+        )
+    }
+
+    override fun equals(other: Any?) = other is SpecificEntityPointerType && other.script == script
+    override fun hashCode() = script.hashCode()
+}
+
+
+class EntityPointerValue(
+    val offset: RawStructValue, // this is the offset, not index (offset = index * 32 currently)
+    override val type: SpecificEntityPointerType,
+    override val bindingContext: Context?,
+) : MemberAccessor,
+    Allocated {
+    val script = type.script
 
     override fun getMember(name: String, accessingContext: Context?): Value? {
-        return when {
-            name in script.dataProperties -> {
-                script.dataProperties.getValue(name).offsetReallocate(
-                    ENTITY_DATA_ARRAY.toLiteralRawValue(),
-                    index.raw,
-                )
-            }
-            name in script.sharedProperties -> {
-                script.sharedProperties.getValue(name).offsetReallocate(
-                    ENTITY_SHARED_MEMORY_ARRAY.toLiteralRawValue(),
-                    index.raw,
-                )
-            }
-            else -> null
+        if (accessingContext == null) compileError("Requires a context.")
+        return (script.dataProperties[name] ?: script.sharedProperties[name] ?: script.letDeclarations[name])?.let {
+            // This could indeed leak some values in an entity like functions (via a let declaration or within a struct)
+            // Trying to use such a value would lead to undefined behavior
+            if (it is Allocated) it.offsetReallocate(offset.raw)
+            else it
         }
     }
+
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = EntityPointerValue(
+        offset.copyTo(allocator, context),
+        type,
+        bindingContext
+    )
+
+    override fun copyFrom(other: Value, context: ExecutionContext) {
+        if (other !is EntityPointerValue || other.type != type) {
+            compileError("Incompatible assignment.")
+        }
+        offset.copyFrom(other.offset, context)
+    }
+
+    override fun offsetReallocate(offset: RawValue): Allocated = EntityPointerValue(
+        this.offset.offsetReallocate(offset),
+        type,
+        bindingContext
+    )
 }

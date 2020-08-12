@@ -47,23 +47,33 @@ interface Allocatable : Type {
     val allocationSize: Int
 }
 
+/**
+ * A value that could be allocated in memory (but not necessarily so in all circumstances).
+ * When not actually allocated in memory, some methods may throw compile errors.
+ */
 interface Allocated : Value {
     override val type: Allocatable
 
     /**
      * Copies the value onto new allocations on the allocator.
+     * This should keep the current binding context in the new value.
      */
     fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated
 
     /**
      * Copies the value of the other value into this value.
+     * This should keep the current binding context.
      */
     fun copyFrom(other: Value, context: ExecutionContext)
 
     /**
      * Used for shared/data arrays.
+     * Reallocates with the particular offset, where possible for shared and data allocated values.
+     * Otherwise should throw a compile error.
+     * Working assumption is that both shared and data have a size of 32 * entities, so only a single offset is needed.
+     * [offset] can then just be a Get call from an already computed 32*entities rather than multiplying each time.
      */
-    fun offsetReallocate(block: RawValue, index: RawValue): Allocated
+    fun offsetReallocate(offset: RawValue): Allocated
 }
 
 /**

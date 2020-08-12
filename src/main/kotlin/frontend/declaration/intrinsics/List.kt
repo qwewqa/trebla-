@@ -99,12 +99,12 @@ class ListValue(val parentContext: Context, override val type: Allocatable, val 
         return values[index]
     }
 
-    override fun offsetReallocate(block: RawValue, index: RawValue): Allocated =
+    override fun offsetReallocate(offset: RawValue): Allocated =
         ListValue(
             parentContext,
             type,
             values.map {
-                (it as? Allocated)?.offsetReallocate(block, index)
+                (it as? Allocated)?.offsetReallocate(offset)
                     ?: compileError("Reallocation not possible for lists containing non-allocated values")
             }
         )
