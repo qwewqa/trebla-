@@ -13,7 +13,7 @@ import xyz.qwewqa.trebla.frontend.expression.rawType
 class ExecuteBuiltin(context: Context) :
     SimpleDeclaration(
         context,
-       "executeBuiltin",
+        "executeBuiltin",
         CallableType
     ),
     Callable by CallableDSL(

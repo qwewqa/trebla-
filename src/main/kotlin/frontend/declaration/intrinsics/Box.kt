@@ -40,7 +40,8 @@ class BoxValue(
         else -> null
     }
 
-    override fun deref(context: Context): Value = type.insideType.allocateOn(DynamicAllocator(blockStruct.raw, indexStruct.raw), context)
+    override fun deref(context: Context): Value =
+        type.insideType.allocateOn(DynamicAllocator(blockStruct.raw, indexStruct.raw), context)
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated {
         compileError("Box cannot be copied.")
@@ -103,23 +104,23 @@ class ResolveBoxPointer(context: Context) :
                 callingContext,
                 SpecificPointerType(callingContext, box.type.insideType),
                 RawStructValue(newBlock.toLiteralRawValue(), callingContext, context.numberType),
-                        RawStructValue(
+                RawStructValue(
+                    BuiltinCallRawValue(
+                        IRFunction.Add,
+                        listOf(
                             BuiltinCallRawValue(
-                                IRFunction.Add,
+                                IRFunction.Multiply,
                                 listOf(
-                                    BuiltinCallRawValue(
-                                        IRFunction.Multiply,
-                                        listOf(
-                                            entityIndex.raw,
-                                            coef.toLiteralRawValue()
-                                        )
-                                    ),
-                                    box.index.toLiteralRawValue()
+                                    entityIndex.raw,
+                                    coef.toLiteralRawValue()
                                 )
                             ),
-                            callingContext,
-                            context.numberType
+                            box.index.toLiteralRawValue()
                         )
+                    ),
+                    callingContext,
+                    context.numberType
+                )
             )
         }
     )

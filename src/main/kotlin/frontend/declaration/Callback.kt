@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
-import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.compile.IRValue
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*

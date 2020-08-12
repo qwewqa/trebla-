@@ -101,7 +101,7 @@ object TreblaBooleanType : IntrinsicType(Context::booleanType)
 class IntrinsicFunctionDSLContext(
     private val _parameters: Map<Parameter, Value>?,
     private val _arguments: List<ValueArgument>?,
-    val callingContext: Context
+    val callingContext: Context,
 ) {
     val String.number
         get() = cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()

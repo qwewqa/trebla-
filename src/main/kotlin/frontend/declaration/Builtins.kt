@@ -3,7 +3,10 @@ package xyz.qwewqa.trebla.frontend.declaration
 import xyz.qwewqa.trebla.backend.compile.IRFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.frontend.expression.BuiltinCallRawValue
+import xyz.qwewqa.trebla.frontend.expression.Callable
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.expression.ValueArgument
 
 /**
  * A special entity which provides access to builtin functions (Sonolus node function).

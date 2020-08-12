@@ -39,7 +39,8 @@ class PointerValue(
         index.copyTo(allocator, context),
     )
 
-    override fun deref(context: Context): Value = type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+    override fun deref(context: Context): Value =
+        type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
 }
 
 interface Dereferenceable {

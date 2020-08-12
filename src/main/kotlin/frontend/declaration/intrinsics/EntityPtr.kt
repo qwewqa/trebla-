@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ENTITY_DATA_ARRAY
 import xyz.qwewqa.trebla.frontend.context.ENTITY_SHARED_MEMORY_ARRAY

@@ -12,7 +12,8 @@ import xyz.qwewqa.trebla.grammar.generated.TreblaLexer
 import xyz.qwewqa.trebla.grammar.generated.TreblaParser
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileVisitor
-import java.io.*
+import java.io.File
+import java.io.InputStream
 import java.util.zip.ZipInputStream
 
 class TreblaCompiler(val configuration: CompilerConfiguration) : CoroutineScope by CoroutineScope(Dispatchers.Default) {

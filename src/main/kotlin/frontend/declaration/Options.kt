@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.AllocatedRawValue

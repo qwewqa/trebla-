@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.compile.IRNode
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.Entity

@@ -1,14 +1,13 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.PointerValue
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
 import xyz.qwewqa.trebla.grammar.trebla.PostfixUnaryFunctionNode

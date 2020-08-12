@@ -58,6 +58,17 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         val callbacks = mutableListOf(initializeCallback)
         val propertyDeclarationsByNode = propertyDeclarations.associateBy { it.node }
         node.body.value.forEach { memberNode ->
+            /*
+            There are 3 contexts here:
+            - initializationContext: scope is script, executes in initialize callback
+            - initializeCallback: scope is initialize callback, executes in initialize callback
+            - this (script): scope is script, no execution
+
+            Properties can use initializationContext because the update the scope of the script,
+            but won't leak temporary variables since they copy.
+            Other declarations (that is, let declarations), however, must not leak temporary variables,
+            and thus cannot have an execution context.
+             */
             when (memberNode) {
                 is PropertyDeclarationNode -> {
                     propertyDeclarationsByNode[memberNode]?.let {
@@ -66,12 +77,12 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
                         )
                     }
                 }
+                is InitBlockNode -> memberNode.body.value.forEach { it.parseAndApplyTo(initializeCallback) }
                 is CallbackDeclarationNode -> CallbackDeclaration(memberNode, this).let {
-                    it.applyTo(initializationContext)
+                    it.applyTo(this)
                     callbacks += it.getCallback()
                 }
-                is InitBlockNode -> memberNode.body.value.forEach { it.parseAndApplyTo(initializeCallback) }
-                is StatementNode -> memberNode.parseAndApplyTo(initializationContext)
+                is StatementNode -> memberNode.parseAndApplyTo(this)
                 else -> error("Unsupported script member.") // should not happen
             }
         }
