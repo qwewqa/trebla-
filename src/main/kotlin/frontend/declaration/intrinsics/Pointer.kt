@@ -27,7 +27,7 @@ class Pointer(context: Context) :
 class SpecificPointerType(context: Context, val insideType: Allocatable) :
     Callable,
     Allocatable {
-    val callableDelegate = CallableDSL(
+    private val callableDelegate = CallableDSL(
         context,
         {
             "block" type NumberType

@@ -120,4 +120,7 @@ val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::Box,
     listOf("std") to ::ResolveBoxPointer,
     listOf("std") to ::ResolveLocalBoxPointer,
+    listOf("std") to ::SizeOf,
+    listOf("std") to ::TypeOf,
+    listOf("std") to ::TypeAccepts,
 )

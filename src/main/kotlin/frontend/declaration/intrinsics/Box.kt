@@ -186,6 +186,8 @@ class TransientBoxValue(override val bindingContext: Context, val inside: Alloca
             is StandardAllocator -> allocator.allocateContiguous(inside.type.allocationSize)
             else -> compileError("Invalid location or property type for box.")
         }
+        // note that in this case, a standard allocator would work as well and doesn't make a difference,
+        // since it's only used for the copy
         val dyn = DynamicAllocator(ptr.block.toLiteralRawValue(), ptr.index.toLiteralRawValue())
         val new = inside.copyTo(dyn, context)
         return BoxValue(

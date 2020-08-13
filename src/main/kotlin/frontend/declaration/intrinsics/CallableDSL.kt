@@ -122,3 +122,5 @@ class IntrinsicFunctionDSLContext(
             ?: error("Parameters are unmanaged; use the argument list instead.")
     }
 }
+
+fun Number.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context, context.numberType)
