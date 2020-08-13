@@ -46,19 +46,28 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     val spawnProperties by lazy {
         propertyDeclarations
             .filter { it.variant == PropertyVariant.SPAWN }
-            .associate { it.identifier to it.applyTo(initializationContext) }
+            .let { exprs ->
+                exprs.forEach { it.applyTo(initializationContext) }
+                exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
+            }
     }
 
     val dataProperties by lazy {
         propertyDeclarations
             .filter { it.variant == PropertyVariant.DATA }
-            .associate { it.identifier to it.applyTo(initializationContext) }
+            .let { exprs ->
+                exprs.forEach { it.applyTo(initializationContext) }
+                exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
+            }
     }
 
     val sharedProperties by lazy {
         propertyDeclarations
             .filter { it.variant == PropertyVariant.SHARED }
-            .associate { it.identifier to it.applyTo(initializationContext) }
+            .let { exprs ->
+                exprs.forEach { it.applyTo(initializationContext) }
+                exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
+            }
     }
 
     val letDeclarations by lazy {

@@ -30,7 +30,7 @@ class PropertyDeclaration(
         }
     }
 
-    override fun applyTo(context: Context): Allocated = runWithErrorMessage("Error in property declaration.") {
+    override fun applyTo(context: Context): UnitValue = runWithErrorMessage("Error in property declaration.") {
         val initializer = node.expression?.parse(context)
         val typeConstraint = typeConstraint // loads lazy delegate and allows smart casts
         val allocator = when (variant) {
@@ -96,7 +96,7 @@ class PropertyDeclaration(
         if (typeConstraint != null && !typeConstraint.accepts(newValue))
             compileError("Expression type does not match specified type.")
         context.scope.add(newValue, identifier, signature, visibility)
-        newValue
+        UnitValue
     }
 
 }

@@ -27,7 +27,7 @@ class LetDeclaration(
         }
     }
 
-    override fun applyTo(context: Context): Value {
+    override fun applyTo(context: Context): UnitValue {
         context.scope.add(
             lazy {
                 val value = node.expression.parseAndApplyTo(context)

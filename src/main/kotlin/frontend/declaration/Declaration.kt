@@ -5,6 +5,7 @@ import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.expression.Expression
+import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.ModifierListNode
 import kotlin.contracts.ExperimentalContracts
@@ -48,9 +49,9 @@ interface Declaration : Value, Expression {
     /*
     By default, a declaration adds itself, but not all declarations may do so, like property declarations.
      */
-    override fun applyTo(context: Context): Value {
+    override fun applyTo(context: Context): UnitValue {
         context.scope.add(this, identifier, signature, visibility)
-        return this
+        return UnitValue
     }
 }
 
