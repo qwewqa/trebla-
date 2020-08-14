@@ -124,3 +124,4 @@ class IntrinsicFunctionDSLContext(
 }
 
 fun Number.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context, context.numberType)
+fun Boolean.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context, context.booleanType)

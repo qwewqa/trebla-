@@ -42,6 +42,7 @@ class LiteralRawValue(val value: Double) : RawValue() {
 }
 
 fun Number.toLiteralRawValue() = LiteralRawValue(this.toDouble())
+fun Boolean.toLiteralRawValue() = LiteralRawValue(if (this) 1.0 else 0.0)
 
 class BuiltinCallRawValue(val function: IRFunction, val arguments: List<RawValue>) : RawValue(), Statement {
     override fun toIR(): IRNode {

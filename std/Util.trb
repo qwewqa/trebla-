@@ -34,6 +34,16 @@ func Any.also(block: Callable): Any {
 func Raw.execute() = executeBuiltin(this)
 
 operator func Type.deref() = Pointer[this]
+operator func Script.deref() = EntityPointer[this]
 
 func Box.pointer() = resolveBoxPointer(this, entityIndex)
 func Box.localPointer() = resolveLocalBoxPointer(this)
+
+// Use of infix (non short-circuiting) "and" helps with readability of IR
+// Optimizer could eventually clean things up otherwise
+operator func Type.equals(other: Any) = (typeOf(other) === Type) and typeAccepts(this, other) and typeAccepts(other, this)
+operator func Type.notEquals(other: Any) = !(this == other)
+operator func Type.greaterOr(other: Any) = typeAccepts(this, other)
+operator func Type.lessOr(other: Any) = typeAccepts(other, this)
+operator func Type.greater(other: Any) = (this >= other) and (this != other)
+operator func Type.less(other: Any) = (this <= other) and (this != other)

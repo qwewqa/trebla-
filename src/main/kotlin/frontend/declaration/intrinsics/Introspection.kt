@@ -48,7 +48,7 @@ class TypeOf(context: Context) :
 class TypeAccepts(context: Context) :
     SimpleDeclaration(
         context,
-        "TypeAccepts",
+        "typeAccepts",
         CallableType
     ),
     Callable by CallableDSL(
@@ -60,6 +60,6 @@ class TypeAccepts(context: Context) :
         {
             val constraint = "constraint".cast<Type>()
             val type = "type".cast<Type>()
-            constraint.accepts(type).let { if (it) 1.0 else 0.0 }.toStruct(callingContext)
+            constraint.accepts(type).toStruct(callingContext)
         }
     )
