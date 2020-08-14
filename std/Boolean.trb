@@ -4,8 +4,9 @@ package std
 // Literals default to 1/0 for True/False respectively.
 raw struct Boolean
 
-operator func Boolean.equals(other: Boolean) = (this && other) || !(this || other)
-operator func Boolean.notEquals(other: Boolean) = !(this && other) && (this || other)
+// Does assume booleans will be 1.0 or 0.0
+operator func Boolean.equals(other: Any) = typeOf(other) === Boolean && Number(this) == Number(other)
+operator func Boolean.notEquals(other: Boolean) = Number(this) != Number(other)
 
 operator func Boolean.not() = Boolean(builtins.Not(this))
 

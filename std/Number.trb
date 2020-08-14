@@ -54,7 +54,7 @@ operator func Number.powAssign(other: Number) {
 func Number.radToDeg() = Number(builtins.Degree(this))
 func Number.degToRad() = Number(builtins.Radian(this))
 
-operator func Number.equals(other: Number) = Boolean(builtins.Equal(this, other))
+operator func Number.equals(other: Any) = typeOf(other) == Number && Boolean(builtins.Equal(this, other))
 operator func Number.notEquals(other: Number) = Boolean(builtins.NotEqual(this, other))
 operator func Number.greater(other: Number) = Boolean(builtins.Greater(this, other))
 operator func Number.greaterOr(other: Number) = Boolean(builtins.GreaterOr(this, other))
