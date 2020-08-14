@@ -383,6 +383,7 @@ assignmentOperator
 equalityOperation
     : EXCL_EQ
     | EQEQ
+    | EQEQEQ
     ;
 
 comparisonOperator
