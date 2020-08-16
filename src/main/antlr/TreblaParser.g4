@@ -253,7 +253,7 @@ conditionalExpression
     ;
 
 ifExpression
-    : IF NL* LPAREN expression RPAREN NL* controlStructureBody SEMICOLON?
+    : CONST? IF NL* LPAREN expression RPAREN NL* controlStructureBody SEMICOLON?
     (NL* ELSE NL* controlStructureBody)?
     ;
 

@@ -12,11 +12,16 @@ import xyz.qwewqa.trebla.grammar.trebla.IfExpressionNode
 class IfExpression(override val node: IfExpressionNode) : Expression {
     override fun applyTo(context: Context): Value {
         if (context !is ExecutionContext) compileError("if statement not allowed at location.", node)
-        val condition = node.expression.parseAndApplyTo(context)
+        val condition = node.condition.parseAndApplyTo(context)
         if (condition !is RawStructValue || condition.type != context.booleanType)
-            compileError("if statement condition must be a boolean.", node.expression)
+            compileError("if statement condition must be a boolean.", node.condition)
         when (condition.raw.toIR().tryConstexprEvaluate()) {
-            null -> { // Condition unknown at compile time
+            null -> {
+                // As a side note here, once if expressions are implemented,
+                // const if expressions should be able to have immutable/incompatible values in each branch
+                if (node.isConst) {
+                    compileError("if statement is marked const, but condition is not a compile time constant.")
+                }
                 context.statements += IfElseStatement(
                     condition.raw,
                     SimpleExecutionContext(context).also { ctx ->
@@ -27,14 +32,14 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
                     }
                 )
             }
-            0.0 -> { // False at compile time
+            0.0 -> {
                 node.fbranch?.let { fbranch ->
                     fbranch.value.forEach {
                         it.parseAndApplyTo(context)
                     }
                 }
             }
-            else -> { // True at compile time
+            else -> {
                 node.tbranch.value.forEach {
                     it.parseAndApplyTo(context)
                 }
