@@ -250,11 +250,21 @@ data class ValueArgumentNode(
 data class IfExpressionNode(
     override val context: ParseTree,
     override val filename: String,
-    val expression: ExpressionNode,
+    val isConst: Boolean,
+    val condition: ExpressionNode,
     val tbranch: BlockNode,
     val fbranch: BlockNode?,
 ) : ExpressionNode {
     override fun parse(context: Context) = IfExpression(this)
+}
+
+data class TryExpressionNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val tryBranch: BlockNode,
+    val exceptBranch: BlockNode,
+) : ExpressionNode {
+    override fun parse(context: Context) = TryExpression(this)
 }
 
 data class WhileExpressionNode(

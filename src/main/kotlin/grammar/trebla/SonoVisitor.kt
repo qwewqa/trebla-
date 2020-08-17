@@ -291,9 +291,19 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         val body = ctx.controlStructureBody()
         return IfExpressionNode(
             ctx, filename,
+            ctx.CONST().exist,
             ctx.expression().visit() as ExpressionNode,
             body[0].visit() as BlockNode,
             (if (body.size == 2) body[1].visit() else null) as BlockNode?
+        )
+    }
+
+    override fun visitTryExpression(ctx: TreblaParser.TryExpressionContext): TreblaNode {
+        val body = ctx.controlStructureBody()
+        return TryExpressionNode(
+            ctx, filename,
+            body[0].visit() as BlockNode,
+            body[1].visit() as BlockNode
         )
     }
 

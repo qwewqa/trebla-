@@ -250,11 +250,17 @@ valueArgument
 
 conditionalExpression
     : ifExpression
+    | tryExpression
     ;
 
 ifExpression
     : CONST? IF NL* LPAREN expression RPAREN NL* controlStructureBody SEMICOLON?
     (NL* ELSE NL* controlStructureBody)?
+    ;
+
+tryExpression
+    : TRY NL* controlStructureBody SEMICOLON?
+    NL* EXCEPT NL* controlStructureBody
     ;
 
 loopExpression

@@ -87,6 +87,8 @@ VAL: 'val' ;
 IF: 'if' ;
 ELSE: 'else' ;
 WHILE: 'while' ;
+TRY: 'try' ;
+EXCEPT: 'except' ;
 FOR: 'for' ;
 GETTER: 'get' ;
 SETTER: 'set' ;
@@ -201,6 +203,8 @@ Inside_VAL: VAL -> type(VAL) ;
 Inside_VAR: VAR -> type(VAR) ;
 Inside_IF: IF -> type(IF) ;
 Inside_ELSE: ELSE -> type(ELSE) ;
+Inside_TRY: TRY -> type(TRY) ;
+Inside_EXCEPT: EXCEPT -> type(EXCEPT) ;
 Inside_WHILE: WHILE -> type(WHILE) ;
 Inside_FOR: FOR -> type(FOR) ;
 
