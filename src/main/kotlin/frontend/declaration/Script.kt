@@ -87,7 +87,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         sharedProperties
         letDeclarations
 
-        val callbacks = mutableListOf(initializeCallback)
+        val callbackDeclarationNodes = mutableListOf<CallbackDeclarationNode>()
         val propertyDeclarationsByNode = propertyDeclarations.associateBy { it.node }
         node.body.value.forEach { memberNode ->
             when (memberNode) {
@@ -100,18 +100,23 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
                 }
                 is LetDeclarationNode -> {} // Already dealt with in the letDeclarations property
                 is InitBlockNode -> memberNode.body.value.forEach { it.parseAndApplyTo(initializeCallback) }
-                is CallbackDeclarationNode -> CallbackDeclaration(memberNode, this).let {
-                    it.applyTo(this)
-                    callbacks += it.getCallback()
-                }
+                is CallbackDeclarationNode -> callbackDeclarationNodes += memberNode
                 is StatementNode -> memberNode.parseAndApplyTo(this)
                 else -> error("Unsupported script member.") // should not happen
             }
         }
+
+        val processedCallbacks = listOf(initializeCallback) + callbackDeclarationNodes.map { cbNode ->
+            CallbackDeclaration(cbNode, this).run {
+                applyTo(this@ScriptDeclaration)
+                getCallback()
+            }
+        }
+
         return ScriptData(
             identifier,
             index,
-            callbacks,
+            processedCallbacks,
             dataProperties.mapValues { (_, v) -> ((((v as RawStructValue).raw as AllocatedRawValue).allocation) as ConcreteAllocation).index },
             (memoryAllocator.index until memoryAllocator.size).toList()
         )
