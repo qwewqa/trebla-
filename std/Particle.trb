@@ -1,0 +1,36 @@
+package std
+
+func spawnParticle(
+    id: Number,
+    x1: Number, y1: Number,
+    x2: Number, y2: Number,
+    x3: Number, y3: Number,
+    x4: Number, y4: Number,
+    t: Number, loop: Boolean,
+): ParticleID {
+    var particleID = builtins.SpawnParticleEffect(
+        id,
+        x1, y1,
+        x2, y2,
+        x3, y3,
+        x4, y4,
+        t, loop,
+    )
+    ParticleID(Number(particleID))
+}
+
+struct ParticleID(value: Number)
+
+func ParticleID.destroy() {
+    builtins.DestroyParticleEffect(this.value).execute()
+}
+
+func ParticleID.moveTo(quad: Quad) {
+    builtins.MoveParticleEffect(
+        this.value,
+        quad.p1.x, quad.p1.y,
+        quad.p2.x, quad.p2.y,
+        quad.p3.x, quad.p3.y,
+        quad.p4.x, quad.p4.y,
+    ).execute()
+}

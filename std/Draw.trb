@@ -35,6 +35,17 @@ func Quad.draw(id: Number, z: Number, alpha: Number = 1) {
     )
 }
 
+func Quad.spawnParticle(id: Number, t: Number, loop: Boolean = false): ParticleID {
+    spawnParticle(
+        id,
+        this.p1.x, this.p1.y,
+        this.p2.x, this.p2.y,
+        this.p3.x, this.p3.y,
+        this.p4.x, this.p4.y,
+        t, loop,
+    )
+}
+
 func Quad.rotatedCW() = Quad(this.p4, this.p1, this.p2, this.p3)
 func Quad.rotatedCCW() = Quad(this.p2, this.p3, this.p4, this.p1)
 func Quad.rotated180() = Quad(this.p3, this.p4, this.p1, this.p2)
