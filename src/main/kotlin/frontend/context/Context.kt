@@ -54,6 +54,11 @@ class SimpleExecutionContext(override val parentContext: ExecutionContext) : Exe
     }
 }
 
+fun Context.createSimpleChild() = when (this) {
+    is ExecutionContext -> SimpleExecutionContext(this).also { this.statements += it }
+    else -> SimpleContext(this)
+}
+
 class InnerExecutionContext(override val parentContext: ExecutionContext) : ExecutionContext {
     override val scope = EagerScope(parentContext.scope)
     override val configuration = parentContext.configuration

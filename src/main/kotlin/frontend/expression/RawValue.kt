@@ -54,6 +54,8 @@ class BuiltinCallRawValue(val function: IRFunction, val arguments: List<RawValue
     }
 }
 
+fun IRFunction.raw(vararg args: RawValue) = BuiltinCallRawValue(this, args.toList())
+
 /**
  * Wraps an IRNode directly as raw value.
  */
@@ -62,6 +64,8 @@ class IRRawValue(val value: IRNode) : RawValue(), Statement {
         return value
     }
 }
+
+fun Statement.raw() = IRRawValue(toIR())
 
 class AllocatedValueAssignment(val lhs: AllocatedRawValue, val rhs: RawValue) : Statement {
     override fun toIR() = when (val alloc = lhs.allocation) {
