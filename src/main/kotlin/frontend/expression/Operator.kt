@@ -52,8 +52,10 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
                 UnitValue
             }
             "===" -> {
-                RawStructValue((rhs === lhs).let { if (it) 1.0 else 0.0 }
-                    .toLiteralRawValue(), context, context.booleanType)
+                RawStructValue((rhs === lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(), context, context.booleanType)
+            }
+            "!==" -> {
+                RawStructValue((rhs !== lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(), context, context.booleanType)
             }
             else -> {
                 val func = lhs.resolveMember(functionName, context)

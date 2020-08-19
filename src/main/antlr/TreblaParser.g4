@@ -389,6 +389,7 @@ assignmentOperator
 equalityOperation
     : EXCL_EQ
     | EQEQ
+    | EXCL_EQEQ
     | EQEQEQ
     ;
 
