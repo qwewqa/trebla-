@@ -520,6 +520,26 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitIfExpression(TreblaParser.IfExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#whenExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhenExpression(TreblaParser.WhenExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#whenExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhenExpression(TreblaParser.WhenExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#whenEntry}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhenEntry(TreblaParser.WhenEntryContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#whenEntry}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhenEntry(TreblaParser.WhenEntryContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#tryExpression}.
 	 * @param ctx the parse tree
 	 */

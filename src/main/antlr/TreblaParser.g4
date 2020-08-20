@@ -250,12 +250,21 @@ valueArgument
 
 conditionalExpression
     : ifExpression
+    | whenExpression
     | tryExpression
     ;
 
 ifExpression
     : CONST? IF NL* LPAREN expression RPAREN NL* controlStructureBody SEMICOLON?
     (NL* ELSE NL* controlStructureBody)?
+    ;
+
+whenExpression
+    : CONST? WHEN NL* LCURL NL* (whenEntry NL*)* RCURL
+    ;
+
+whenEntry
+    : (expression | ELSE) NL* ARROW NL* controlStructureBody
     ;
 
 tryExpression

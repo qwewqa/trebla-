@@ -258,6 +258,22 @@ data class IfExpressionNode(
     override fun parse(context: Context) = IfExpression(this)
 }
 
+data class WhenExpressionNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val isConst: Boolean,
+    val entries: List<WhenEntryNode>
+) : ExpressionNode {
+    override fun parse(context: Context) = WhenExpression(this)
+}
+
+data class WhenEntryNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val condition: ExpressionNode?,
+    val body: BlockNode,
+) : TreblaNode
+
 data class TryExpressionNode(
     override val context: ParseTree,
     override val filename: String,

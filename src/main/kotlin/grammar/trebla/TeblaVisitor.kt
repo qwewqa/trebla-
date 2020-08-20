@@ -298,6 +298,22 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         )
     }
 
+    override fun visitWhenExpression(ctx: TreblaParser.WhenExpressionContext): TreblaNode {
+        return WhenExpressionNode(
+            ctx, filename,
+            ctx.CONST().exist,
+            ctx.whenEntry().visit() as List<WhenEntryNode>
+        )
+    }
+
+    override fun visitWhenEntry(ctx: TreblaParser.WhenEntryContext): TreblaNode {
+        return WhenEntryNode(
+            ctx, filename,
+            ctx.expression()?.visit() as ExpressionNode?,
+            ctx.controlStructureBody().visit() as BlockNode
+        )
+    }
+
     override fun visitTryExpression(ctx: TreblaParser.TryExpressionContext): TreblaNode {
         val body = ctx.controlStructureBody()
         return TryExpressionNode(

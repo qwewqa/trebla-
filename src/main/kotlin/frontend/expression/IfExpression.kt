@@ -14,11 +14,8 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
     override fun applyTo(context: Context): Value = if (node.isConst) applyConstant(context) else applyNormal(context)
 
     private fun applyNormal(context: Context): UnitValue {
-        if (context !is ExecutionContext) compileError("if statement requires an execution context.", node)
-        val condition = node.condition.parseAndApplyTo(context)
-        if (condition !is RawStructValue || condition.type != context.booleanType) {
-            compileError("if statement condition must be a boolean.", node.condition)
-        }
+        if (context !is ExecutionContext) compileError("non-const if statement requires an execution context.", node)
+        val condition = node.condition.parseAndApplyTo(context).asBooleanStruct(context)
         context.statements += IRFunction.If.raw(
             condition.raw,
             SimpleExecutionContext(context).also { ctx ->
@@ -32,10 +29,7 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
     }
 
     private fun applyConstant(context: Context): Value {
-        val condition = node.condition.parseAndApplyTo(context)
-        if (condition !is RawStructValue || condition.type != context.booleanType) {
-            compileError("if statement condition must be a boolean.", node.condition)
-        }
+        val condition = node.condition.parseAndApplyTo(context).asBooleanStruct(context)
         val ifContext = context.createSimpleChild()
         val selectedBranch = when (condition.raw.toIR().tryConstexprEvaluate()) {
             null -> compileError("if statement is marked const, but condition is not a compile time constant.")
@@ -47,4 +41,11 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
             .map { it.parseAndApplyTo((ifContext)) }
             .lastOrNull() ?: UnitValue
     }
+}
+
+fun Value.asBooleanStruct(context: Context): RawStructValue {
+    if (this !is RawStructValue || this.type != context.booleanType) {
+        compileError("if statement condition must be a boolean.", this.node)
+    }
+    return this
 }
