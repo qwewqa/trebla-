@@ -1,8 +1,13 @@
 package std
 
 func copy(value): Any {
-    var ret = value
-    ret
+    try {
+        var ret = value
+        ret
+    } except {
+        // fully immutable values cannot be used to initialize a var
+        value
+    }
 }
 
 func judge(

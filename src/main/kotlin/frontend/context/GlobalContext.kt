@@ -13,11 +13,12 @@ import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 import java.util.concurrent.atomic.AtomicInteger
 
-class GlobalContext(override val configuration: CompilerConfiguration) : GlobalAllocatorContext {
+class GlobalContext(override val configuration: CompilerConfiguration) : GlobalAllocatorContext, Context {
     override val parentContext: Context? = null
     override val scope = Scope(null)
-    override val levelAllocator = StandardAllocator(0, 256)
-    override val tempAllocator = StandardAllocator(100, 16)
+    override val levelAllocator = StandardAllocator(LEVEL_MEMORY_BLOCK, 256)
+    override val leveldataAllocator = StandardAllocator(LEVEL_DATA_BLOCK, 256)
+    override val tempAllocator = StandardAllocator(TEMPORARY_MEMORY_BLOCK, 16)
 
     private val files = mutableListOf<TreblaFile>()
 
@@ -85,6 +86,7 @@ data class CompileData(val scripts: List<ScriptData>, val archetypes: List<Arche
 
 interface GlobalAllocatorContext : Context {
     val levelAllocator: StandardAllocator
+    val leveldataAllocator: StandardAllocator
 
     // not to be confused with the local allocator for temporary variables
     // this is for the literal temporary memory block

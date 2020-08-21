@@ -1,9 +1,6 @@
 package xyz.qwewqa.trebla.frontend
 
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.GlobalAllocatorContext
-import xyz.qwewqa.trebla.frontend.context.GlobalContext
-import xyz.qwewqa.trebla.frontend.context.Scope
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.ArchetypeDeclaration
 import xyz.qwewqa.trebla.frontend.declaration.Declaration
 import xyz.qwewqa.trebla.frontend.declaration.ScriptDeclaration
@@ -16,6 +13,7 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
     override val configuration = parentContext.configuration
     private val pkg = parentContext.getPackage(node.packageHeader?.identifier?.value ?: defaultPackage)
     override val levelAllocator = parentContext.levelAllocator
+    override val leveldataAllocator = parentContext.leveldataAllocator
     override val tempAllocator = parentContext.tempAllocator
 
     /*

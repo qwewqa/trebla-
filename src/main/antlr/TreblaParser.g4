@@ -317,6 +317,7 @@ modifier
     | SPAWN
     | DATA
     | LEVEL
+    | LEVELDATA
     | TEMP
     | RAW
     | CONST
@@ -341,6 +342,7 @@ simpleIdentifier
     | SPAWN
     | DATA
     | LEVEL
+    | LEVELDATA
     | RAW
     | PACKAGE
     | TEMP

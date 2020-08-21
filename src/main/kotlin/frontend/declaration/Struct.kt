@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.backend.constexpr.constexprEvaluate
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
@@ -150,8 +149,8 @@ class RawStructValue(
                     AllocatedRawValue(
                         DynamicAllocation(
                             when (this.raw.allocation.block) {
-                                ENTITY_SHARED_MEMORY -> ENTITY_SHARED_MEMORY_ARRAY
-                                ENTITY_DATA -> ENTITY_DATA_ARRAY
+                                ENTITY_SHARED_MEMORY_BLOCK -> ENTITY_SHARED_MEMORY_ARRAY_BLOCK
+                                ENTITY_DATA_BLOCK -> ENTITY_DATA_ARRAY_BLOCK
                                 else -> compileError("Only data and shared allocated structs can be reallocated.")
                             }.toLiteralRawValue(),
                             offset,

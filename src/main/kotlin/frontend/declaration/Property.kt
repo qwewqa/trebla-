@@ -51,6 +51,10 @@ class PropertyDeclaration(
                 if (context !is GlobalAllocatorContext) compileError("The level modifier is only allowed at the top level.")
                 context.levelAllocator
             }
+            PropertyVariant.LEVELDATA -> {
+                if (context !is GlobalAllocatorContext) compileError("The leveldata modifier is only allowed at the top level.")
+                context.leveldataAllocator
+            }
             PropertyVariant.TEMP -> {
                 if (context !is GlobalAllocatorContext) compileError("The temp modifier is only allowed at the top level.")
                 context.tempAllocator
@@ -133,11 +137,19 @@ enum class PropertyVariant(val initialized: Boolean = false) {
     SHARED,
 
     /**
-     * Located in level data.
+     * Located in level memory.
      * Does not take an initializer.
      * Declared at the top level outside of scripts.
      */
     LEVEL,
+
+    /**
+     * Located in level data.
+     * Does not take an initializer.
+     * Declared at the top level outside of scripts.
+     * Only modifiable in preprocessing.
+     */
+    LEVELDATA,
 
 
     /**
@@ -153,5 +165,6 @@ val propertyVariants = mapOf(
     "data" to PropertyVariant.DATA,
     "shared" to PropertyVariant.SHARED,
     "level" to PropertyVariant.LEVEL,
+    "leveldata" to PropertyVariant.LEVELDATA,
     "temp" to PropertyVariant.TEMP
 )

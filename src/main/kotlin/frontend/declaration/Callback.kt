@@ -65,5 +65,7 @@ val callbacksByName = mapOf(
     "shouldSpawn" to CallbackName.ShouldSpawn,
     "updateSequential" to CallbackName.UpdateSequential,
     "touch" to CallbackName.Touch,
-    "updateParallel" to CallbackName.UpdateParallel
+    "updateParallel" to CallbackName.UpdateParallel,
+    "preprocess" to CallbackName.Preprocess,
+    "spawnOrder" to CallbackName.SpawnOrder,
 )

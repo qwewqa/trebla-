@@ -1,8 +1,7 @@
 package xyz.qwewqa.trebla.backend.compile
 
 import xyz.qwewqa.trebla.backend.BackendConfig
-
-const val TEMPORARY_MEMORY_BLOCK = 21
+import xyz.qwewqa.trebla.frontend.context.TEMPORARY_MEMORY_BLOCK
 
 fun IRNode.processTemporaryAllocations(
     freeIndexes: List<Int>,

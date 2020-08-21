@@ -165,6 +165,8 @@ enum class CallbackName(val compiledName: String) {
     UpdateSequential("updateSequential"),
     Touch("touch"),
     UpdateParallel("updateParallel"),
+    Preprocess("preprocess"),
+    SpawnOrder("spawnOrder"),
 }
 
 data class CompiledScript(

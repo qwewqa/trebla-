@@ -19,6 +19,7 @@ class Package(
     override val signature = Signature.Default
     override val scope = Scope(parentContext.scope)
     override val levelAllocator = parentContext.levelAllocator
+    override val leveldataAllocator = parentContext.leveldataAllocator
     override val tempAllocator = parentContext.tempAllocator
 
     override fun getMember(name: String, accessingContext: Context?): Value? =

@@ -61,8 +61,8 @@ class BoxValue(
             SpecificPointerType(bindingContext, type.insideType),
             RawStructValue(
                 when (block) {
-                    ENTITY_SHARED_MEMORY -> ENTITY_SHARED_MEMORY_ARRAY
-                    ENTITY_DATA -> ENTITY_DATA_ARRAY
+                    ENTITY_SHARED_MEMORY_BLOCK -> ENTITY_SHARED_MEMORY_ARRAY_BLOCK
+                    ENTITY_DATA_BLOCK -> ENTITY_DATA_ARRAY_BLOCK
                     else -> compileError("Only data and shared allocated structs can be reallocated.")
                 }.toLiteralRawValue(),
                 bindingContext,
@@ -122,8 +122,8 @@ class ResolveBoxPointer(context: Context) :
             val box: BoxValue = "box".cast()
             val entityIndex: RawStructValue = "entityIndex".cast()
             val newBlock = when (box.block) {
-                ENTITY_DATA -> ENTITY_DATA_ARRAY
-                ENTITY_SHARED_MEMORY -> ENTITY_SHARED_MEMORY_ARRAY
+                ENTITY_DATA_BLOCK -> ENTITY_DATA_ARRAY_BLOCK
+                ENTITY_SHARED_MEMORY_BLOCK -> ENTITY_SHARED_MEMORY_ARRAY_BLOCK
                 else -> compileError("Box pointer only exists for data and shared memory.")
             }
             PointerValue(
