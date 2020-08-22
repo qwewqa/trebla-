@@ -39,6 +39,15 @@ class MemberAccessExpression(override val node: UnaryFunctionNode, op: MemberAcc
 fun Value.resolveMember(name: String, context: Context?) =
     (this as? MemberAccessor)?.getMember(name, context)
         ?: context?.let { (this as? Type)?.resolveBinding(name, it) }
+        ?: resolveMemberWithoutTypeMembers(name, context)
+
+/**
+ * Same as [resolveMember] but without unbound type member access.
+ * E.g. `Number.equals` normally gives an unbound function,
+ * but with this, it gives a bound function of the equals function defined on the type of `Number` (which is TypeType)
+ */
+fun Value.resolveMemberWithoutTypeMembers(name: String, context: Context?) =
+    (this as? MemberAccessor)?.getMember(name, context)
         ?: context?.let { type.resolveBinding(name, it)?.tryBind(this, context) }
         ?: this.bindingContext?.let { bindingContext ->
             context?.let { type.resolveBinding(name, bindingContext)?.tryBind(this, it) }

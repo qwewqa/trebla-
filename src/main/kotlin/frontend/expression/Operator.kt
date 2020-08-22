@@ -58,7 +58,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
                 RawStructValue((rhs !== lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(), context, context.booleanType)
             }
             else -> {
-                val func = lhs.resolveMember(functionName, context)
+                val func = lhs.resolveMemberWithoutTypeMembers(functionName, context)
                 if (func !is Callable) compileError("Operator '${node.op}' ($functionName) not defined by a function.")
                 if (isOperator && !func.isOperator) compileError("Operator '${node.op}' ($functionName) has a function but is not marked as operator.")
                 if (!isOperator && !func.isInfix) compileError("$functionName is a function but is not marked as infix.")
