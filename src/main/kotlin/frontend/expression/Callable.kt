@@ -3,10 +3,7 @@ package xyz.qwewqa.trebla.frontend.expression
 import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.declaration.AnyType
-import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.declaration.accepts
-import xyz.qwewqa.trebla.frontend.declaration.applyIn
+import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.*
 
@@ -37,10 +34,14 @@ class CallExpression(override val node: UnaryFunctionNode, op: FunctionCallNode)
         val lambda = lambdaNode?.parseAndApplyTo(context)?.let { ValueArgument(null, it, true) }
         val arguments = if (lambda != null) valueArguments + lambda else valueArguments
 
-        val callable = node.value.parseAndApplyTo(context)
-        if (callable !is Callable) compileError("Not a callable.", node)
+        val target = node.value.parseAndApplyTo(context)
         return runWithErrorMessage("Error in call expression.") {
-            callable.callWith(arguments, context)
+            (target as? Callable)?.callWith(arguments, context)
+                ?: (target.resolveMember("call", context) as? Callable)?.run {
+                    if (!isOperator) compileError("call function exists, but is not operator.", node)
+                    callWith(arguments, context)
+                }
+                ?: compileError("Not a callable and no call operator function exists.", node)
         }
     }
 }
@@ -50,10 +51,15 @@ class SubscriptExpression(override val node: UnaryFunctionNode, op: SubscriptNod
 
     override fun applyTo(context: Context): Value {
         val arguments = arguments.applyAllIn(context)
-        val subscriptable = node.value.parseAndApplyTo(context)
-        if (subscriptable !is Subscriptable) compileError("Not a callable.", node)
+
+        val target = node.value.parseAndApplyTo(context)
         return runWithErrorMessage("Error in subscript expression.") {
-            subscriptable.subscriptWith(arguments, context)
+            (target as? Subscriptable)?.subscriptWith(arguments, context)
+                ?: (target.resolveMember("subscript", context) as? Callable)?.run {
+                    if (!isOperator) compileError("subscript function exists, but is not operator.", node)
+                    callWith(arguments, context)
+                }
+                ?: compileError("Not a subscriptable and no subscript operator function exists.", node)
         }
     }
 }
