@@ -2,10 +2,8 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.compile.*
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.trebla.frontend.context.Allocation
-import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
-import xyz.qwewqa.trebla.frontend.context.DynamicAllocation
-import xyz.qwewqa.trebla.frontend.context.TemporaryAllocation
+import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 
 /**
  * Either a location in memory, or a literal. Should generally appear within a raw struct except
@@ -83,3 +81,15 @@ class AllocatedValueAssignment(val lhs: AllocatedRawValue, val rhs: RawValue) : 
         )
     }
 }
+
+fun RawValue.toNumberStruct(context: Context) = RawStructValue(
+    this,
+    context,
+    context.numberType
+)
+
+fun RawValue.toBooleanStruct(context: Context) = RawStructValue(
+    this,
+    context,
+    context.booleanType
+)

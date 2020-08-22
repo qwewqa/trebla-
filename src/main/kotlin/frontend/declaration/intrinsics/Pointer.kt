@@ -1,5 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
+import xyz.qwewqa.trebla.backend.compile.IRFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -72,10 +73,38 @@ class PointerValue(
     override val type: SpecificPointerType,
     val block: RawStructValue,
     val index: RawStructValue,
-) : Allocated, MemberAccessor, Dereferenceable {
+) : Allocated,
+    MemberAccessor,
+    Dereferenceable,
+    Subscriptable by SubscriptableDSL(
+        bindingContext,
+        {
+            "index" type NumberType
+        },
+        {
+            val insideType = type.insideType
+            if (insideType !is SpecificListType) compileError("Only pointers to lists are subscriptable")
+            // only pointers to allocatable types are possible, so cast should never fail
+            val listContainedType = insideType.containedType
+            val elementSize = (listContainedType as Allocatable).allocationSize
+            val listIndex = "index".cast<RawStructValue>()
+            PointerValue(
+                bindingContext,
+                SpecificPointerType(bindingContext, listContainedType),
+                block,
+                IRFunction.Add.raw(
+                    index.raw,
+                    IRFunction.Multiply.raw(
+                        listIndex.raw,
+                        elementSize.toLiteralRawValue()
+                    )
+                ).toNumberStruct(bindingContext)
+            )
+        }
+    ) {
     override fun getMember(name: String, accessingContext: Context?): Value? = when (name) {
-        "block" -> this.block
-        "index" -> this.index
+        "block" -> block
+        "index" -> index
         else -> null
     }
 

@@ -44,9 +44,7 @@ class ListOf(context: Context) :
         {
             if (arguments.any { it.name != null }) compileError("listOf requires only unnamed arguments.")
             val values = arguments.map { it.value }
-            val type = values.map { it.type }.toSet().let {
-                if (it.size == 1) it.first() else AnyType
-            }
+            val type = values.map { it.type }.toSet().singleOrNull() ?: AnyType
             ListValue(callingContext, SpecificListType(arguments.size, type, callingContext), values)
         },
     )
