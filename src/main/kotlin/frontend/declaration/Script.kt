@@ -15,7 +15,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     override val visibility = Visibility.PUBLIC
     override val type = ScriptType
     override val bindingContext = parentContext
-    override val scope = EagerScope(parentContext.scope)
+    override val scope = Scope(parentContext.scope)
     override val memoryAllocator = StandardAllocator(21, 64)
     override val dataAllocator = StandardAllocator(22, 32)
     override val sharedAllocator = StandardAllocator(24, 32)
@@ -41,11 +41,11 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         node.body.value
             .filterIsInstance<PropertyDeclarationNode>()
             .map { it.parse(initializationContext) }
+            .groupBy { it.variant }
     }
 
     val spawnProperties by lazy {
-        propertyDeclarations
-            .filter { it.variant == PropertyVariant.SPAWN }
+        (propertyDeclarations[PropertyVariant.SPAWN] ?: emptyList())
             .let { exprs ->
                 exprs.forEach { it.applyTo(initializationContext) }
                 exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
@@ -53,8 +53,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     }
 
     val dataProperties by lazy {
-        propertyDeclarations
-            .filter { it.variant == PropertyVariant.DATA }
+        (propertyDeclarations[PropertyVariant.DATA] ?: emptyList())
             .let { exprs ->
                 exprs.forEach { it.applyTo(initializationContext) }
                 exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
@@ -62,18 +61,18 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     }
 
     val sharedProperties by lazy {
-        propertyDeclarations
-            .filter { it.variant == PropertyVariant.SHARED }
+        (propertyDeclarations[PropertyVariant.SHARED] ?: emptyList())
             .let { exprs ->
                 exprs.forEach { it.applyTo(initializationContext) }
                 exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
             }
     }
 
-    val letDeclarations by lazy {
+    val sharedLetDeclarations by lazy {
         node.body.value
             .filterIsInstance<LetDeclarationNode>()
             .map { it.parse(initializationContext) }
+            .filter { it.isShared }
             .let { exprs ->
                 exprs.forEach { it.applyTo(this) }
                 exprs.associate { it.identifier to this.scope.get(it.identifier) }
@@ -85,20 +84,22 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         spawnProperties
         dataProperties
         sharedProperties
-        letDeclarations
+        sharedLetDeclarations
 
         val callbackDeclarationNodes = mutableListOf<CallbackDeclarationNode>()
-        val propertyDeclarationsByNode = propertyDeclarations.associateBy { it.node }
+        val propertyDeclarationsByNode =
+            (propertyDeclarations[PropertyVariant.NORMAL] ?: emptyList()).associateBy { it.node }
         node.body.value.forEach { memberNode ->
             when (memberNode) {
-                is PropertyDeclarationNode -> {
-                    propertyDeclarationsByNode[memberNode]?.let {
-                        if (it.variant != PropertyVariant.SPAWN && it.variant != PropertyVariant.DATA && it.variant != PropertyVariant.SHARED) it.applyTo(
-                            initializationContext
-                        )
+                is PropertyDeclarationNode -> propertyDeclarationsByNode[memberNode]?.applyTo(initializationContext)
+                is LetDeclarationNode -> {
+                    memberNode.parse(initializationContext).let {
+                        // shared let declarations (accessible from other scripts via an entity pointer)
+                        // cannot access normal (local) properties
+                        // but unshared ones can, so they are initialized in order in this case
+                        if (!it.isShared) it.applyTo(initializationContext)
                     }
                 }
-                is LetDeclarationNode -> {} // Already dealt with in the letDeclarations property
                 is InitBlockNode -> memberNode.body.value.forEach { it.parseAndApplyTo(initializeCallback) }
                 is CallbackDeclarationNode -> callbackDeclarationNodes += memberNode
                 is StatementNode -> memberNode.parseAndApplyTo(this)
@@ -117,7 +118,8 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
             identifier,
             index,
             processedCallbacks,
-            dataProperties.mapValues { (_, v) -> ((((v as RawStructValue).raw as AllocatedRawValue).allocation) as ConcreteAllocation).index },
+            dataProperties.mapValues
+            { (_, v) -> ((((v as RawStructValue).raw as AllocatedRawValue).allocation) as ConcreteAllocation).index },
             (memoryAllocator.index until memoryAllocator.size).toList()
         )
     }

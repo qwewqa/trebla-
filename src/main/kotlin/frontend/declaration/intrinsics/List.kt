@@ -80,7 +80,7 @@ class SpecificListType(val size: Int, val containedType: Type, override val bind
     }
 }
 
-class ListValue(val parentContext: Context, override val type: Allocatable, val values: List<Value>) : Allocated,
+class ListValue(val parentContext: Context, override val type: SpecificListType, val values: List<Value>) : Allocated,
     MemberAccessor,
     Subscriptable {
     override val bindingContext = parentContext
@@ -136,7 +136,8 @@ class ListValue(val parentContext: Context, override val type: Allocatable, val 
         mapOf(
             "forEach" to ListValueForEach(parentContext, this, false),
             "forEachIndexed" to ListValueForEach(parentContext, this, true),
-            "get" to ListGet(parentContext, this)
+            "get" to ListGet(parentContext, this),
+            "size" to type.size.toStruct(parentContext)
         )
     }
 }

@@ -6,7 +6,6 @@ import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.context.visibilityModifiers
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
-import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.LetDeclarationNode
 
@@ -19,11 +18,17 @@ class LetDeclaration(
     override val visibility: Visibility
     override val type = UnitValue
 
+    val isShared: Boolean
+
     val typeConstraint = node.type?.applyIn(parentContext) ?: AnyType
 
     init {
         node.modifiers.parse {
             visibility = selectFromMap(visibilityModifiers) ?: Visibility.PUBLIC
+            isShared = selectSingle("shared")
+        }
+        if (isShared && parentContext !is ScriptContext) {
+            compileError("let declaration shared modifier only allowed directly in scripts.")
         }
     }
 

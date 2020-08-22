@@ -33,7 +33,6 @@ object ContextType : BuiltinType("Context")
  * A context under which a block of expressions may be evaluated.
  */
 interface ExecutionContext : Context {
-    override val scope: EagerScope
     val localAllocator: TemporaryAllocator
     val statements: MutableList<Statement>
 }
