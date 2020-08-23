@@ -49,8 +49,8 @@ class ListOf(context: Context) :
         },
     )
 
-class SpecificListType(val size: Int, val containedType: Type, override val bindingContext: Context) : Type,
-    Allocatable {
+class SpecificListType(val size: Int, val containedType: Type, override val bindingContext: Context) :
+    Type, Allocatable, MemberAccessor {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "List") as Type))
 
@@ -75,6 +75,13 @@ class SpecificListType(val size: Int, val containedType: Type, override val bind
         var result = size
         result = 31 * result + containedType.hashCode()
         return result
+    }
+
+    override fun getMember(name: String, accessingContext: Context?): Value? {
+        return when (name) {
+            "containedType" -> containedType
+            else -> null
+        }
     }
 }
 
