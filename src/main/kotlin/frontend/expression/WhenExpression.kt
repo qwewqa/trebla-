@@ -1,10 +1,8 @@
 package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.compile.IRFunction
-import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.grammar.trebla.BlockNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenEntryNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenExpressionNode
 
@@ -19,9 +17,13 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
             .toIR()
         context.statements += IRRawValue(
             conditionals.foldRight(elseContext) { entry, prev ->
-                val condition = entry.condition!!.parseAndApplyTo(context).asBooleanStruct(context)
+                val conditionContext = SimpleExecutionContext(context)
+                val condition = entry.condition!!.parseAndApplyTo(conditionContext).asBooleanStruct(context)
                 IRFunction.If.calledWith(
-                    condition.raw.toIR(),
+                    IRFunction.Execute.calledWith(
+                        conditionContext.toIR(),
+                        condition.raw.toIR(),
+                    ),
                     SimpleExecutionContext(context)
                         .apply { entry.body.value.forEach { it.parseAndApplyTo(this) } }
                         .toIR(),
