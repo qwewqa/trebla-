@@ -8,6 +8,12 @@ import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Statement
+import xyz.qwewqa.trebla.frontend.expression.UnitValue
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
+import xyz.qwewqa.trebla.grammar.trebla.BlockNode
+import xyz.qwewqa.trebla.grammar.trebla.ExpressionNode
+import xyz.qwewqa.trebla.grammar.trebla.StatementNode
 
 /**
  * A context contains declarations, which are stored in its scope.
@@ -69,3 +75,13 @@ class ReadOnlyContext(override val parentContext: Context) : Context {
     override val scope = ReadOnlyScope(parentContext.scope)
     override val configuration = parentContext.configuration
 }
+
+fun List<StatementNode>.evaluateIn(context: Context): Value =
+    this
+        .asSequence()
+        .map { it.parseAndApplyTo(context) }
+        .lastOrNull() ?: UnitValue
+fun List<StatementNode>.evaluateInChildOf(context: Context): Value = evaluateIn(context.createSimpleChild())
+
+fun BlockNode.evaluateIn(context: Context) = value.evaluateIn(context)
+fun BlockNode.evaluateInChildOf(context: Context): Value = evaluateIn(context.createSimpleChild())

@@ -2,12 +2,15 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.compile.IRFunction
 import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
+import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
+import xyz.qwewqa.trebla.frontend.context.SimpleContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.toStruct
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
 import xyz.qwewqa.trebla.grammar.trebla.PostfixUnaryFunctionNode
@@ -41,8 +44,8 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
 
     override fun applyTo(context: Context): Value = runWithErrorMessage("Error in infix expression.") {
         when (functionName) {
-            "||" -> return doShortCircuitingBoolean(IRFunction.Or, context)
-            "&&" -> return doShortCircuitingBoolean(IRFunction.And, context)
+            "||" -> return doShortCircuitingBoolean(ShortCircuitOperation.Or, context)
+            "&&" -> return doShortCircuitingBoolean(ShortCircuitOperation.And, context)
         }
         val lhs = node.lhs.parseAndApplyTo(context)
         val rhs = node.rhs.parseAndApplyTo(context)
@@ -74,15 +77,17 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
     }
 
     private fun doShortCircuitingBoolean(
-        operation: IRFunction,
+        operation: ShortCircuitOperation,
         context: Context,
     ): Value {
         val booleanType = context.booleanType
         val lhsValue = node.lhs.parseAndApplyTo(context)
-        if (lhsValue !is RawStructValue || lhsValue.type != context.booleanType)
+        if (lhsValue !is RawStructValue || lhsValue.type != context.booleanType) {
             compileError("Short circuiting operators can only be applied to booleans.")
-        if (context !is ExecutionContext)
-            compileError("Short circuiting operators can only be used in execution contexts. Use the infix `and` or `or` instead.")
+        }
+        if (context !is ExecutionContext) {
+            return doNonExecutionBoolean(operation, context)
+        }
 
         // We need to make a new block to place on the right side of the builtin short circuiting function
         // such that it only executes if the first part evaluated to a relevant value.
@@ -91,7 +96,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         val rhsValue = node.rhs.parseAndApplyTo(rhsBlock)
         if (rhsValue !is RawStructValue || rhsValue.type != context.booleanType)
             compileError("Short circuiting operators can only be applied to booleans.")
-        val resultValue = IRFunctionCall(operation, listOf(
+        val resultValue = IRFunctionCall(operation.function, listOf(
             lhsValue.raw.toIR(),
             IRFunctionCall(IRFunction.Execute, listOf(
                 rhsBlock.toIR(),
@@ -104,6 +109,30 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         // Otherwise, the action would be rerun each time the value was accessed (or not at all if never accessed).
         // In simpler cases, it's up to the backend to optimize (at least once implemented).
         return RawStructValue(IRRawValue(resultValue), context, booleanType).copyTo(context.localAllocator, context)
+    }
+
+    private fun doNonExecutionBoolean(
+        operation: ShortCircuitOperation,
+        context: Context
+    ): Value {
+        val lhsResult = node.lhs.parseAndEvaluateConstantBoolean(context)
+        return when (operation) {
+            ShortCircuitOperation.And -> if (lhsResult && node.rhs.parseAndEvaluateConstantBoolean(context)) {
+                true.toStruct(context)
+            } else {
+                false.toStruct(context)
+            }
+            ShortCircuitOperation.Or -> if (lhsResult || node.rhs.parseAndEvaluateConstantBoolean(context)) {
+                true.toStruct(context)
+            } else {
+                false.toStruct(context)
+            }
+        }
+    }
+
+    enum class ShortCircuitOperation(val function: IRFunction) {
+        And(IRFunction.And),
+        Or(IRFunction.Or),
     }
 }
 

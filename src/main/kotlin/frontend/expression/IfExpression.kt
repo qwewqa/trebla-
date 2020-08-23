@@ -3,11 +3,9 @@ package xyz.qwewqa.trebla.frontend.expression
 import xyz.qwewqa.trebla.backend.compile.IRFunction
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.ExecutionContext
-import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.trebla.frontend.context.createSimpleChild
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.grammar.trebla.ExpressionNode
 import xyz.qwewqa.trebla.grammar.trebla.IfExpressionNode
 
 class IfExpression(override val node: IfExpressionNode) : Expression {
@@ -19,33 +17,39 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
         context.statements += IRFunction.If.raw(
             condition.raw,
             SimpleExecutionContext(context).also { ctx ->
-                node.tbranch.value.forEach { it.parseAndApplyTo(ctx) }
+                node.tbranch.evaluateIn(ctx)
             }.raw(),
             SimpleExecutionContext(context).also { ctx ->
-                node.fbranch?.value?.forEach { it.parseAndApplyTo(ctx) }
+                node.fbranch?.evaluateIn(ctx)
             }.raw()
         )
         return UnitValue
     }
 
     private fun applyConstant(context: Context): Value {
-        val condition = node.condition.parseAndApplyTo(context).asBooleanStruct(context)
-        val ifContext = context.createSimpleChild()
-        val selectedBranch = when (condition.raw.toIR().tryConstexprEvaluate()) {
-            null -> compileError("if statement is marked const, but condition is not a compile time constant.")
-            0.0 -> node.fbranch?.value ?: emptyList()
-            else -> node.tbranch.value
+        val selectedBranch = if (node.condition.parseAndEvaluateConstantBoolean(context)) {
+            node.tbranch.value
+        } else {
+            node.fbranch?.value ?: emptyList()
         }
-        return selectedBranch
-            .asSequence()
-            .map { it.parseAndApplyTo((ifContext)) }
-            .lastOrNull() ?: UnitValue
+        return selectedBranch.evaluateInChildOf(context)
     }
 }
 
 fun Value.asBooleanStruct(context: Context): RawStructValue {
     if (this !is RawStructValue || this.type != context.booleanType) {
-        compileError("if statement condition must be a boolean.", this.node)
+        compileError("Value most be a boolean.", this.node)
     }
     return this
+}
+
+fun ExpressionNode.parseAndEvaluateConstantBoolean(context: Context): Boolean {
+    val parsed = parseAndApplyTo(SimpleContext(context)).asBooleanStruct(context)
+    val result = parsed.raw.toIR().tryConstexprEvaluate()
+        ?: compileError("Boolean is a not a compile time constant.", this)
+    return when (result) {
+        1.0 -> true
+        0.0 -> false
+        else -> compileError("Invalid value for boolean: $result")
+    }
 }

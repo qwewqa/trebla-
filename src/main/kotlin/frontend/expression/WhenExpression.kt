@@ -3,10 +3,7 @@ package xyz.qwewqa.trebla.frontend.expression
 import xyz.qwewqa.trebla.backend.compile.IRFunction
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.ExecutionContext
-import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.trebla.frontend.context.createSimpleChild
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.grammar.trebla.BlockNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenEntryNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenExpressionNode
@@ -38,25 +35,11 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
     private fun applyConstant(context: Context): Value {
         val (conditionals, default) = getEntries()
         conditionals.forEach { entry ->
-            when (entry.condition!!.parseAndApplyTo(context).asBooleanStruct(context).raw.toIR().tryConstexprEvaluate()) {
-                null -> compileError("Condition in const when must be a compile time constant.", entry.condition)
-                0.0 -> {}
-                1.0 -> {
-                    val whenContext = context.createSimpleChild()
-                    return entry.body.value
-                        .asSequence()
-                        .map { it.parseAndApplyTo(whenContext) }
-                        .lastOrNull() ?: UnitValue
-                }
+            if (entry.condition!!.parseAndEvaluateConstantBoolean(context)) {
+                return entry.body.evaluateInChildOf(context)
             }
         }
-        if (default != null) {
-            val whenContext = context.createSimpleChild()
-            return default.body.value
-                .asSequence()
-                .map { it.parseAndApplyTo(whenContext) }
-                .lastOrNull() ?: UnitValue
-        }
+        if (default != null) return default.body.evaluateInChildOf(context)
         compileError("Const when expression has no default and no conditions were satisfied.")
     }
 
