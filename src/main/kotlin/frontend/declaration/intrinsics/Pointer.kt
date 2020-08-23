@@ -18,14 +18,12 @@ class Pointer(context: Context) :
             "type" type TypeType
         },
         {
-            val type =
-                ("type".cast<Type>() as? Allocatable) ?: compileError("Only pointers to allocatable types are allowed.")
-            SpecificPointerType(callingContext, type)
+            SpecificPointerType(callingContext, "type".cast<Type>())
         }
     ),
     Type
 
-class SpecificPointerType(context: Context, val insideType: Allocatable) :
+class SpecificPointerType(context: Context, val insideType: Type) :
     Callable,
     Allocatable {
     private val callableDelegate = CallableDSL(
@@ -54,6 +52,10 @@ class SpecificPointerType(context: Context, val insideType: Allocatable) :
     override val bindingContext = context
     override val allocationSize = 2
     override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "Pointer") as Type))
+
+    override fun accepts(other: Type): Boolean {
+        return super.accepts(other) || (other is SpecificPointerType && insideType.accepts(other.insideType))
+    }
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         return PointerValue(
@@ -84,9 +86,9 @@ class PointerValue(
         {
             val insideType = type.insideType
             if (insideType !is SpecificListType) compileError("Only pointers to lists are subscriptable")
-            // only pointers to allocatable types are possible, so cast should never fail
             val listContainedType = insideType.containedType
-            val elementSize = (listContainedType as Allocatable).allocationSize
+            val elementSize = (listContainedType as? Allocatable)?.allocationSize
+                ?: compileError("Only pointers to lists containing an allocatable type are subscriptable")
             val listIndex = "index".cast<RawStructValue>()
             PointerValue(
                 bindingContext,
@@ -133,8 +135,10 @@ class PointerValue(
         index.copyTo(allocator, context),
     )
 
-    override fun deref(context: Context): Value =
-        type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+    override fun deref(context: Context): Value {
+        if (type.insideType !is Allocatable) compileError("Cannot dereference pointer to non-allocatable type")
+        return type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+    }
 }
 
 interface Dereferenceable {
