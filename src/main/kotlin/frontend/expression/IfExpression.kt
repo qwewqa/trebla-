@@ -38,7 +38,14 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
 
 fun Value.asBooleanStruct(context: Context): RawStructValue {
     if (this !is RawStructValue || this.type != context.booleanType) {
-        compileError("Value most be a boolean.", this.node)
+        compileError("Value must be a boolean.", this.node)
+    }
+    return this
+}
+
+fun Value.asNumberStruct(context: Context): RawStructValue {
+    if (this !is RawStructValue || this.type != context.numberType) {
+        compileError("Value must be a number.", this.node)
     }
     return this
 }
@@ -46,10 +53,16 @@ fun Value.asBooleanStruct(context: Context): RawStructValue {
 fun ExpressionNode.parseAndEvaluateConstantBoolean(context: Context): Boolean {
     val parsed = parseAndApplyTo(SimpleContext(context)).asBooleanStruct(context)
     val result = parsed.raw.toIR().tryConstexprEvaluate()
-        ?: compileError("Boolean is a not a compile time constant.", this)
+        ?: compileError("Boolean must be a compile time constant.", this)
     return when (result) {
         1.0 -> true
         0.0 -> false
         else -> compileError("Invalid value for boolean: $result")
     }
+}
+
+fun ExpressionNode.parseAndEvaluateConstantNumber(context: Context): Double {
+    val parsed = parseAndApplyTo(SimpleContext(context)).asNumberStruct(context)
+    return parsed.raw.toIR().tryConstexprEvaluate()
+        ?: compileError("Number must be a compile time constant.", this)
 }

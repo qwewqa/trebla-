@@ -52,3 +52,13 @@ operator func Type.greaterOr(other: Any) = typeAccepts(this, other)
 operator func Type.lessOr(other: Any) = typeAccepts(other, this)
 operator func Type.greater(other: Any) = (this >= other) and (this != other)
 operator func Type.less(other: Any) = (this <= other) and (this != other)
+
+func Range.execute(op: Callable) = this(op)
+infix func Number.until(other: Number) = Range(this, other)
+infix func Number.through(other: Number) = const if (other > this) {
+    Range(this, other + 1)
+} else {
+    Range(this, other - 1)
+}
+
+infix func Range.by(n: Number) = Range(this.start, this.stop, n)

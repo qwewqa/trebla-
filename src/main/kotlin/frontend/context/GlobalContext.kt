@@ -126,4 +126,5 @@ val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::SizeOf,
     listOf("std") to ::TypeOf,
     listOf("std") to ::TypeAccepts,
+    listOf("std") to ::Range,
 )

@@ -72,31 +72,20 @@ class IntrinsicParameterDSLContext(val context: Context) {
     infix fun String.type(type: Type) =
         IntrinsicParameter(this, type, null).also { params += it }
 
-    infix fun String.type(type: IntrinsicType) =
-        IntrinsicParameter(
-            this,
-            context.run(type.accessor),
-            null,
-        ).also { params += it }
-
     infix fun IntrinsicParameter.default(value: Value) =
         copy(default = value).also { new ->
             params.removeLast().let { if (it != this) error("Out of order default use in parameter DSL") }
             params += new
         }
 
-    val NumberType = TreblaNumberType
-    val BooleanType = TreblaBooleanType
+    val NumberType by lazy { context.numberType }
+    val BooleanType by lazy { context.booleanType }
 
     fun get() = if (managed) params else {
         if (params.isNotEmpty()) compileError("Unmanaged parameters requires none to be specified in DSL.")
         null
     }
 }
-
-sealed class IntrinsicType(val accessor: Context.() -> Type)
-object TreblaNumberType : IntrinsicType(Context::numberType)
-object TreblaBooleanType : IntrinsicType(Context::booleanType)
 
 class IntrinsicFunctionDSLContext(
     private val _parameters: Map<Parameter, Value>?,
@@ -105,16 +94,18 @@ class IntrinsicFunctionDSLContext(
 ) {
     val String.number
         get() = cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()
-            ?: compileError("Argument not a compile time constant.", parameters[this]?.second?.node)
+            ?: compileError("Argument must be a compile time constant.", parameters[this]?.second?.node)
 
     val String.boolean
         get() = (cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()
-            ?: compileError("Argument not a compile time constant.", parameters[this]?.second?.node)) != 0.0
+            ?: compileError("Argument must be a compile time constant.", parameters[this]?.second?.node)) != 0.0
 
     inline fun <reified T : Any> String.cast(): T =
         (parameters[this] ?: error("Unknown parameter $this.")).let { (param, value) ->
             (value as? T) ?: compileError("Failed to cast parameter with type ${param.type.repr()}", value.node)
         }
+
+    fun String.param() = parameters[this]?.first ?: error("Unknown parameter $this.")
 
     val arguments get() = _arguments ?: error("Parameters are managed; direct argument access is invalid.")
     val parameters by lazy {
@@ -125,3 +116,7 @@ class IntrinsicFunctionDSLContext(
 
 fun Number.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context, context.numberType)
 fun Boolean.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context, context.booleanType)
+
+fun Double.isIntOrCompileError() = toInt().also {
+    if (it.toDouble() != this) compileError("Value $this is not an integer.")
+}
