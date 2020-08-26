@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -35,7 +35,7 @@ class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration)
             EntityPointerValue(
                 RawStructValue(
                     BuiltinCallRawValue(
-                        IRFunction.Multiply,
+                        SonoFunction.Multiply,
                         listOf(
                             "index".cast<RawStructValue>().raw,
                             SHARED_BLOCK_SIZE.toLiteralRawValue()

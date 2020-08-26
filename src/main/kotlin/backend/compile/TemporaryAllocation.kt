@@ -1,6 +1,8 @@
 package xyz.qwewqa.trebla.backend.compile
 
 import xyz.qwewqa.trebla.backend.BackendConfig
+import xyz.qwewqa.trebla.backend.allocate.SSAContext
+import xyz.qwewqa.trebla.backend.allocate.constructSSA
 import xyz.qwewqa.trebla.frontend.context.TEMPORARY_MEMORY_BLOCK
 
 fun IRNode.processTemporaryAllocations(
@@ -14,10 +16,11 @@ private fun IRNode.processTemporaryAllocations(
     remainingIndexes: MutableList<Int>,
     mapping: MutableMap<Int, Int>,
 ): IRNode {
+    var foo = this.constructSSA(SSAContext())
     return when (this) {
         is IRValue -> this
         is IRTempRead -> {
-            IRFunction.Get.calledWith(
+            SonoFunction.Get.calledWith(
                 TEMPORARY_MEMORY_BLOCK.toIR(),
                 mapping.getOrPut(id) {
                     remainingIndexes.removeFirstOrNull() ?: backendError("Temporary Allocations Full")
@@ -25,7 +28,7 @@ private fun IRNode.processTemporaryAllocations(
             )
         }
         is IRTempAssign -> {
-            IRFunction.Set.calledWith(
+            SonoFunction.Set.calledWith(
                 TEMPORARY_MEMORY_BLOCK.toIR(),
                 mapping.getOrPut(id) {
                     remainingIndexes.removeFirstOrNull() ?: backendError("Temporary Allocations Full")
@@ -38,5 +41,6 @@ private fun IRNode.processTemporaryAllocations(
                 arguments = arguments.map { it.processTemporaryAllocations(config, remainingIndexes, mapping) }
             )
         }
+        else -> TODO()
     }
 }

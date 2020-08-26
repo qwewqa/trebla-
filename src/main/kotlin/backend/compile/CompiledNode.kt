@@ -34,12 +34,11 @@ data class CompiledNodeData(val orderedNodes: List<Map<String, Any>>, val indexe
 fun IRNode.toCompiledNode(): CompiledNode = when (this) {
     is IRValue -> CompiledValueNode(value)
     is IRFunctionCall -> when (variant) {
-        IRFunction.Execute -> {
+        SonoFunction.Execute -> {
             if (arguments.isEmpty()) CompiledValueNode(0.0)
             else CompiledFunctionNode(variant.name, arguments.map { it.toCompiledNode() })
         }
         else -> CompiledFunctionNode(variant.name, arguments.map { it.toCompiledNode() })
     }
-    is IRTempRead -> backendError("Unresolved temporary variable.")
-    is IRTempAssign -> backendError("Unresolved temporary variable.")
+    else -> backendError("Unresolved temporary variable.")
 }

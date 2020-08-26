@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -94,9 +94,9 @@ class PointerValue(
                 bindingContext,
                 SpecificPointerType(bindingContext, listContainedType),
                 block,
-                IRFunction.Add.raw(
+                SonoFunction.Add.raw(
                     index.raw,
-                    IRFunction.Multiply.raw(
+                    SonoFunction.Multiply.raw(
                         listIndex.raw,
                         elementSize.toLiteralRawValue()
                     )

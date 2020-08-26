@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.compile.IRNode
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
@@ -12,7 +12,6 @@ import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.BlockNode
-import xyz.qwewqa.trebla.grammar.trebla.ExpressionNode
 import xyz.qwewqa.trebla.grammar.trebla.StatementNode
 
 /**
@@ -55,7 +54,7 @@ class SimpleExecutionContext(override val parentContext: ExecutionContext) : Exe
     override val statements = mutableListOf<Statement>()
 
     override fun toIR(): IRNode {
-        return IRFunctionCall(IRFunction.Execute, statements.map { it.toIR() })
+        return IRFunctionCall(SonoFunction.Execute, statements.map { it.toIR() })
     }
 }
 

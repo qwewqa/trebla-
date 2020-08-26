@@ -29,7 +29,7 @@ data class AllocationPointer(val block: Int, val index: Int)
 // this will usually end up as part of entity memory, though the door is technically open
 // to storing things in other blocks depending on what's available to the callback
 class TemporaryAllocator : Allocator() {
-    private var counter = 0
+    private var counter = 1
     override fun allocate() = TemporaryAllocation(counter++)
 }
 

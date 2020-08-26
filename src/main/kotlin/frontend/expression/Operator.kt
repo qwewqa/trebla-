@@ -1,12 +1,10 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
-import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
-import xyz.qwewqa.trebla.frontend.context.SimpleContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
@@ -98,7 +96,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
             compileError("Short circuiting operators can only be applied to booleans.")
         val resultValue = IRFunctionCall(operation.function, listOf(
             lhsValue.raw.toIR(),
-            IRFunctionCall(IRFunction.Execute, listOf(
+            IRFunctionCall(SonoFunction.Execute, listOf(
                 rhsBlock.toIR(),
                 rhsValue.raw.toIR()
             ))
@@ -130,9 +128,9 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         }
     }
 
-    enum class ShortCircuitOperation(val function: IRFunction) {
-        And(IRFunction.And),
-        Or(IRFunction.Or),
+    enum class ShortCircuitOperation(val function: SonoFunction) {
+        And(SonoFunction.And),
+        Or(SonoFunction.Or),
     }
 }
 

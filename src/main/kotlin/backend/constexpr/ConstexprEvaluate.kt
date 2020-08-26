@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.backend.constexpr
 
 import xyz.qwewqa.trebla.backend.compile.*
-import xyz.qwewqa.trebla.backend.compile.IRFunction.*
-import xyz.qwewqa.trebla.backend.compile.IRFunction.Set
+import xyz.qwewqa.trebla.backend.compile.SonoFunction.*
+import xyz.qwewqa.trebla.backend.compile.SonoFunction.Set
 import kotlin.math.*
 
 fun IRNode.constexprEvaluate(allowTemporary: Boolean = false, allowMemory: Boolean = false): Double =
@@ -17,9 +17,23 @@ fun IRNode.tryConstexprEvaluate(allowTemporary: Boolean = false, allowMemory: Bo
 
 fun IRNode.constexprEvaluate(context: ConstexprEvaluationContext): Double {
     return when (this) {
-        is IRValue -> this.value
-        is IRTempRead -> context[this.id]
-        is IRTempAssign -> run { context[this.id] = this.rhs.constexprEvaluate(context); 0.0 }
+        is IRValue -> value
+        is IRTempRead -> context.getTemp(id)
+        is IRTempAssign -> run { context.setTemp(id, rhs.constexprEvaluate(context)); 0.0 }
+        is IRSeqTempRead -> context.getSeqTemp(
+            id,
+            size,
+            offset.constexprEvaluate(context).toInt(),
+        )
+        is IRSeqTempAssign -> run {
+            context.setSeqTemp(
+                id,
+                size,
+                offset.constexprEvaluate(context).toInt(),
+                rhs.constexprEvaluate(context)
+            )
+            0.0
+        }
         is IRFunctionCall -> when (variant) {
             Execute -> {
                 arguments.dropLast(1).forEach { it.constexprEvaluate(context) }

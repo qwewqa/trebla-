@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.compile.IRValue
 import xyz.qwewqa.trebla.frontend.compileError
@@ -57,7 +57,7 @@ class Callback(
 
     fun toIR(): IRFunctionCall {
         val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR() ?: IRValue(0.0)
-        return IRFunction.Execute.calledWith(statements.map { it.toIR() } + listOf(returnIRValue))
+        return SonoFunction.Execute.calledWith(statements.map { it.toIR() } + listOf(returnIRValue))
     }
 }
 

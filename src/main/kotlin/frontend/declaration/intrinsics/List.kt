@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
@@ -214,7 +214,7 @@ class ListGet(val context: Context, val listValue: ListValue) : Callable, Value 
         val returns = type.allocateOn(callingContext.localAllocator, callingContext)
         callingContext.statements += Statement {
             IRFunctionCall(
-                IRFunction.SwitchIntegerWithDefault,
+                SonoFunction.SwitchIntegerWithDefault,
                 listValue.values.map { value ->
                     SimpleExecutionContext(callingContext).also {
                         returns.copyFrom(value, it)

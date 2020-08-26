@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -70,7 +70,7 @@ class BoxValue(
             ),
             RawStructValue(
                 BuiltinCallRawValue(
-                    IRFunction.Add,
+                    SonoFunction.Add,
                     listOf(
                         offset,
                         index.toLiteralRawValue()
@@ -132,10 +132,10 @@ class ResolveBoxPointer(context: Context) :
                 RawStructValue(newBlock.toLiteralRawValue(), callingContext, context.numberType),
                 RawStructValue(
                     BuiltinCallRawValue(
-                        IRFunction.Add,
+                        SonoFunction.Add,
                         listOf(
                             BuiltinCallRawValue(
-                                IRFunction.Multiply,
+                                SonoFunction.Multiply,
                                 listOf(
                                     entityIndex.raw,
                                     SHARED_BLOCK_SIZE.toLiteralRawValue()

@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.grammar.trebla.WhenEntryNode
@@ -19,8 +19,8 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
             conditionals.foldRight(elseContext) { entry, prev ->
                 val conditionContext = SimpleExecutionContext(context)
                 val condition = entry.condition!!.parseAndApplyTo(conditionContext).asBooleanStruct(context)
-                IRFunction.If.calledWith(
-                    IRFunction.Execute.calledWith(
+                SonoFunction.If.calledWith(
+                    SonoFunction.Execute.calledWith(
                         conditionContext.toIR(),
                         condition.raw.toIR(),
                     ),

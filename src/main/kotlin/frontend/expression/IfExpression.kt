@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.compile.IRFunction
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
@@ -14,7 +14,7 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
     private fun applyNormal(context: Context): UnitValue {
         if (context !is ExecutionContext) compileError("non-const if statement requires an execution context.", node)
         val condition = node.condition.parseAndApplyTo(context).asBooleanStruct(context)
-        context.statements += IRFunction.If.raw(
+        context.statements += SonoFunction.If.raw(
             condition.raw,
             SimpleExecutionContext(context).also { ctx ->
                 node.tbranch.evaluateIn(ctx)

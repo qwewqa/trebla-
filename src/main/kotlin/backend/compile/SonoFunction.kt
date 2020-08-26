@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.backend.compile
 
-enum class IRFunction {
+enum class SonoFunction {
     Execute,
     If,
     Switch,

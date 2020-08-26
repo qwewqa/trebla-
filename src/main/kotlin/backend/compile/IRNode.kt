@@ -21,7 +21,7 @@ data class IRTempAssign(val id: Int, val rhs: IRNode) : IRNode() {
     override fun toString() = "$$id <- $rhs"
 }
 
-data class IRFunctionCall(val variant: IRFunction, var arguments: List<IRNode>) : IRNode() {
+data class IRFunctionCall(val variant: SonoFunction, val arguments: List<IRNode>) : IRNode() {
     override fun toString() = "$variant${
         arguments.map { it.toString() }.let {
             if (it.joinToString(", ").length > 120)
@@ -30,4 +30,12 @@ data class IRFunctionCall(val variant: IRFunction, var arguments: List<IRNode>) 
                 "(${it.joinToString(", ")})"
         }
     }"
+}
+
+data class IRSeqTempAssign(val id: Int, val size: Int, val offset: IRNode, val rhs: IRNode) : IRNode() {
+    override fun toString() = "$$id[$size|$offset] <- $rhs"
+}
+
+data class IRSeqTempRead(val id: Int, val size: Int, val offset: IRNode) : IRNode() {
+    override fun toString() = "$$id[$size|$offset]"
 }
