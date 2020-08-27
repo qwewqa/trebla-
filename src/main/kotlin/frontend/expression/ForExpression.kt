@@ -1,5 +1,6 @@
 package xyz.qwewqa.trebla.frontend.expression
 
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
@@ -13,7 +14,8 @@ class ForExpression(override val node: ForExpressionNode) : Expression {
         if (context !is ExecutionContext) compileError("For statement not allowed at location.", node)
         val innerContext = InnerExecutionContext(context)
         node.initializer?.parseAndApplyTo(innerContext)
-        val condition = node.condition?.parseAndApplyTo(innerContext) ?: RawStructValue(LiteralRawValue(1.0),
+        val conditionContext = SimpleExecutionContext(innerContext)
+        val condition = node.condition?.parseAndApplyTo(conditionContext) ?: RawStructValue(LiteralRawValue(1.0),
             innerContext,
             innerContext.booleanType)
         val afterthought = node.afterthought?.parse(innerContext)
@@ -23,7 +25,13 @@ class ForExpression(override val node: ForExpressionNode) : Expression {
             node.body.value.forEach { it.parseAndApplyTo(ctx) }
             afterthought?.applyTo(ctx)
         }
-        innerContext.statements += WhileStatement(condition, body)
+        innerContext.statements += WhileStatement(
+            SonoFunction.Execute.calledWith(
+                conditionContext.toIR(),
+                condition.raw.toIR()
+            ),
+            body,
+        )
         return UnitValue
     }
 }
