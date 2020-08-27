@@ -3,20 +3,27 @@ package xyz.qwewqa.trebla.backend.allocate
 import xyz.qwewqa.trebla.backend.compile.*
 
 class SSAContext(
-    val mappings: MutableMap<Int, Int> = mutableMapOf(),
-    val seqMappings: MutableMap<Pair<Int, Int>, Int> = mutableMapOf(),
+    private val mappings: MutableMap<Int, Int> = mutableMapOf(),
+    private val seqMappings: MutableMap<Pair<Int, Int>, Int> = mutableMapOf(),
+    private val parent: SSAContext? = null,
 ) {
-    fun copy() = SSAContext(mappings.toMutableMap(), seqMappings.toMutableMap())
+    fun child() = SSAContext(mappings.toMutableMap(), seqMappings.toMutableMap(), this)
+    fun copy() = SSAContext(mappings.toMutableMap(), seqMappings.toMutableMap(), parent)
+    fun split(n: Int) = List(n) { child() }
 
-    fun incrementAndGet(id: Int) = ((mappings[id] ?: (id * 10000 - 1)) + 1).also {
-        mappings[id] = it
-        if (it - id * 10000 >= 10000) backendError("Too many temporary uses")
-    }
+    fun incrementAndGet(id: Int): Int =
+        parent?.incrementAndGet(id)?.also { mappings[id] = it }
+            ?: ((mappings[id] ?: (id * 1000 - 1)) + 1).also {
+                mappings[id] = it
+                if (it - id * 1000 >= 1000) backendError("Too many temporary uses")
+            }
 
-    fun incrementAndGetSeq(id: Int, size: Int) = ((seqMappings[id to size] ?: (id * 10000 - 1)) + 1).also {
-        seqMappings[id to size] = it
-        if (it - id * 10000 >= 10000) backendError("Too many temporary uses")
-    }
+    fun incrementAndGetSeq(id: Int, size: Int): Int =
+        parent?.incrementAndGetSeq(id, size)?.also { seqMappings[id to size] = it }
+            ?: ((seqMappings[id to size] ?: (id * 1000 - 1)) + 1).also {
+                seqMappings[id to size] = it
+                if (it - id * 1000 >= 1000) backendError("Too many temporary uses")
+            }
 
     fun get(id: Int) = mappings[id] ?: backendError("Read before assignment of id $id")
     fun getSeq(id: Int, size: Int) =
@@ -25,17 +32,25 @@ class SSAContext(
     fun applyJoin(branches: List<SSAContext>): List<Phi> {
         return branches.map { it.mappings }.let { allMappings ->
             val keys = allMappings.map { it.keys as Set<Int> }.reduce { a, v -> a + v }
-            keys.map { id ->
-                val newId = this.incrementAndGet(id)
-                PhiAssign(newId, allMappings.map { it[id] })
-            }.filter {
-                it.values.toSet().size > 1
+            keys.mapNotNull { id ->
+                val phiArgs = allMappings.map { it[id] }
+                if (phiArgs.toSet().size <= 1) {
+                    null
+                } else {
+                    val newId = this.incrementAndGet(id)
+                    PhiAssign(newId, phiArgs)
+                }
             }
         } + branches.map { it.seqMappings }.let { allMappings ->
             val keys = allMappings.map { it.keys as Set<Pair<Int, Int>> }.reduce { a, v -> a + v }
-            keys.map { id ->
-                val newId = this.incrementAndGetSeq(id.first, id.second)
-                PhiSeqAssign(newId, id.second, allMappings.map { it[id] })
+            keys.mapNotNull { id ->
+                val phiArgs = allMappings.map { it[id] }
+                if (phiArgs.toSet().size <= 1) {
+                    null
+                } else {
+                    val newId = this.incrementAndGetSeq(id.first, id.second)
+                    PhiSeqAssign(newId, id.second, phiArgs)
+                }
             }
         }
     }
@@ -50,152 +65,49 @@ Some functions like draw short circuit if their argument is a nonexistent id.
 
 fun IRNode.constructSSA(context: SSAContext): SSANode = when (this) {
     is IRValue -> SSAValue(value)
-    is IRTempRead -> SSATempRead(context.mappings[id] ?: backendError("Read before assignment of id $id"))
-    is IRSeqTempRead -> SSASeqTempRead(context.seqMappings[id to size]
-        ?: backendError("Read before assignment of id $id size $size"), size, offset.constructSSA(context))
+    is IRTempRead -> SSATempRead(context.get(id))
+    is IRSeqTempRead -> SSASeqTempRead(context.getSeq(id, size), size, offset.constructSSA(context))
     is IRTempAssign -> {
         val newRhs = rhs.constructSSA(context)
-        val newId = (context.mappings[id] ?: (id * 1000 - 1)) + 1
-        context.mappings[id] = newId
+        val newId = context.incrementAndGet(id)
         SSATempAssign(newId, newRhs)
     }
     is IRSeqTempAssign -> {
-        val newId = (context.seqMappings[id to size] ?: (id * 1000 - 1)) + 1
-        context.seqMappings[id to size] = newId
-        SSASeqTempAssign(newId, size, offset.constructSSA(context), rhs.constructSSA(context))
+        val newRhs = rhs.constructSSA(context)
+        val newId = context.incrementAndGetSeq(id, size)
+        SSASeqTempAssign(newId, size, offset.constructSSA(context), newRhs)
     }
     is IRFunctionCall -> when (variant) {
-        SonoFunction.Execute -> {
-            SSAFunctionCall(
-                variant,
-                arguments.map { it.constructSSA(context) },
-                emptyList()
-            )
-        }
-        SonoFunction.If -> {
-            val condition = arguments[0].constructSSA(context)
-            val branchContexts = mutableListOf<SSAContext>()
-            val branches = arguments.drop(1).map { node ->
-                node.constructSSA(context).also {
-                    branchContexts += context.copy()
-                }
-            }
-            SSAFunctionCall(
-                variant,
-                listOf(condition) + branches,
-                context.applyJoin(branchContexts),
-            )
-        }
-        SonoFunction.Switch -> {
-            val condition = arguments[0].constructSSA(context)
-            // keep original context here too, because it's possible no branch will be executed
-            val branchContexts = mutableListOf(context.copy())
-            val branches = arguments.drop(1).map { node ->
-                node.constructSSA(context).also {
-                    branchContexts += context.copy()
-                }
-            }
-            SSAFunctionCall(
-                variant,
-                listOf(condition) + branches,
-                context.applyJoin(branchContexts),
-            )
-        }
-        SonoFunction.SwitchInteger -> {
-            val condition = arguments[0].constructSSA(context)
-            // keep original context here too, because it's possible no branch will be executed
-            val branchContexts = mutableListOf(context.copy())
-            val branches = arguments.drop(1).map { node ->
-                node.constructSSA(context).also {
-                    branchContexts += context.copy()
-                }
-            }
-            SSAFunctionCall(
-                variant,
-                listOf(condition) + branches,
-                context.applyJoin(branchContexts),
-            )
-        }
-        SonoFunction.SwitchWithDefault -> {
-            val condition = arguments[0].constructSSA(context)
-            val branchContexts = mutableListOf<SSAContext>()
-            val branches = arguments.drop(1).map { node ->
-                node.constructSSA(context).also {
-                    branchContexts += context.copy()
-                }
-            }
-            SSAFunctionCall(
-                variant,
-                listOf(condition) + branches,
-                context.applyJoin(branchContexts),
-            )
-        }
-        SonoFunction.SwitchIntegerWithDefault -> {
-            val condition = arguments[0].constructSSA(context)
-            val branchContexts = mutableListOf<SSAContext>()
-            val branches = arguments.drop(1).map { node ->
-                node.constructSSA(context).also {
-                    branchContexts += context.copy()
-                }
-            }
-            SSAFunctionCall(
-                variant,
-                listOf(condition) + branches,
-                context.applyJoin(branchContexts),
-            )
-        }
-        SonoFunction.And -> {
-            // functionally like a conditional, so just copy the same logic
-            val condition = arguments[0].constructSSA(context)
-            // keep original context here too, because it's possible no branch will be executed
-            val branchContexts = mutableListOf(context.copy())
-            val branches = arguments.drop(1).map { node ->
-                node.constructSSA(context).also {
-                    branchContexts += context.copy()
-                }
-            }
-            SSAFunctionCall(
-                variant,
-                listOf(condition) + branches,
-                context.applyJoin(branchContexts),
-            )
-        }
-        SonoFunction.Or -> {
-            // functionally like a conditional, so just copy the same logic
-            val condition = arguments[0].constructSSA(context)
-            // keep original context here too, because it's possible no branch will be executed
-            val branchContexts = mutableListOf(context.copy())
-            val branches = arguments.drop(1).map { node ->
-                node.constructSSA(context).also {
-                    branchContexts += context.copy()
-                }
-            }
-            SSAFunctionCall(
-                variant,
-                listOf(condition) + branches,
-                context.applyJoin(branchContexts),
-            )
-        }
-        SonoFunction.While -> {
-            // functionally like a conditional, so just copy the same logic
-            val condition = arguments[0].constructSSA(context)
-            // keep original context here too, because it's possible no branch will be executed
-            val branchContexts = mutableListOf(context.copy())
-            val branches = arguments.drop(1).map { node ->
-                node.constructSSA(context).also {
-                    branchContexts += context.copy()
-                }
-            }
-            SSAFunctionCall(
-                variant,
-                listOf(condition) + branches,
-                context.applyJoin(branchContexts),
-            )
-        }
+        SonoFunction.If -> conditionAndBranch(context, true)
+        SonoFunction.Switch -> conditionAndBranch(context, false)
+        SonoFunction.SwitchInteger -> conditionAndBranch(context, false)
+        SonoFunction.SwitchWithDefault -> conditionAndBranch(context, true)
+        SonoFunction.SwitchIntegerWithDefault -> conditionAndBranch(context, true)
+        SonoFunction.And -> conditionAndBranch(context, false)
+        SonoFunction.Or -> conditionAndBranch(context, false)
+        SonoFunction.While -> conditionAndBranch(context, false)
         else -> SSAFunctionCall(
             variant,
             arguments.map { it.constructSSA(context) },
             emptyList(),
         )
     }
+}
+
+private fun IRFunctionCall.conditionAndBranch(context: SSAContext, complete: Boolean): SSAFunctionCall {
+    // functionally like a conditional, so just copy the same logic
+    val condition = arguments[0].constructSSA(context)
+    val branchContexts = if (complete) { // at least one argument (other than the first) must be executed
+        context.split(arguments.size - 1)
+    } else {
+        context.split(arguments.size - 1) + mutableListOf(context.copy())
+    }
+    val branches = arguments.drop(1).zip(branchContexts).map { (node, ctx) ->
+        node.constructSSA(ctx)
+    }
+    return SSAFunctionCall(
+        variant,
+        listOf(condition) + branches,
+        context.applyJoin(branchContexts),
+    )
 }
