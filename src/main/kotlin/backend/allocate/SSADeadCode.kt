@@ -95,9 +95,13 @@ private fun SSANode.inlineAssigns(
 ): SSANode = when(this) {
     is SSATempRead ->
         assigns[location]?. let {
-            if (reads.getOrPut(location) { 0 } == 1) {
-                reads[location] = -1
-                it.inlineAssigns(reads, assigns)
+            if (!it.isOrderedImpure()) {
+                if (reads.getOrPut(location) { 0 } == 1) {
+                    reads[location] = -1
+                    it.inlineAssigns(reads, assigns)
+                } else {
+                    this
+                }
             } else {
                 this
             }

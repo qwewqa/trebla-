@@ -38,7 +38,9 @@ val undroppableFunctions = setOf(
 
 val orderedImpureFunctions = setOf(
     Set,
+    Get,
     SetShifted,
+    GetShifted,
 )
 
 fun SSANode.isImpure(): Boolean = when (this) {
@@ -70,8 +72,8 @@ As such, things which are order dependent should be detected, and an error throw
 fun SSANode.isOrderedImpure(): Boolean = when (this) {
     is SSAFunctionCall -> variant in orderedImpureFunctions || arguments.any(SSANode::isOrderedImpure)
     is SSAValue -> false
-    is SSATempRead -> false
-    is SSASeqTempRead -> false
+    is SSATempRead -> true
+    is SSASeqTempRead -> true
     is SSATempAssign -> true
     is SSASeqTempAssign -> true
 }
