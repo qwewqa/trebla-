@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.backend.allocate
+package xyz.qwewqa.trebla.backend.ssa
 
 import xyz.qwewqa.trebla.backend.compile.SonoFunction.*
 import xyz.qwewqa.trebla.backend.compile.SonoFunction.Set

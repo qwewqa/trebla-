@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.backend.allocate
+package xyz.qwewqa.trebla.backend.ssa
 
 fun SSANode.propagateCopies() = propagateCopies(
     @Suppress("UNCHECKED_CAST")

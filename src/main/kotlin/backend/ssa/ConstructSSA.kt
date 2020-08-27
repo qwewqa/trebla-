@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.backend.allocate
+package xyz.qwewqa.trebla.backend.ssa
 
 import xyz.qwewqa.trebla.backend.compile.*
 
@@ -105,7 +105,18 @@ private fun IRNode.constructSSA(context: SSAContext): SSANode = when (this) {
         SonoFunction.SwitchIntegerWithDefault -> conditionAndBranch(context, true)
         SonoFunction.And -> conditionAndBranch(context, false)
         SonoFunction.Or -> conditionAndBranch(context, false)
-        SonoFunction.While -> conditionAndBranch(context, false)
+        SonoFunction.While -> {
+            val condition = arguments[0].constructSSA(context)
+            val baseContext = context.copy()
+            val bodyContext = context.child()
+            val body = arguments[1].constructSSA(bodyContext)
+            val postCondition = arguments[0].constructSSA(bodyContext)
+            SSAFunctionCall(
+                variant,
+                listOf(condition, body, postCondition),
+                context.applyJoin(listOf(baseContext, bodyContext)),
+            )
+        }
         else -> SSAFunctionCall(
             variant,
             arguments.map { it.constructSSA(context) },

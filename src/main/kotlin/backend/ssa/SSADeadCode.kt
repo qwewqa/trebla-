@@ -1,4 +1,6 @@
-package xyz.qwewqa.trebla.backend.allocate
+package xyz.qwewqa.trebla.backend.ssa
+
+import xyz.qwewqa.trebla.backend.compile.SonoFunction
 
 fun SSANode.getReadCounts(): Map<SSAReadLocation, Int> = when (this) {
     is SSAFunctionCall -> arguments.asSequence().map { it.getReadCounts() }
@@ -96,7 +98,7 @@ private fun SSANode.inlineAssigns(
     is SSATempRead ->
         assigns[location]?. let {
             if (!it.isOrderedImpure()) {
-                if (reads.getOrPut(location) { 0 } == 1 || it is SSAValue) {
+                if (reads.getOrPut(location) { 0 } == 1) {
                     reads[location] = -1
                     it.inlineAssigns(reads, assigns)
                 } else {
@@ -114,10 +116,19 @@ private fun SSANode.inlineAssigns(
         }
     is SSASeqTempAssign -> SSASeqTempAssign(id, size, offset.inlineAssigns(reads, assigns), rhs.inlineAssigns(reads, assigns))
     is SSASeqTempRead -> SSASeqTempRead(id, size, offset.inlineAssigns(reads, assigns))
-    is SSAFunctionCall -> SSAFunctionCall(
-        variant,
-        arguments.asReversed().map { it.inlineAssigns(reads, assigns) }.asReversed(),
-        phiAssigns,
-    )
+    is SSAFunctionCall -> when (variant) {
+        SonoFunction.While -> {
+            SSAFunctionCall(
+                variant,
+                listOf(arguments[0], arguments[1].inlineAssigns(reads, assigns), arguments[2]),
+                phiAssigns,
+            )
+        }
+        else -> SSAFunctionCall(
+            variant,
+            arguments.asReversed().map { it.inlineAssigns(reads, assigns) }.asReversed(),
+            phiAssigns,
+        )
+    }
     else -> this
 }

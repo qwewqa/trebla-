@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.backend.allocate
+package xyz.qwewqa.trebla.backend.ssa
 
 import xyz.qwewqa.trebla.backend.compile.*
 
@@ -50,10 +50,16 @@ fun SSANode.toIR(coalesceMapping: Map<SSAReadLocation, SSAReadLocation> = getCoa
             offset.toIR(coalesceMapping),
             rhs.toIR(coalesceMapping),
         )
-        is SSAFunctionCall -> IRFunctionCall(
-            variant,
-            arguments.map {
-                it.toIR(coalesceMapping)
-            },
-        )
+        is SSAFunctionCall -> when (variant) {
+            SonoFunction.While -> IRFunctionCall(
+                variant,
+                arguments.dropLast(1).map { it.toIR(coalesceMapping) }
+            )
+            else -> IRFunctionCall(
+                variant,
+                arguments.map {
+                    it.toIR(coalesceMapping)
+                },
+            )
+        }
     }

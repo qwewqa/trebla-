@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.backend.compile
 
 import xyz.qwewqa.trebla.backend.BackendConfig
-import xyz.qwewqa.trebla.backend.allocate.applySSAOptimizations
+import xyz.qwewqa.trebla.backend.ssa.applySSAOptimizations
 
 fun compileEngine(
     scripts: List<IRScript>,

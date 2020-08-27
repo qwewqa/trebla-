@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.backend.compile
 
 import xyz.qwewqa.trebla.backend.BackendConfig
-import xyz.qwewqa.trebla.backend.allocate.*
+import xyz.qwewqa.trebla.backend.ssa.*
 import xyz.qwewqa.trebla.frontend.context.TEMPORARY_MEMORY_BLOCK
 
 fun IRNode.processTemporaryAllocations(
