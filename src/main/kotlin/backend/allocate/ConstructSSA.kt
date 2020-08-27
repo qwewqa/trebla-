@@ -8,9 +8,15 @@ class SSAContext(
 ) {
     fun copy() = SSAContext(mappings.toMutableMap(), seqMappings.toMutableMap())
 
-    fun incrementAndGet(id: Int) = ((mappings[id] ?: (id * 1000 - 1)) + 1).also { mappings[id] = it }
-    fun incrementAndGetSeq(id: Int, size: Int) =
-        ((seqMappings[id to size] ?: (id * 1000 - 1)) + 1).also { seqMappings[id to size] = it }
+    fun incrementAndGet(id: Int) = ((mappings[id] ?: (id * 10000 - 1)) + 1).also {
+        mappings[id] = it
+        if (it - id * 10000 >= 10000) backendError("Too many temporary uses")
+    }
+
+    fun incrementAndGetSeq(id: Int, size: Int) = ((seqMappings[id to size] ?: (id * 10000 - 1)) + 1).also {
+        seqMappings[id to size] = it
+        if (it - id * 10000 >= 10000) backendError("Too many temporary uses")
+    }
 
     fun get(id: Int) = mappings[id] ?: backendError("Read before assignment of id $id")
     fun getSeq(id: Int, size: Int) =
@@ -22,6 +28,8 @@ class SSAContext(
             keys.map { id ->
                 val newId = this.incrementAndGet(id)
                 PhiAssign(newId, allMappings.map { it[id] })
+            }.filter {
+                it.values.toSet().size > 1
             }
         } + branches.map { it.seqMappings }.let { allMappings ->
             val keys = allMappings.map { it.keys as Set<Pair<Int, Int>> }.reduce { a, v -> a + v }
@@ -46,9 +54,10 @@ fun IRNode.constructSSA(context: SSAContext): SSANode = when (this) {
     is IRSeqTempRead -> SSASeqTempRead(context.seqMappings[id to size]
         ?: backendError("Read before assignment of id $id size $size"), size, offset.constructSSA(context))
     is IRTempAssign -> {
+        val newRhs = rhs.constructSSA(context)
         val newId = (context.mappings[id] ?: (id * 1000 - 1)) + 1
         context.mappings[id] = newId
-        SSATempAssign(newId, rhs.constructSSA(context))
+        SSATempAssign(newId, newRhs)
     }
     is IRSeqTempAssign -> {
         val newId = (context.seqMappings[id to size] ?: (id * 1000 - 1)) + 1

@@ -3,6 +3,8 @@ package xyz.qwewqa.trebla.backend.compile
 import xyz.qwewqa.trebla.backend.BackendConfig
 import xyz.qwewqa.trebla.backend.allocate.SSAContext
 import xyz.qwewqa.trebla.backend.allocate.constructSSA
+import xyz.qwewqa.trebla.backend.allocate.inlineAssigns
+import xyz.qwewqa.trebla.backend.allocate.pruneUnusedAssigns
 import xyz.qwewqa.trebla.frontend.context.TEMPORARY_MEMORY_BLOCK
 
 fun IRNode.processTemporaryAllocations(
@@ -16,7 +18,9 @@ private fun IRNode.processTemporaryAllocations(
     remainingIndexes: MutableList<Int>,
     mapping: MutableMap<Int, Int>,
 ): IRNode {
-    var foo = this.constructSSA(SSAContext())
+    val foo = this.constructSSA(SSAContext())
+    val bar = foo.pruneUnusedAssigns()
+    val baz = bar.inlineAssigns()
     return when (this) {
         is IRValue -> this
         is IRTempRead -> {
