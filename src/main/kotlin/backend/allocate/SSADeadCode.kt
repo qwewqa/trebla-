@@ -1,12 +1,5 @@
 package xyz.qwewqa.trebla.backend.allocate
 
-fun SSANode.collectPhi(): List<Phi> = when (this) {
-    is SSAFunctionCall -> {
-        phiAssigns + arguments.asReversed().flatMap { it.collectPhi() }
-    }
-    else -> emptyList()
-}
-
 fun SSANode.getReads(): Map<SSAReadLocation, Int> = when (this) {
     is SSAFunctionCall -> arguments.asSequence().map { it.getReads() }
         .fold(mutableMapOf<SSAReadLocation, Int>()) { a, v ->
