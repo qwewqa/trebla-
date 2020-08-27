@@ -2,6 +2,24 @@ package xyz.qwewqa.trebla.backend.allocate
 
 import xyz.qwewqa.trebla.backend.compile.*
 
+const val SSA_RENUMBER_COEF = 1000
+
+fun IRNode.applySSAOptimizations(): IRNode {
+    var last: SSANode
+    var current = constructSSA()
+    do {
+        println(current.toIR())
+        last = current
+        current = current
+            .pruneUnusedAssigns()
+            .inlineAssigns()
+            .propagateCopies()
+            .toIR()
+            .constructSSA()
+    } while (current != last)
+    return current.toIR()
+}
+
 class SSAContext(
     private val mappings: MutableMap<Int, Int> = mutableMapOf(),
     private val seqMappings: MutableMap<Pair<Int, Int>, Int> = mutableMapOf(),
@@ -13,16 +31,16 @@ class SSAContext(
 
     fun incrementAndGet(id: Int): Int =
         parent?.incrementAndGet(id)?.also { mappings[id] = it }
-            ?: ((mappings[id] ?: (id * 1000 - 1)) + 1).also {
+            ?: ((mappings[id] ?: (id * SSA_RENUMBER_COEF - 1)) + 1).also {
                 mappings[id] = it
-                if (it - id * 1000 >= 1000) backendError("Too many temporary uses")
+                if (it - id * SSA_RENUMBER_COEF >= SSA_RENUMBER_COEF) backendError("Too many temporary uses")
             }
 
     fun incrementAndGetSeq(id: Int, size: Int): Int =
         parent?.incrementAndGetSeq(id, size)?.also { seqMappings[id to size] = it }
-            ?: ((seqMappings[id to size] ?: (id * 1000 - 1)) + 1).also {
+            ?: ((seqMappings[id to size] ?: (id * SSA_RENUMBER_COEF - 1)) + 1).also {
                 seqMappings[id to size] = it
-                if (it - id * 1000 >= 1000) backendError("Too many temporary uses")
+                if (it - id * SSA_RENUMBER_COEF >= SSA_RENUMBER_COEF) backendError("Too many temporary uses")
             }
 
     fun get(id: Int) = mappings[id] ?: backendError("Read before assignment of id $id")
@@ -34,7 +52,7 @@ class SSAContext(
             val keys = allMappings.map { it.keys as Set<Int> }.reduce { a, v -> a + v }
             keys.mapNotNull { id ->
                 val phiArgs = allMappings.map { it[id] }
-                if (phiArgs.toSet().size <= 1) {
+                if (phiArgs.filterNotNull().toSet().size <= 1) {
                     null
                 } else {
                     val newId = this.incrementAndGet(id)
@@ -45,7 +63,7 @@ class SSAContext(
             val keys = allMappings.map { it.keys as Set<Pair<Int, Int>> }.reduce { a, v -> a + v }
             keys.mapNotNull { id ->
                 val phiArgs = allMappings.map { it[id] }
-                if (phiArgs.toSet().size <= 1) {
+                if (phiArgs.filterNotNull().toSet().size <= 1) {
                     null
                 } else {
                     val newId = this.incrementAndGetSeq(id.first, id.second)
@@ -63,7 +81,8 @@ Apart from control flow functions, function execution order is undefined formall
 Some functions like draw short circuit if their argument is a nonexistent id.
  */
 
-fun IRNode.constructSSA(context: SSAContext): SSANode = when (this) {
+fun IRNode.constructSSA(): SSANode = constructSSA(SSAContext())
+private fun IRNode.constructSSA(context: SSAContext): SSANode = when (this) {
     is IRValue -> SSAValue(value)
     is IRTempRead -> SSATempRead(context.get(id))
     is IRSeqTempRead -> SSASeqTempRead(context.getSeq(id, size), size, offset.constructSSA(context))
@@ -74,8 +93,9 @@ fun IRNode.constructSSA(context: SSAContext): SSANode = when (this) {
     }
     is IRSeqTempAssign -> {
         val newRhs = rhs.constructSSA(context)
+        val newOffset = offset.constructSSA(context)
         val newId = context.incrementAndGetSeq(id, size)
-        SSASeqTempAssign(newId, size, offset.constructSSA(context), newRhs)
+        SSASeqTempAssign(newId, size, newOffset, newRhs)
     }
     is IRFunctionCall -> when (variant) {
         SonoFunction.If -> conditionAndBranch(context, true)

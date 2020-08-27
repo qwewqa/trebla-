@@ -15,10 +15,6 @@ private fun IRNode.processTemporaryAllocations(
     remainingIndexes: MutableList<Int>,
     mapping: MutableMap<Int, Int>,
 ): IRNode {
-    val foo = this.constructSSA(SSAContext())
-    val bar = foo.pruneUnusedAssigns()
-    val baz = bar.inlineAssigns()
-    val foo2 = baz.toIR()
     return when (this) {
         is IRValue -> this
         is IRTempRead -> {

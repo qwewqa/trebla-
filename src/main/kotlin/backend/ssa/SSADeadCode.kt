@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.backend.allocate
 
-fun SSANode.getReads(): Map<SSAReadLocation, Int> = when (this) {
-    is SSAFunctionCall -> arguments.asSequence().map { it.getReads() }
+fun SSANode.getReadCounts(): Map<SSAReadLocation, Int> = when (this) {
+    is SSAFunctionCall -> arguments.asSequence().map { it.getReadCounts() }
         .fold(mutableMapOf<SSAReadLocation, Int>()) { a, v ->
             v.forEach { (loc, count) -> a[loc] = (a[loc] ?: 0) + count }
             a
@@ -12,8 +12,8 @@ fun SSANode.getReads(): Map<SSAReadLocation, Int> = when (this) {
         }
     is SSATempRead -> mapOf(this.location to 1)
     is SSASeqTempRead -> mapOf(this.location to 1)
-    is SSATempAssign -> rhs.getReads()
-    is SSASeqTempAssign -> rhs.getReads()
+    is SSATempAssign -> rhs.getReadCounts()
+    is SSASeqTempAssign -> rhs.getReadCounts()
     is SSAValue -> emptyMap()
 }
 
@@ -28,7 +28,7 @@ fun SSANode.getAssigns(): Map<SSAReadLocation, SSANode> = when (this) {
     else -> emptyMap()
 }
 
-fun SSANode.pruneUnusedAssigns() = pruneUnusedAssigns(getReads().toMutableMap())
+fun SSANode.pruneUnusedAssigns() = pruneUnusedAssigns(getReadCounts().toMutableMap())
 
 private fun SSANode.pruneUnusedAssigns(reads: MutableMap<SSAReadLocation, Int>): SSANode = when (this) {
     is SSAValue -> this
@@ -85,10 +85,10 @@ private fun SSANode.pruneUnusedAssigns(reads: MutableMap<SSAReadLocation, Int>):
 }
 
 private fun SSANode.drop(reads: MutableMap<SSAReadLocation, Int>) {
-    getReads().forEach { (k, v) -> reads[k] = reads.getValue(k) - v }
+    getReadCounts().forEach { (k, v) -> reads[k] = reads.getValue(k) - v }
 }
 
-fun SSANode.inlineAssigns() = inlineAssigns(getReads().toMutableMap(), getAssigns())
+fun SSANode.inlineAssigns() = inlineAssigns(getReadCounts().toMutableMap(), getAssigns())
 private fun SSANode.inlineAssigns(
     reads: MutableMap<SSAReadLocation, Int>,
     assigns: Map<SSAReadLocation, SSANode>,
@@ -96,7 +96,7 @@ private fun SSANode.inlineAssigns(
     is SSATempRead ->
         assigns[location]?. let {
             if (!it.isOrderedImpure()) {
-                if (reads.getOrPut(location) { 0 } == 1) {
+                if (reads.getOrPut(location) { 0 } == 1 || it is SSAValue) {
                     reads[location] = -1
                     it.inlineAssigns(reads, assigns)
                 } else {
@@ -110,8 +110,10 @@ private fun SSANode.inlineAssigns(
         if (reads.getOrPut(location) { 0 } == -1) {
             SSAValue(0.0)
         } else {
-            this
+            SSATempAssign(id, rhs.inlineAssigns(reads, assigns))
         }
+    is SSASeqTempAssign -> SSASeqTempAssign(id, size, offset.inlineAssigns(reads, assigns), rhs.inlineAssigns(reads, assigns))
+    is SSASeqTempRead -> SSASeqTempRead(id, size, offset.inlineAssigns(reads, assigns))
     is SSAFunctionCall -> SSAFunctionCall(
         variant,
         arguments.asReversed().map { it.inlineAssigns(reads, assigns) }.asReversed(),

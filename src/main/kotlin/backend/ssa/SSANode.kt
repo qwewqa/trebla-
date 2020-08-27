@@ -55,7 +55,7 @@ sealed class Phi {
     abstract val targetLocation: SSAReadLocation
 }
 data class PhiAssign(val id: Int, val values: List<Int?>) : Phi() {
-    override fun toString() = "\$$id := \$Phi(${values.joinToString(", ") { "\$$it" }})"
+    override fun toString() = "\$$id := \$Phi(${values.joinToString(", ") { "\$${it ?: "_"}" }})"
     override val locations = values.filterNotNull().map { NormalReadLocation(it) }.toSet()
     override val targetLocation = NormalReadLocation(id)
 }

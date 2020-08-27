@@ -1,6 +1,7 @@
 package xyz.qwewqa.trebla.backend.compile
 
 import xyz.qwewqa.trebla.backend.BackendConfig
+import xyz.qwewqa.trebla.backend.allocate.applySSAOptimizations
 
 fun compileEngine(
     scripts: List<IRScript>,
@@ -36,6 +37,7 @@ fun compileEngine(
 
 fun compileEntryNode(entryNode: IRNode, freeIndexes: List<Int>, config: BackendConfig) =
     entryNode
+        .applySSAOptimizations()
         .processTemporaryAllocations(freeIndexes, config)
         .toCompiledNode()
 

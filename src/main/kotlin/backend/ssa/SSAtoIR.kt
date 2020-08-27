@@ -9,42 +9,43 @@ private fun SSANode.collectPhi(): List<Phi> = when (this) {
     else -> emptyList()
 }
 
-// assumes list is in reverse order (bottom to top) as obtained from collectPhi
-private fun List<Phi>.getCoalesceMapping() =
+fun SSANode.getCoalesceMapping(): Map<SSAReadLocation, SSAReadLocation> =
     mutableMapOf<SSAReadLocation, SSAReadLocation>().also {
-        this.forEach { phi ->
+        collectPhi().forEach { phi ->
             phi.locations.forEach { loc ->
                 it[loc] = it[phi.targetLocation] ?: phi.targetLocation
             }
         }
     }
 
-fun SSANode.toIR(coalesceMapping: Map<SSAReadLocation, SSAReadLocation> = collectPhi().getCoalesceMapping()): IRNode =
+fun SSANode.toIR(coalesceMapping: Map<SSAReadLocation, SSAReadLocation> = getCoalesceMapping()): IRNode =
     when (this) {
         is SSAValue -> IRValue(value)
-        is SSATempRead -> IRTempRead((coalesceMapping[location] as NormalReadLocation?)?.id ?: id)
+        is SSATempRead -> IRTempRead(((coalesceMapping[location] as NormalReadLocation?)?.id ?: id) / SSA_RENUMBER_COEF)
         is SSASeqTempRead -> (coalesceMapping[location] as SeqReadLocation?)?.let {
             IRSeqTempRead(
-                it.id,
+                it.id / SSA_RENUMBER_COEF,
                 it.size,
                 offset.toIR(coalesceMapping),
             )
         } ?: IRSeqTempRead(
-            id,
+            id / SSA_RENUMBER_COEF,
             size,
             offset.toIR(coalesceMapping),
         )
-        is SSATempAssign -> IRTempAssign((coalesceMapping[location] as NormalReadLocation?)?.id ?: id,
-            rhs.toIR(coalesceMapping))
+        is SSATempAssign -> IRTempAssign(
+            ((coalesceMapping[location] as NormalReadLocation?)?.id ?: id) / SSA_RENUMBER_COEF,
+            rhs.toIR(coalesceMapping),
+        )
         is SSASeqTempAssign -> (coalesceMapping[location] as SeqReadLocation?)?.let {
             IRSeqTempAssign(
-                it.id,
+                it.id / SSA_RENUMBER_COEF,
                 it.size,
                 offset.toIR(coalesceMapping),
                 rhs.toIR(coalesceMapping),
             )
         } ?: IRSeqTempAssign(
-            id,
+            id / SSA_RENUMBER_COEF,
             size,
             offset.toIR(coalesceMapping),
             rhs.toIR(coalesceMapping),
@@ -52,7 +53,7 @@ fun SSANode.toIR(coalesceMapping: Map<SSAReadLocation, SSAReadLocation> = collec
         is SSAFunctionCall -> IRFunctionCall(
             variant,
             arguments.map {
-              it.toIR(coalesceMapping)
+                it.toIR(coalesceMapping)
             },
         )
     }
