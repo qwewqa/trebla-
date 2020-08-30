@@ -20,7 +20,7 @@ private fun IRNode.processTemporaryAllocations(
         is IRTempRead -> {
             SonoFunction.Get.calledWith(
                 TEMPORARY_MEMORY_BLOCK.toIR(),
-                mapping.getOrPut(id) {
+                mapping.getOrPut(location.id) {
                     remainingIndexes.removeFirstOrNull() ?: backendError("Temporary Allocations Full")
                 }.toIR()
             )
@@ -28,7 +28,7 @@ private fun IRNode.processTemporaryAllocations(
         is IRTempAssign -> {
             SonoFunction.Set.calledWith(
                 TEMPORARY_MEMORY_BLOCK.toIR(),
-                mapping.getOrPut(id) {
+                mapping.getOrPut(location.id) {
                     remainingIndexes.removeFirstOrNull() ?: backendError("Temporary Allocations Full")
                 }.toIR(),
                 rhs.processTemporaryAllocations(config, remainingIndexes, mapping)

@@ -18,20 +18,11 @@ fun IRNode.tryConstexprEvaluate(allowTemporary: Boolean = false, allowMemory: Bo
 fun IRNode.constexprEvaluate(context: ConstexprEvaluationContext): Double {
     return when (this) {
         is IRValue -> value
-        is IRTempRead -> context.getTemp(id)
-        is IRTempAssign -> run { context.setTemp(id, rhs.constexprEvaluate(context)); 0.0 }
-        is IRSeqTempRead -> context.getSeqTemp(
-            id,
-            size,
-            offset.constexprEvaluate(context).toInt(),
-        )
+        is IRTempRead -> context[location]
+        is IRTempAssign -> run { context[location] = rhs.constexprEvaluate(context); 0.0 }
+        is IRSeqTempRead -> context[location, offset.constexprEvaluate(context).toInt()]
         is IRSeqTempAssign -> run {
-            context.setSeqTemp(
-                id,
-                size,
-                offset.constexprEvaluate(context).toInt(),
-                rhs.constexprEvaluate(context)
-            )
+            context[location, offset.constexprEvaluate(context).toInt()] = rhs.constexprEvaluate(context)
             0.0
         }
         is IRFunctionCall -> when (variant) {
