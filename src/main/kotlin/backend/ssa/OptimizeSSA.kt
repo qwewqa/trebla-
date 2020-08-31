@@ -3,8 +3,18 @@ package xyz.qwewqa.trebla.backend.ssa
 import xyz.qwewqa.trebla.backend.ir.IRNode
 
 fun IRNode.applySSAOptimizations(): IRNode {
+    var last: IRNode? = null
+    var current = this
+    while (current != last) {
+        last = current
+        current = current.toSSA(SSAContext()).applyOptimizationRound().toIR()
+    }
+    return current
+}
+
+fun SSANode.applyOptimizationRound(): SSANode {
     var last: SSANode? = null
-    var current = this.toSSA(SSAContext())
+    var current = this
     while (current != last) {
         last = current
         current = current
@@ -15,5 +25,5 @@ fun IRNode.applySSAOptimizations(): IRNode {
             .simplifyExpressions()
             .simplifyFlow()
     }
-    return current.toIR()
+    return current
 }

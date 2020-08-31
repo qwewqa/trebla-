@@ -5,7 +5,7 @@ package std
 raw struct Boolean
 
 // Does assume booleans will be 1.0 or 0.0
-operator func Boolean.equals(other: Any) = (typeOf(other) === Boolean) && (Number(this) == Number(other))
+operator func Boolean.equals(other: Any) = (typeOf(other) == Boolean) and (Number(this) == Number(other))
 operator func Boolean.notEquals(other: Boolean) = Number(this) != Number(other)
 
 operator func Boolean.not() = Boolean(builtins.Not(this))
