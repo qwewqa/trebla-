@@ -1,7 +1,6 @@
 package xyz.qwewqa.trebla.backend.ssa
 
 import xyz.qwewqa.trebla.backend.compile.SonoFunction
-import xyz.qwewqa.trebla.backend.compile.backendError
 
 fun SSANode.simplifyFlow(): SSANode = when (this) {
     is SSAFunctionCall -> when (variant) {

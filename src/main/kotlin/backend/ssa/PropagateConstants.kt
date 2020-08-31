@@ -30,7 +30,19 @@ fun SSANode.simplifyExpressions(): SSANode {
 private fun SSANode.buildConstantMap(constants: MutableMap<SingleLocation, Double> = mutableMapOf()): MutableMap<SingleLocation, Double> {
     when (this) {
         is SSAValue -> Unit
-        is SSAFunctionCall -> arguments.forEach { it.buildConstantMap(constants) }
+        is SSAFunctionCall -> {
+            inPhi.forEach { phi ->
+                phi.arguments.filterNotNull().map { constants[it] }.toSet().singleOrNull()?.let {
+                    constants[phi.location] = it
+                }
+            }
+            arguments.forEach { it.buildConstantMap(constants) }
+            outPhi.forEach { phi ->
+                phi.arguments.filterNotNull().map { constants[it] }.toSet().singleOrNull()?.let {
+                    constants[phi.location] = it
+                }
+            }
+        }
         is SSATempRead -> Unit
         is SSATempAssign -> {
             rhs.buildConstantMap(constants)

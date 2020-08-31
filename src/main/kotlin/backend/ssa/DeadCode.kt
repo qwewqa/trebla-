@@ -5,11 +5,16 @@ import xyz.qwewqa.trebla.backend.compile.TempLocation
 
 fun SSANode.pruneDeadAssigns(uses: Map<TempLocation, Int> = countUses()): SSANode = when (this) {
     is SSAValue -> this
-    is SSAFunctionCall -> this.copy(
-        arguments = arguments.map { it.pruneDeadAssigns(uses) },
-        inPhi = inPhi.filter { uses.getOrDefault(it.location, 0) != 0 },
-        outPhi = outPhi.filter { uses.getOrDefault(it.location, 0) != 0 }
-    )
+    is SSAFunctionCall -> {
+        val newOutPhi = outPhi.filter { uses.getOrDefault(it.location, 0) != 0 }
+        val newArguments = arguments.map { it.pruneDeadAssigns(uses) }
+        val newInPhi = inPhi.filter { uses.getOrDefault(it.location, 0) != 0 }
+        this.copy(
+            arguments = newArguments,
+            inPhi = newInPhi,
+            outPhi = newOutPhi
+        )
+    }
     is SSATempRead -> this
     is SSATempAssign -> if (uses.getOrDefault(location, 0) == 0) {
         rhs.pruneDeadAssigns(uses)
