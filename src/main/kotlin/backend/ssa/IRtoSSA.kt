@@ -97,8 +97,8 @@ fun IRNode.toSSA(context: SSAContext): SSANode = when (this) {
 
 /**
  * Used where the first argument, the condition is evaluated once always.
- * If [complete], exactly one branch (other argument) is evaluated, otherwise,
- * exactly one or no branch may be evaluated.
+ * If [complete], at least one branch (other argument) is evaluated, otherwise,
+ * it is possible that no branch may be evaluated.
  */
 private fun IRFunctionCall.conditionAndBranch(context: SSAContext, complete: Boolean): SSAFunctionCall {
     // functionally like a conditional, so just copy the same logic
