@@ -9,7 +9,7 @@ fun IRNode.applySSAOptimizations(): IRNode {
         last = current
         current = current
             .propagateConstants()
-            .dropIneffectual()
+            .pruneIneffectual()
             .pruneSimple()
             .pruneDeadAssigns()
             .simplifyExpressions()

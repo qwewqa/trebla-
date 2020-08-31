@@ -2,17 +2,17 @@ package xyz.qwewqa.trebla.backend.ssa
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 
-fun SSANode.dropIneffectual(): SSANode = if (this.isDroppable()) {
+fun SSANode.pruneIneffectual(): SSANode = if (this.isDroppable()) {
     SSAValue(0.0)
 } else {
     when (this) {
         is SSAValue -> this
         is SSAFunctionCall ->
-            if (this.isImpure()) this else copy(arguments = arguments.map { it.dropIneffectual() })
+            if (this.isImpure()) this else copy(arguments = arguments.map { it.pruneIneffectual() })
         is SSATempRead -> this
-        is SSATempAssign -> copy(rhs = rhs.dropIneffectual())
-        is SSASeqTempRead -> copy(offset = offset.dropIneffectual())
-        is SSASeqTempAssign -> copy(offset = offset.dropIneffectual(), rhs = rhs.dropIneffectual())
+        is SSATempAssign -> copy(rhs = rhs.pruneIneffectual())
+        is SSASeqTempRead -> copy(offset = offset.pruneIneffectual())
+        is SSASeqTempAssign -> copy(offset = offset.pruneIneffectual(), rhs = rhs.pruneIneffectual())
     }
 }
 
@@ -22,15 +22,15 @@ fun SSANode.pruneSimple(): SSANode = when (this) {
         SonoFunction.Execute ->
             copy(
                 arguments = arguments
+                    .flattenExecute()
                     .map { it.pruneSimple() }
                     .let { args ->
                         if (args.size <= 1) {
                             args
                         } else {
-                            args.dropLast(1).filter { it !is SSAValue && it !is SSATempRead } + args.last()
+                            args.dropLast(1).filter { it.isUndroppable() } + args.last()
                         }
                     }
-                    .flattenExecute()
             ).let {
                 when {
                     it.arguments.isEmpty() -> SSAValue(0.0)

@@ -41,3 +41,20 @@ val orderedImpureFunctions = setOf(
     SetShifted,
     GetShifted,
 )
+
+fun AIRNode.isImpure(): Boolean = when (this) {
+    is AIRFunctionCall -> variant in impureFunctions || arguments.any { it.isImpure() }
+    is AIRValue -> false
+}
+fun AIRNode.isPure() = !isImpure()
+
+fun AIRNode.isUndroppable(): Boolean = when (this) {
+    is AIRFunctionCall -> variant in undroppableFunctions || arguments.any { it.isUndroppable() }
+    is AIRValue -> false
+}
+fun AIRNode.isDroppable() = !isUndroppable()
+
+fun AIRNode.isOrderedImpure(): Boolean = when (this) {
+    is AIRFunctionCall -> variant in orderedImpureFunctions || arguments.any { it.isOrderedImpure() }
+    is AIRValue -> false
+}
