@@ -1,6 +1,7 @@
 package xyz.qwewqa.trebla.backend.compile
 
 import com.google.gson.Gson
+import xyz.qwewqa.trebla.backend.ir.IRNode
 import java.io.Reader
 
 @Suppress("UNCHECKED_CAST")

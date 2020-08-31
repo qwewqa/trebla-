@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.backend.compile.SonoFunction
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.BuiltinCallRawValue

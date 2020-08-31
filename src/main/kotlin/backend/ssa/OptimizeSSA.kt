@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.backend.ssa
 
-import xyz.qwewqa.trebla.backend.compile.IRNode
+import xyz.qwewqa.trebla.backend.ir.IRNode
 
 fun IRNode.applySSAOptimizations(): IRNode {
     var last: SSANode? = null

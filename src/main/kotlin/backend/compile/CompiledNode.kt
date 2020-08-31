@@ -1,5 +1,10 @@
 package xyz.qwewqa.trebla.backend.compile
 
+import xyz.qwewqa.trebla.backend.ir.AIRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.AIRNode
+import xyz.qwewqa.trebla.backend.ir.AIRValue
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
+
 sealed class CompiledNode {
     abstract fun finalize(indexes: Map<CompiledNode, Int>): Map<String, Any>
 }
@@ -31,14 +36,13 @@ fun combineCallbackNodes(entryNodes: List<CompiledNode>): CompiledNodeData {
 
 data class CompiledNodeData(val orderedNodes: List<Map<String, Any>>, val indexes: Map<CompiledNode, Int>)
 
-fun IRNode.toCompiledNode(): CompiledNode = when (this) {
-    is IRValue -> CompiledValueNode(value)
-    is IRFunctionCall -> when (variant) {
+fun AIRNode.toCompiledNode(): CompiledNode = when (this) {
+    is AIRValue -> CompiledValueNode(value)
+    is AIRFunctionCall -> when (variant) {
         SonoFunction.Execute -> {
             if (arguments.isEmpty()) CompiledValueNode(0.0)
             else CompiledFunctionNode(variant.name, arguments.map { it.toCompiledNode() })
         }
         else -> CompiledFunctionNode(variant.name, arguments.map { it.toCompiledNode() })
     }
-    else -> backendError("Unresolved temporary variable.")
 }

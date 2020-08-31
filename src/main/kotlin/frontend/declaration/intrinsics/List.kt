@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.compile.SonoFunction
-import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*

@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.backend.compile
+package xyz.qwewqa.trebla.backend.ir
 
 enum class SonoFunction {
     Execute,

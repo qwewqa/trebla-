@@ -1,6 +1,7 @@
 package xyz.qwewqa.trebla.backend.ssa
 
 import xyz.qwewqa.trebla.backend.compile.*
+import xyz.qwewqa.trebla.backend.ir.*
 
 class SSAContext(
     private val mapping: MutableMap<Int, Int> = mutableMapOf(),

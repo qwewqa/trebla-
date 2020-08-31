@@ -1,9 +1,9 @@
 package xyz.qwewqa.trebla.backend.ssa
 
-import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
-import xyz.qwewqa.trebla.backend.compile.IRNode
-import xyz.qwewqa.trebla.backend.compile.IRValue
-import xyz.qwewqa.trebla.backend.compile.SingleLocation
+import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.IRNode
+import xyz.qwewqa.trebla.backend.ir.IRValue
+import xyz.qwewqa.trebla.backend.ir.SingleLocation
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 
 fun SSANode.propagateConstants(constants: Map<SingleLocation, Double> = buildConstantMap()): SSANode = when (this) {

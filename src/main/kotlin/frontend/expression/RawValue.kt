@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.compile.*
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.backend.ir.*
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 

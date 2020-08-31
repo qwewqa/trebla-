@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.trebla.backend.compile.SonoFunction
-import xyz.qwewqa.trebla.backend.compile.IRFunctionCall
-import xyz.qwewqa.trebla.backend.compile.IRNode
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.IRNode
 import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType

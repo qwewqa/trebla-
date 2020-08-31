@@ -1,9 +1,9 @@
 package xyz.qwewqa.trebla.backend.ssa
 
-import xyz.qwewqa.trebla.backend.compile.SeqLocation
-import xyz.qwewqa.trebla.backend.compile.SingleLocation
-import xyz.qwewqa.trebla.backend.compile.SonoFunction
-import xyz.qwewqa.trebla.backend.compile.TempLocation
+import xyz.qwewqa.trebla.backend.ir.SeqLocation
+import xyz.qwewqa.trebla.backend.ir.SingleLocation
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.backend.ir.TempLocation
 
 sealed class SSANode
 

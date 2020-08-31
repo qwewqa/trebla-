@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.backend.constexpr
 
-import xyz.qwewqa.trebla.backend.compile.*
-import xyz.qwewqa.trebla.backend.compile.SonoFunction.*
-import xyz.qwewqa.trebla.backend.compile.SonoFunction.Set
+import xyz.qwewqa.trebla.backend.ir.SonoFunction.*
+import xyz.qwewqa.trebla.backend.ir.SonoFunction.Set
+import xyz.qwewqa.trebla.backend.ir.*
 import kotlin.math.*
 
 fun IRNode.constexprEvaluate(allowTemporary: Boolean = false, allowMemory: Boolean = false): Double =

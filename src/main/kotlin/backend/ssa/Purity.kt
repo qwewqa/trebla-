@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.backend.ssa
 
-import xyz.qwewqa.trebla.backend.compile.impureFunctions
-import xyz.qwewqa.trebla.backend.compile.orderedImpureFunctions
-import xyz.qwewqa.trebla.backend.compile.undroppableFunctions
+import xyz.qwewqa.trebla.backend.ir.impureFunctions
+import xyz.qwewqa.trebla.backend.ir.orderedImpureFunctions
+import xyz.qwewqa.trebla.backend.ir.undroppableFunctions
 
 fun SSANode.isImpure(): Boolean = when (this) {
     is SSAFunctionCall -> variant in impureFunctions || arguments.any { it.isImpure() }

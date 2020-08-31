@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.backend.ssa
 
-import xyz.qwewqa.trebla.backend.compile.*
+import xyz.qwewqa.trebla.backend.ir.*
 
 fun SSANode.toIR(mapping: Map<SingleLocation, SingleLocation> = getCoalesceMapping()): IRNode = when (this) {
     is SSAValue -> IRValue(value)

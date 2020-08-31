@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.backend.constexpr
 
-import xyz.qwewqa.trebla.backend.compile.SeqLocation
-import xyz.qwewqa.trebla.backend.compile.SingleLocation
-import xyz.qwewqa.trebla.backend.compile.TempLocation
+import xyz.qwewqa.trebla.backend.ir.SeqLocation
+import xyz.qwewqa.trebla.backend.ir.SingleLocation
+import xyz.qwewqa.trebla.backend.ir.TempLocation
 
 class ConstexprEvaluationContext(val allowTemporary: Boolean = false, val allowMemory: Boolean = false) {
     private val memory = mutableMapOf<Pair<Int, Int>, Double>()

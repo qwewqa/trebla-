@@ -1,6 +1,7 @@
 package xyz.qwewqa.trebla.backend.compile
 
 import xyz.qwewqa.trebla.backend.BackendConfig
+import xyz.qwewqa.trebla.backend.ir.*
 import xyz.qwewqa.trebla.backend.ssa.*
 
 fun compileEngine(
@@ -37,8 +38,9 @@ fun compileEngine(
 
 fun compileEntryNode(entryNode: IRNode, freeIndexes: List<Int>, config: BackendConfig) =
     entryNode
-        .applySSAOptimizations().also { println(it) }
-        .processTemporaryAllocations(freeIndexes, config)
+        .applySSAOptimizations()
+        .allocate(freeIndexes)
+        .pruneSimple()
         .toCompiledNode()
 
 class CompileBackendError(message: String) : IllegalStateException(message)

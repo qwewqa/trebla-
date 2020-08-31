@@ -1,6 +1,6 @@
-package xyz.qwewqa.trebla.backend.compile
+package xyz.qwewqa.trebla.backend.ir
 
-import xyz.qwewqa.trebla.backend.compile.SonoFunction.*
+import xyz.qwewqa.trebla.backend.ir.SonoFunction.*
 
 val impureFunctions = setOf(
     Set,

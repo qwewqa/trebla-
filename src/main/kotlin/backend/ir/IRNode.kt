@@ -1,11 +1,12 @@
-package xyz.qwewqa.trebla.backend.compile
+package xyz.qwewqa.trebla.backend.ir
 
 /**
  * An IR node.
  * Used for optimization and assignment of temporary memory locations.
  */
 sealed class IRNode {
-    var number: Int = -1
+    val liveForwards = mutableSetOf<TempLocation>()
+    val liveBackwards = mutableSetOf<TempLocation>()
 }
 
 data class IRValue(val value: Double) : IRNode() {

@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.backend.ssa
 
-import xyz.qwewqa.trebla.backend.compile.SingleLocation
-import xyz.qwewqa.trebla.backend.compile.SonoFunction
+import xyz.qwewqa.trebla.backend.ir.SingleLocation
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
 
 fun SSANode.simplifyFlow() = simplifyFlowUncleaned().cleanPhi()
 

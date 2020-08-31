@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.backend.ssa
 
-import xyz.qwewqa.trebla.backend.compile.SonoFunction
-import xyz.qwewqa.trebla.backend.compile.TempLocation
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.backend.ir.TempLocation
 
 fun SSANode.pruneDeadAssigns(uses: Map<TempLocation, Int> = countUses()): SSANode = when (this) {
     is SSAValue -> this
