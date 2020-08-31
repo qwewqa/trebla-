@@ -17,7 +17,12 @@ fun SSANode.pruneDeadAssigns(uses: Map<TempLocation, Int> = countUses()): SSANod
     }
     is SSATempRead -> this
     is SSATempAssign -> if (uses.getOrDefault(location, 0) == 0) {
-        rhs.pruneDeadAssigns(uses)
+        SSAFunctionCall(
+            SonoFunction.Execute,
+            listOf(rhs.pruneDeadAssigns(uses), SSAValue(0.0)),
+            emptyList(),
+            emptyList(),
+        )
     } else {
         copy(rhs = rhs.pruneDeadAssigns(uses))
     }
@@ -25,7 +30,7 @@ fun SSANode.pruneDeadAssigns(uses: Map<TempLocation, Int> = countUses()): SSANod
     is SSASeqTempAssign -> if (uses.getOrDefault(location, 0) == 0) {
         SSAFunctionCall(
             SonoFunction.Execute,
-            listOf(offset.pruneDeadAssigns(uses), rhs.pruneDeadAssigns(uses)),
+            listOf(offset.pruneDeadAssigns(uses), rhs.pruneDeadAssigns(uses), SSAValue(0.0)),
             emptyList(),
             emptyList(),
         )
