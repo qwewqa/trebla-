@@ -14,6 +14,7 @@ fun compileEngine(
     val callbackNodesByCallback = mutableMapOf<IRCallback, CompiledNode>()
     val callbackNodes = scripts.flatMap { sc ->
         sc.callbacks.map { cb ->
+            println(cb.name)
             compileEntryNode(cb.node, sc.freeIndexes, config).also { callbackNodesByCallback[cb] = it }
         }
     }
@@ -40,7 +41,7 @@ fun compileEntryNode(entryNode: IRNode, freeIndexes: List<Int>, config: BackendC
     entryNode
         .applySSAOptimizations()
         .allocate(freeIndexes)
-        .pruneSimple()
+        .pruneSimple().also { println(it) }
         .toCompiledNode()
 
 class CompileBackendError(message: String) : IllegalStateException(message)

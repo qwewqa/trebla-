@@ -34,7 +34,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     and thus cannot have an execution context.
      */
 
-    private val initializeCallback = Callback(this, 0, CallbackName.Initialize, this)
+    private val initializeCallback = ExecutionCallback(this, 0, CallbackName.Initialize, this)
     private val initializationContext = ScriptInitializationContext(this, initializeCallback)
 
     val propertyDeclarations by lazy {
@@ -180,7 +180,7 @@ data class ScriptData(
  * Statements directly in a script should update the scope of the script. However,
  * they should add statements to the initialize callback, so this combines the two.
  */
-class ScriptInitializationContext(script: ScriptDeclaration, initializeCallback: Callback) :
+class ScriptInitializationContext(script: ScriptDeclaration, initializeCallback: ExecutionCallback) :
     ExecutionContext, ScriptContext by script {
     override val scope = script.scope // Necessary for some reason. Delegate alone won't work.
     override val statements = initializeCallback.statements

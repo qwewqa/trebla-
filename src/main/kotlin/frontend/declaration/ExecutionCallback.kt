@@ -3,6 +3,7 @@ package xyz.qwewqa.trebla.frontend.declaration
 import xyz.qwewqa.trebla.backend.compile.CallbackName
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.IRNode
 import xyz.qwewqa.trebla.backend.ir.IRValue
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
@@ -31,9 +32,15 @@ class CallbackDeclaration(
         else compileError("Unknown callback $identifier.", node.identifier)
 
     fun getCallback(): Callback {
-        val callback = Callback(parentContext, node.order?.let {
-            it.tryConstexprEval(parentContext) ?: compileError("Invalid callback order expression.")
-        }?.roundToInt() ?: 0, name, parentContext)
+        val callback = if (name == CallbackName.ShouldSpawn) {
+            NonExecutionCallback(parentContext, node.order?.let {
+                it.tryConstexprEval(parentContext) ?: compileError("Invalid callback order expression.")
+            }?.roundToInt() ?: 0, name, parentContext)
+        } else {
+            ExecutionCallback(parentContext, node.order?.let {
+                it.tryConstexprEval(parentContext) ?: compileError("Invalid callback order expression.")
+            }?.roundToInt() ?: 0, name, parentContext)
+        }
         node.body.value.let { body ->
             body.dropLast(1).forEach { it.parseAndApplyTo(callback) }
             body.lastOrNull()?.let { callback.returnValue = it.parseAndApplyTo(callback) }
@@ -42,22 +49,47 @@ class CallbackDeclaration(
     }
 }
 
-class Callback(
+interface Callback : Context {
+    val order: Int
+    val name: CallbackName
+
+    var returnValue: Value?
+
+    fun toIR(): IRNode
+}
+
+class ExecutionCallback(
     override val parentContext: ScriptContext,
-    val order: Int,
-    val name: CallbackName,
+    override val order: Int,
+    override val name: CallbackName,
     script: ScriptDeclaration,
-) : ExecutionContext {
+) : Callback, ExecutionContext {
     override val scope = EagerScope(script.scope)
     override val configuration = parentContext.configuration
     override val localAllocator = TemporaryAllocator()
     override val statements = mutableListOf<Statement>()
 
-    var returnValue: Value? = null
+    override var returnValue: Value? = null
 
-    fun toIR(): IRFunctionCall {
+    override fun toIR(): IRFunctionCall {
         val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR() ?: IRValue(0.0)
         return SonoFunction.Execute.calledWith(statements.map { it.toIR() } + listOf(returnIRValue))
+    }
+}
+
+class NonExecutionCallback(
+    override val parentContext: ScriptContext,
+    override val order: Int,
+    override val name: CallbackName,
+    script: ScriptDeclaration,
+) : Callback {
+    override val scope = EagerScope(script.scope)
+    override val configuration = parentContext.configuration
+
+    override var returnValue: Value? = null
+
+    override fun toIR(): IRNode {
+        return (returnValue as? RawStructValue)?.raw?.toIR() ?: IRValue(0.0)
     }
 }
 

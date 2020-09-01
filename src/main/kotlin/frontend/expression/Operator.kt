@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
@@ -53,10 +53,14 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
                 UnitValue
             }
             "===" -> {
-                RawStructValue((rhs === lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(), context, context.booleanType)
+                RawStructValue((rhs === lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(),
+                    context,
+                    context.booleanType)
             }
             "!==" -> {
-                RawStructValue((rhs !== lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(), context, context.booleanType)
+                RawStructValue((rhs !== lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(),
+                    context,
+                    context.booleanType)
             }
             else -> {
                 val func = lhs.resolveMemberWithoutTypeMembers(functionName, context)
@@ -111,8 +115,9 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
 
     private fun doNonExecutionBoolean(
         operation: ShortCircuitOperation,
-        context: Context
-    ): Value {
+        context: Context,
+    ): Value = runWithErrorMessage("Short circuiting operator failed in non-execution context. " +
+            "Non short circuiting infix functions 'and' or 'or' may work.") {
         val lhsResult = node.lhs.parseAndEvaluateConstantBoolean(context)
         return when (operation) {
             ShortCircuitOperation.And -> if (lhsResult && node.rhs.parseAndEvaluateConstantBoolean(context)) {
