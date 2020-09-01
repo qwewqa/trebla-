@@ -1,9 +1,5 @@
 package xyz.qwewqa.trebla.backend.ir
 
-import xyz.qwewqa.trebla.backend.ssa.*
-
-fun AIRNode.prune() = pruneIneffectual().pruneSimple()
-
 fun AIRNode.pruneSimple(): AIRNode = when (this) {
     is AIRValue -> this
     is AIRFunctionCall -> when (variant) {
@@ -27,16 +23,6 @@ fun AIRNode.pruneSimple(): AIRNode = when (this) {
                 }
             }
         else -> copy(arguments = arguments.map { it.pruneSimple() })
-    }
-}
-
-fun AIRNode.pruneIneffectual(): AIRNode = if (this.isDroppable()) {
-    AIRValue(0.0)
-} else {
-    when (this) {
-        is AIRValue -> this
-        is AIRFunctionCall ->
-            if (this.isImpure()) this else copy(arguments = arguments.map { it.pruneIneffectual() })
     }
 }
 

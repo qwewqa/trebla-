@@ -2,20 +2,6 @@ package xyz.qwewqa.trebla.backend.ssa
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 
-fun SSANode.pruneIneffectual(): SSANode = if (this.isDroppable()) {
-    SSAValue(0.0)
-} else {
-    when (this) {
-        is SSAValue -> this
-        is SSAFunctionCall ->
-            if (this.isImpure()) this else copy(arguments = arguments.map { it.pruneIneffectual() })
-        is SSATempRead -> this
-        is SSATempAssign -> copy(rhs = rhs.pruneIneffectual())
-        is SSASeqTempRead -> copy(offset = offset.pruneIneffectual())
-        is SSASeqTempAssign -> copy(offset = offset.pruneIneffectual(), rhs = rhs.pruneIneffectual())
-    }
-}
-
 fun SSANode.pruneSimple(): SSANode = when (this) {
     is SSAValue -> this
     is SSAFunctionCall -> when (variant) {

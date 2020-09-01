@@ -19,7 +19,6 @@ fun SSANode.applyOptimizationRound(): SSANode {
         last = current
         current = current
             .propagateConstants()
-            .pruneIneffectual()
             .pruneSimple()
             .pruneDeadAssigns()
             .simplifyExpressions()
