@@ -80,6 +80,7 @@ class SpecificListType(val size: Int, val containedType: Type, override val bind
     override fun getMember(name: String, accessingContext: Context?): Value? {
         return when (name) {
             "containedType" -> containedType
+            "size" -> size.toStruct(bindingContext)
             else -> null
         }
     }
