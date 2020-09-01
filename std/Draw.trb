@@ -8,14 +8,14 @@ func draw(
     x4: Number, y4: Number,
     z: Number, alpha: Number,
 ) {
-    builtins.Draw(
+    builtins.Draw.statement(
         id,
         x1, y1,
         x2, y2,
         x3, y3,
         x4, y4,
         z, alpha,
-    ).execute()
+    )
 }
 
 struct Drawable(quad: Quad, id: Number, z: Number, alpha: Number = 1)

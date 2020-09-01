@@ -3,10 +3,7 @@ package xyz.qwewqa.trebla.frontend.declaration
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.expression.BuiltinCallRawValue
-import xyz.qwewqa.trebla.frontend.expression.Callable
-import xyz.qwewqa.trebla.frontend.expression.Value
-import xyz.qwewqa.trebla.frontend.expression.ValueArgument
+import xyz.qwewqa.trebla.frontend.expression.*
 
 /**
  * A special entity which provides access to builtin functions (Sonolus node function).
@@ -32,11 +29,11 @@ object Builtins : MemberAccessor, Declaration {
  * A builtin function.
  * Builtin functions are part of Sonolus.
  */
-class BuiltinFunction(val function: SonoFunction) : Callable, Value {
+class BuiltinFunction(val function: SonoFunction) : Callable, Value, MemberAccessor {
     override val type = CallableType
     override val bindingContext: Context? = null
 
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): RawStructValue {
         val argumentValues = arguments.map {
             val parameterValue = it.value
             if (parameterValue !is RawStructValue) compileError("A builtin function must be called with only raw struct arguments.")
@@ -44,5 +41,21 @@ class BuiltinFunction(val function: SonoFunction) : Callable, Value {
         }
         val rawType = callingContext.scope.getFullyQualified(listOf("std", "Raw")) as StructDeclaration
         return RawStructValue(BuiltinCallRawValue(function, argumentValues), callingContext, rawType)
+    }
+
+    override fun getMember(name: String, accessingContext: Context?): Value? = when (name) {
+        "statement" -> ExecutedBuiltinFunction(this)
+        else -> null
+    }
+}
+
+class ExecutedBuiltinFunction(val builtin: BuiltinFunction) : Callable, Value {
+    override val type = CallableType
+    override val bindingContext: Context? = null
+
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+        if (callingContext !is ExecutionContext) compileError("Builtin not executable in non-execution context.")
+        callingContext.statements += Statement { builtin.callWith(arguments, callingContext).raw.toIR() }
+        return UnitValue
     }
 }

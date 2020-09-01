@@ -22,15 +22,15 @@ func spawnParticle(
 struct ParticleID(value: Number)
 
 func ParticleID.destroy() {
-    builtins.DestroyParticleEffect(this.value).execute()
+    builtins.DestroyParticleEffect.statement(this.value)
 }
 
 func ParticleID.moveTo(quad: Quad) {
-    builtins.MoveParticleEffect(
+    builtins.MoveParticleEffect.statement(
         this.value,
         quad.p1.x, quad.p1.y,
         quad.p2.x, quad.p2.y,
         quad.p3.x, quad.p3.y,
         quad.p4.x, quad.p4.y,
-    ).execute()
+    )
 }

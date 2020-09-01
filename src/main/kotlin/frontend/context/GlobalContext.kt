@@ -115,7 +115,6 @@ val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::TreblaList,
     listOf("std") to ::LocalContext,
     listOf("std") to ::WithContext,
-    listOf("std") to ::ExecuteBuiltin,
     listOf("std") to ::BoxCallable,
     listOf("std") to ::Deref,
     listOf("std") to ::Pointer,
