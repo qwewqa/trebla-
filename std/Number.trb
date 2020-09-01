@@ -79,7 +79,7 @@ func abs(n: Number) = Number(builtins.Abs(n))
 func sign(n: Number) = Number(builtins.Sign(n))
 
 func ceil(n: Number) = Number(builtins.Ceil(n))
-func Floor(n: Number) = Number(builtins.Floor(n))
+func floor(n: Number) = Number(builtins.Floor(n))
 
 func frac(n: Number) = Number(builtins.Frac(n))
 func trunc(n: Number) = Number(builtins.Trunc(n))

@@ -1,10 +1,7 @@
 package xyz.qwewqa.trebla.backend.ssa
 
-import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
-import xyz.qwewqa.trebla.backend.ir.IRNode
-import xyz.qwewqa.trebla.backend.ir.IRValue
-import xyz.qwewqa.trebla.backend.ir.SingleLocation
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.backend.ir.*
 
 fun SSANode.propagateConstants(constants: Map<SingleLocation, Double> = buildConstantMap()): SSANode = when (this) {
     is SSAValue -> this
@@ -16,7 +13,7 @@ fun SSANode.propagateConstants(constants: Map<SingleLocation, Double> = buildCon
 }
 
 fun SSANode.simplifyExpressions(): SSANode {
-    val simplified =  when (this) {
+    val simplified = when (this) {
         is SSAValue -> this
         is SSAFunctionCall -> copy(arguments = arguments.map { it.simplifyExpressions() })
         is SSATempRead -> this
@@ -30,16 +27,26 @@ fun SSANode.simplifyExpressions(): SSANode {
 private fun SSANode.buildConstantMap(constants: MutableMap<SingleLocation, Double> = mutableMapOf()): MutableMap<SingleLocation, Double> {
     when (this) {
         is SSAValue -> Unit
-        is SSAFunctionCall -> {
-            inPhi.forEach { phi ->
-                phi.arguments.filterNotNull().map { constants[it] }.toSet().singleOrNull()?.let {
-                    constants[phi.location] = it
+        is SSAFunctionCall -> when (variant) {
+            SonoFunction.While -> {
+                arguments.forEach { it.buildConstantMap(constants) }
+                outPhi.forEach { phi ->
+                    phi.arguments.filterNotNull().map { constants[it] }.toSet().singleOrNull()?.let {
+                        constants[phi.location] = it
+                    }
                 }
             }
-            arguments.forEach { it.buildConstantMap(constants) }
-            outPhi.forEach { phi ->
-                phi.arguments.filterNotNull().map { constants[it] }.toSet().singleOrNull()?.let {
-                    constants[phi.location] = it
+            else -> {
+                inPhi.forEach { phi ->
+                    phi.arguments.filterNotNull().map { constants[it] }.toSet().singleOrNull()?.let {
+                        constants[phi.location] = it
+                    }
+                }
+                arguments.forEach { it.buildConstantMap(constants) }
+                outPhi.forEach { phi ->
+                    phi.arguments.filterNotNull().map { constants[it] }.toSet().singleOrNull()?.let {
+                        constants[phi.location] = it
+                    }
                 }
             }
         }
