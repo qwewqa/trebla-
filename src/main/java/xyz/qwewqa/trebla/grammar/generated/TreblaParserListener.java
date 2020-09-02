@@ -120,6 +120,16 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitStructDeclaration(TreblaParser.StructDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#structTypeParameters}.
+	 * @param ctx the parse tree
+	 */
+	void enterStructTypeParameters(TreblaParser.StructTypeParametersContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#structTypeParameters}.
+	 * @param ctx the parse tree
+	 */
+	void exitStructTypeParameters(TreblaParser.StructTypeParametersContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#structFields}.
 	 * @param ctx the parse tree
 	 */
@@ -129,16 +139,6 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStructFields(TreblaParser.StructFieldsContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#structField}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructField(TreblaParser.StructFieldContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#structField}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructField(TreblaParser.StructFieldContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TreblaParser#scriptDeclaration}.
 	 * @param ctx the parse tree

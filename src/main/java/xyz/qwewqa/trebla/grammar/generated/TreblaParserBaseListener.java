@@ -150,6 +150,18 @@ public class TreblaParserBaseListener implements TreblaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterStructTypeParameters(TreblaParser.StructTypeParametersContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStructTypeParameters(TreblaParser.StructTypeParametersContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterStructFields(TreblaParser.StructFieldsContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -157,18 +169,6 @@ public class TreblaParserBaseListener implements TreblaParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStructFields(TreblaParser.StructFieldsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructField(TreblaParser.StructFieldContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructField(TreblaParser.StructFieldContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

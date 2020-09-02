@@ -10,7 +10,7 @@ class LambdaExpression(override val node: LambdaNode, val declaringContext: Cont
     override val type = LambdaType
     override val bindingContext = declaringContext
     override val parameters by lazy {
-        node.parameters?.values?.map {
+        node.parameters?.value?.map {
             Parameter(
                 it,
                 declaringContext

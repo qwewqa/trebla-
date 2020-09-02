@@ -79,17 +79,17 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStructDeclaration(TreblaParser.StructDeclarationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TreblaParser#structTypeParameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructTypeParameters(TreblaParser.StructTypeParametersContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TreblaParser#structFields}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitStructFields(TreblaParser.StructFieldsContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#structField}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStructField(TreblaParser.StructFieldContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TreblaParser#scriptDeclaration}.
 	 * @param ctx the parse tree

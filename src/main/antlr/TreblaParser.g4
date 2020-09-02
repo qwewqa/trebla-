@@ -70,15 +70,16 @@ propertyDeclaration
 
 structDeclaration
     : modifierList STRUCT NL* simpleIdentifier
+    structTypeParameters
     structFields
     ;
 
-structFields
-    :  (LPAREN (structField (COMMA structField)* COMMA?)? RPAREN)?
+structTypeParameters
+    :  (LSQUARE (parameter (COMMA parameter)* COMMA?)? RSQUARE)?
     ;
 
-structField
-    : parameter
+structFields
+    :  (LPAREN (parameter (COMMA parameter)* COMMA?)? RPAREN)?
     ;
 
 scriptDeclaration

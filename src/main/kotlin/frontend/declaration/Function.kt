@@ -20,7 +20,7 @@ class FunctionDeclaration(
     override val visibility: Visibility
 
     val valueParameters by lazy {
-        node.parameters.values.map {
+        node.parameters.value.map {
             Parameter(
                 it,
                 parentContext

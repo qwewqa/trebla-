@@ -96,14 +96,14 @@ public class TreblaParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> impl
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitStructFields(TreblaParser.StructFieldsContext ctx) { return visitChildren(ctx); }
+	@Override public T visitStructTypeParameters(TreblaParser.StructTypeParametersContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitStructField(TreblaParser.StructFieldContext ctx) { return visitChildren(ctx); }
+	@Override public T visitStructFields(TreblaParser.StructFieldsContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

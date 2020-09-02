@@ -32,7 +32,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     override fun visitFunctionValueParameters(ctx: TreblaParser.FunctionValueParametersContext): TreblaNode {
-        return FunctionValueParametersNode(
+        return ParametersNode(
             ctx, filename,
             ctx.parameter().visit() as List<ParameterNode>
         )
@@ -76,12 +76,17 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
             ctx, filename,
             ctx.modifierList().visit() as ModifierListNode,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
-            ctx.structFields().visit() as StructFieldsNode
+            ctx.structTypeParameters().visit() as ParametersNode,
+            ctx.structFields().visit() as ParametersNode,
         )
     }
 
     override fun visitStructFields(ctx: TreblaParser.StructFieldsContext): TreblaNode {
-        return StructFieldsNode(ctx, filename, ctx.structField().visit() as List<ParameterNode>)
+        return ParametersNode(ctx, filename, ctx.parameter().visit() as List<ParameterNode>)
+    }
+
+    override fun visitStructTypeParameters(ctx: TreblaParser.StructTypeParametersContext): TreblaNode {
+        return ParametersNode(ctx, filename, ctx.parameter().visit() as List<ParameterNode>)
     }
 
     override fun visitScriptDeclaration(ctx: TreblaParser.ScriptDeclarationContext): TreblaNode {
@@ -103,7 +108,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
             ctx.modifierList().visit() as ModifierListNode,
             ctx.functionReceiver()?.visit() as FunctionReceiverNode?,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
-            ctx.functionValueParameters().visit() as FunctionValueParametersNode,
+            ctx.functionValueParameters().visit() as ParametersNode,
             ctx.type()?.visit() as TypeNode?,
             ctx.functionBody().visit() as BlockNode,
             ctx.functionBody().ASSIGNMENT().exist
@@ -365,7 +370,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         return LambdaNode(
             ctx,
             filename,
-            ctx.functionValueParameters()?.visit() as FunctionValueParametersNode?,
+            ctx.functionValueParameters()?.visit() as ParametersNode?,
             ctx.statement().visit() as List<StatementNode>
         )
     }

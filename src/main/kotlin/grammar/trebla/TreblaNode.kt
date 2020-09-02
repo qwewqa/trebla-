@@ -47,7 +47,7 @@ data class FunctionDeclarationNode(
     val modifiers: ModifierListNode,
     val receiver: FunctionReceiverNode?,
     val identifier: SimpleIdentifierNode,
-    val parameters: FunctionValueParametersNode,
+    val parameters: ParametersNode,
     val type: TypeNode?,
     val body: BlockNode,
     val assigmentBody: Boolean,
@@ -62,9 +62,9 @@ data class FunctionReceiverNode(
     val type: TypeNode,
 ) : TreblaNode
 
-data class FunctionValueParametersNode(
+data class ParametersNode(
     override val context: ParseTree,
-    override val filename: String, val values: List<ParameterNode>,
+    override val filename: String, val value: List<ParameterNode>,
 ) : TreblaNode
 
 data class PropertyDeclarationNode(
@@ -95,16 +95,11 @@ data class StructDeclarationNode(
     override val filename: String,
     val modifiers: ModifierListNode,
     val identifier: SimpleIdentifierNode,
-    val fields: StructFieldsNode,
+    val typeParameters: ParametersNode,
+    val fields: ParametersNode,
 ) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
     override fun parse(context: Context) = StructDeclaration(this, context)
 }
-
-data class StructFieldsNode(
-    override val context: ParseTree,
-    override val filename: String,
-    val value: List<ParameterNode>,
-) : TreblaNode
 
 data class ScriptDeclarationNode(
     override val context: ParseTree,
@@ -366,7 +361,7 @@ data class IdentifierNode(
 data class LambdaNode(
     override val context: ParseTree,
     override val filename: String,
-    val parameters: FunctionValueParametersNode?,
+    val parameters: ParametersNode?,
     val body: List<StatementNode>,
 ) : ExpressionNode {
     override fun parse(context: Context) = LambdaExpression(this, context)
