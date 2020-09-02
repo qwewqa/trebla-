@@ -18,7 +18,7 @@ class Pointer(context: Context) :
             "type" type TypeType
         },
         {
-            SpecificPointerType(callingContext, "type".cast<Type>())
+            SpecificPointerType(callingContext, "type".cast())
         }
     ),
     Type
@@ -112,7 +112,7 @@ class PointerValue(
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
         if (other !is PointerValue || other.type != type) {
-            compileError("Incompatible assignment.")
+            compileError("Incompatible assignment. Dereference may be missing.")
         }
         block.copyFrom(other.block, context)
         index.copyFrom(other.index, context)

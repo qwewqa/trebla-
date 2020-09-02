@@ -1,0 +1,17 @@
+struct DynamicRange(
+    start: Number,
+    stop: Number,
+    step: Number = 1,
+)
+
+func DynamicRange.forEach(op: Callable) {
+    if (this.step > 0) {
+        for (var i = this.start; i < this.stop; i += this.step) {
+            op(i)
+        }
+    } else {
+        for (var i = this.start; i > this.stop; i += this.step) {
+            op(i)
+        }
+    }
+}

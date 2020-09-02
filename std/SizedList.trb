@@ -1,0 +1,18 @@
+struct SizedList[type: Type](
+    ptr: Pointer[Any],
+    size: Number,
+)
+
+operator func SizedList.subscript(index: Number) =
+    Pointer[this.type](this.ptr.block, this.ptr.index + index * sizeOf(this.type))
+
+func sizedListFrom(list: Pointer[List]) = SizedList[typeOf(*list).type](
+    list,
+    (*list).size,
+)
+
+func SizedList.forEach(op: Callable) {
+    DynamicRange(0, this.size).forEach { (i) ->
+        op(*this[i])
+    }
+}
