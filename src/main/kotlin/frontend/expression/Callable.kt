@@ -98,7 +98,7 @@ fun List<ParameterNode>.parse(context: Context) = map {
 }
 
 fun List<Parameter>.pairedWithAndValidated(arguments: List<ValueArgument>) =
-    pairArguments(arguments).also { it.validateTyping() }
+    pairArguments(arguments).also { it.applyTyping() }
 
 fun List<Parameter>.pairArguments(arguments: List<ValueArgument>): Map<Parameter, Value> {
     if (arguments.size > this.size) compileError("Too many arguments.")
@@ -151,6 +151,6 @@ fun Map<Parameter, Value>.byParameterName() = entries.associate { (param, value)
 /*
 Want some more specific error reporting at some point. This can do for now.
  */
-fun Map<Parameter, Value>.validateTyping() = forEach { (param, arg) ->
-    if (!param.type.accepts(arg)) compileError("Argument does not satisfy type constraint.")
+fun Map<Parameter, Value>.applyTyping() = mapValues { (param, arg) ->
+    arg.coerceTo(param.type) ?: compileError("Argument does not satisfy type constraint.")
 }

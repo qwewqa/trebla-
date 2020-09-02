@@ -15,6 +15,8 @@ import xyz.qwewqa.trebla.frontend.declaration.Type
 interface Value : Lazy<Value>, Entity {
     val type: Type
 
+    fun coerceTo(type: Type): Value? = if (type.accepts(this.type)) this else null
+
     /**
      * The context to search for receiver functions, apart from the accessing context.
      */
