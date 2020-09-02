@@ -9,6 +9,8 @@ import xyz.qwewqa.trebla.grammar.trebla.StructDeclarationNode
 class StructDeclaration(
     override val node: StructDeclarationNode,
     override val parentContext: Context,
+    val typeParameters: Map<String, Value> = emptyMap(),
+    parentType: Type? = null,
 ) : Declaration,
     Callable,
     Type,
@@ -20,13 +22,19 @@ class StructDeclaration(
 
     // Eventually embedding a struct in another struct might be supported, like in Go
     // In this case, the binding hierarchy would include it.
-    override val bindingHierarchy = listOf(listOf(StructType))
+    override val bindingHierarchy = if (parentType != null) listOf(listOf(parentType)) else listOf(listOf(StructType))
 
     override val loadEarly = true
 
     val isRaw: Boolean
 
-    val fields by lazy { node.fields.value.parse(parentContext) }
+    val fields by lazy {
+        val paramContext = SimpleContext(parentContext)
+        typeParameters.forEach { (id, v) ->
+            paramContext.scope.add(v, id)
+        }
+        node.fields.value.parse(parentContext)
+    }
     val fieldNames by lazy { fields.map { it.name }.toSet() }
     override val parameters by lazy { fields }
 
@@ -106,7 +114,7 @@ class NormalStructValue(
         }
     }
 
-    override fun getMember(name: String, accessingContext: Context?): Value? = fields[name]
+    override fun getMember(name: String, accessingContext: Context?): Value? = fields[name] ?: type.typeParameters[name]
 
     override fun offsetReallocate(offset: RawValue): Allocated {
         return NormalStructValue(

@@ -3,6 +3,7 @@ package xyz.qwewqa.trebla.frontend
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.misc.Interval
 import org.antlr.v4.runtime.tree.TerminalNode
+import xyz.qwewqa.trebla.frontend.declaration.Declaration
 import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 
 /**
@@ -102,4 +103,5 @@ class CompileError(message: String, val node: TreblaNode? = null, cause: Compile
 private operator fun <E> List<E>.get(intRange: IntRange) = this.subList(intRange.first, intRange.last + 1)
 
 fun compileError(message: String, node: TreblaNode? = null): Nothing = throw CompileError(message, node)
+fun Declaration.compileError(message: String): Nothing = node?.compileError(message) ?: compileError(message)
 fun TreblaNode.compileError(message: String): Nothing = compileError(message, this)

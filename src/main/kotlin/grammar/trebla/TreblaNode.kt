@@ -98,7 +98,9 @@ data class StructDeclarationNode(
     val typeParameters: ParametersNode,
     val fields: ParametersNode,
 ) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
-    override fun parse(context: Context) = StructDeclaration(this, context)
+    override fun parse(context: Context): Declaration =
+        if (typeParameters.value.isEmpty()) StructDeclaration(this, context)
+        else TypeParamStructDeclaration(this, context)
 }
 
 data class ScriptDeclarationNode(
@@ -257,7 +259,7 @@ data class WhenExpressionNode(
     override val context: ParseTree,
     override val filename: String,
     val isConst: Boolean,
-    val entries: List<WhenEntryNode>
+    val entries: List<WhenEntryNode>,
 ) : ExpressionNode {
     override fun parse(context: Context) = WhenExpression(this)
 }
