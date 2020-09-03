@@ -18,7 +18,7 @@ class Pointer(context: Context) :
             "type" type TypeType
         },
         {
-            SpecificPointerType(callingContext, "type".cast())
+            SpecificPointerType(context, "type".cast())
         }
     ),
     Type

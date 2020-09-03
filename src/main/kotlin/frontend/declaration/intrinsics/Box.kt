@@ -20,7 +20,7 @@ class Box(context: Context) :
         {
             val type =
                 ("type".cast<Type>() as? Allocatable) ?: compileError("Only box of allocatable types are allowed.")
-            SpecificBoxType(callingContext, type)
+            SpecificBoxType(context, type)
         }
     ),
     Type

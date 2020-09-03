@@ -18,7 +18,7 @@ class EntityPointer(context: Context) :
             "script" type ScriptType
         },
         {
-            SpecificEntityPointerType(callingContext, "script".cast())
+            SpecificEntityPointerType(context, "script".cast())
         }
     ),
     Type

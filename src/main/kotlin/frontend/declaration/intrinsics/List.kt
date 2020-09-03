@@ -9,14 +9,14 @@ import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import kotlin.math.roundToInt
 
-class TreblaList(parentContext: Context) :
+class TreblaList(context: Context) :
     SimpleDeclaration(
-        parentContext,
+        context,
         "List",
         TypeType
     ),
     Subscriptable by SubscriptableDSL(
-        parentContext,
+        context,
         {
             "type" type TypeType
             "size" type NumberType
@@ -25,7 +25,7 @@ class TreblaList(parentContext: Context) :
             val type = "type".cast<Type>()
             val size = "size".cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()?.roundToInt()
                 ?: compileError("List size must be a compile time constant.")
-            SpecificListType(size, type, callingContext)
+            SpecificListType(size, type, context)
         },
     ),
     Type
