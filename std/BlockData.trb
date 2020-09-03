@@ -17,6 +17,7 @@ let ENTITY_SHARED_MEMORY = 24
 let TEMPORARY_MEMORY = 100
 let TEMPORARY_DATA = 101
 
+func memref(block: Number, index: Number) = *Pointer[Raw](block, index)
 func numref(block: Number, index: Number) = Number(memref(block, index))
 func boolref(block: Number, index: Number) = Boolean(memref(block, index))
 

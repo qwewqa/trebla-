@@ -109,7 +109,6 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
 
 // constructors for intrinsics that require the context
 val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
-    listOf("std") to ::Memref,
     listOf("std") to ::OptionsAccessor,
     listOf("std") to ::EntityPointer,
     listOf("std") to ::TreblaList,
