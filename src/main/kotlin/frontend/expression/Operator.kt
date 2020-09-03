@@ -8,7 +8,6 @@ import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.toStruct
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
 import xyz.qwewqa.trebla.grammar.trebla.PostfixUnaryFunctionNode
@@ -116,21 +115,10 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
     private fun doNonExecutionBoolean(
         operation: ShortCircuitOperation,
         context: Context,
-    ): Value = runWithErrorMessage("Short circuiting operator failed in non-execution context. " +
-            "Non short circuiting infix functions 'and' or 'or' may work.") {
-        val lhsResult = node.lhs.parseAndEvaluateConstantBoolean(context)
-        return when (operation) {
-            ShortCircuitOperation.And -> if (lhsResult && node.rhs.parseAndEvaluateConstantBoolean(context)) {
-                true.toStruct(context)
-            } else {
-                false.toStruct(context)
-            }
-            ShortCircuitOperation.Or -> if (lhsResult || node.rhs.parseAndEvaluateConstantBoolean(context)) {
-                true.toStruct(context)
-            } else {
-                false.toStruct(context)
-            }
-        }
+    ): Value {
+        val lhs = node.lhs.parseAndApplyTo(context).asBooleanStruct(context)
+        val rhs = node.rhs.parseAndApplyTo(context).asBooleanStruct(context)
+        return BuiltinCallRawValue(operation.function, listOf(lhs.raw, rhs.raw)).toBooleanStruct(context)
     }
 
     enum class ShortCircuitOperation(val function: SonoFunction) {
