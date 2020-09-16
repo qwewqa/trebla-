@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.ir.SonoFunction
-import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -19,13 +19,10 @@ class TreblaList(context: Context) :
         context,
         {
             "type" type TypeType
-            "size" type NumberType
         },
         {
             val type = "type".cast<Type>()
-            val size = "size".cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()?.roundToInt()
-                ?: compileError("List size must be a compile time constant.")
-            SpecificListType(size, type, context)
+            UnsizedListType(type, context)
         },
     ),
     Type
@@ -45,14 +42,42 @@ class ListOf(context: Context) :
             if (arguments.any { it.name != null }) compileError("listOf requires only unnamed arguments.")
             val values = arguments.map { it.value }
             val type = values.map { it.type }.toSet().singleOrNull() ?: AnyType
-            ListValue(callingContext, SpecificListType(arguments.size, type, callingContext), values)
+            ListValue(context, SizedListType(arguments.size, UnsizedListType(type, context), context), values)
         },
     )
 
-class SpecificListType(val size: Int, val containedType: Type, override val bindingContext: Context) :
-    Type, Allocatable, MemberAccessor {
+data class UnsizedListType(val containedType: Type, override val bindingContext: Context) :
+    Type, MemberAccessor, Subscriptable {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "List") as Type))
+
+    private val subscriptDelegate = SubscriptableDSL(
+        bindingContext,
+        {
+            "size" type NumberType
+        },
+        {
+
+            val size = "size".cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()?.roundToInt()
+                ?: compileError("List size must be a compile time constant.")
+            SizedListType(size, this@UnsizedListType, bindingContext)
+        }
+    )
+
+    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context) =
+        subscriptDelegate.subscriptWith(arguments, callingContext)
+
+    override fun getMember(name: String, accessingContext: Context?) = when (name) {
+        "containedType" -> containedType
+        else -> null
+    }
+}
+
+data class SizedListType(val size: Int, val unsizedType: UnsizedListType, override val bindingContext: Context) :
+    Type, Allocatable, MemberAccessor {
+    override val type = TypeType
+    override val bindingHierarchy = listOf(listOf(unsizedType))
+    val containedType = unsizedType.containedType
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         if (containedType !is Allocatable) {
@@ -69,7 +94,7 @@ class SpecificListType(val size: Int, val containedType: Type, override val bind
     }
 
     override fun equals(other: Any?): Boolean =
-        other is SpecificListType && size == other.size && containedType == other.containedType
+        other is SizedListType && size == other.size && containedType == other.containedType
 
     override fun hashCode(): Int {
         var result = size
@@ -86,7 +111,7 @@ class SpecificListType(val size: Int, val containedType: Type, override val bind
     }
 }
 
-class ListValue(val parentContext: Context, override val type: SpecificListType, val values: List<Value>) : Allocated,
+class ListValue(val parentContext: Context, override val type: SizedListType, val values: List<Value>) : Allocated,
     MemberAccessor,
     Subscriptable {
     override val bindingContext = parentContext

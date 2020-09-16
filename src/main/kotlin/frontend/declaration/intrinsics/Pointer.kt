@@ -85,7 +85,7 @@ class PointerValue(
         },
         {
             val insideType = type.insideType
-            if (insideType !is SpecificListType) compileError("Only pointers to lists are subscriptable")
+            if (insideType !is SizedListType) compileError("Only pointers to lists are subscriptable")
             val listContainedType = insideType.containedType
             val elementSize = (listContainedType as? Allocatable)?.allocationSize
                 ?: compileError("Only pointers to lists containing an allocatable type are subscriptable")

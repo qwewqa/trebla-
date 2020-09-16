@@ -105,6 +105,12 @@ class IntrinsicFunctionDSLContext(
             (value as? T) ?: compileError("Failed to cast parameter with type ${param.type.repr()}", value.node)
         }
 
+    inline fun <reified T : Any> String.coerceTo(type: Type): T =
+        (parameters[this] ?: error("Unknown parameter $this.")).let { (param, value) ->
+            ((value as? Value)?.coerceTo(type) as? T)
+                ?: compileError("Failed to cast parameter with type ${param.type.repr()}", value.node)
+        }
+
     fun String.param() = parameters[this]?.first ?: error("Unknown parameter $this.")
 
     val arguments get() = _arguments ?: error("Parameters are managed; direct argument access is invalid.")
