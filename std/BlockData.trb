@@ -6,6 +6,9 @@ let LEVEL_OPTION_BLOCK = 2
 let LEVEL_TRANSFORM_BLOCK = 3
 let LEVEL_BACKGROUND_BLOCK = 4
 let LEVEL_UI_BLOCK = 5
+let LEVEL_BUCKET_BLOCK = 6
+let LEVEL_SCORE_BLOCK = 7
+let LEVEL_LIFE_BLOCK = 8
 let ENTITY_INFO_ARRAY = 10
 let ENTITY_DATA_ARRAY = 11
 let ENTITY_SHARED_MEMORY_ARRAY = 12
@@ -69,6 +72,8 @@ let comboValueUI = uiBlock(2 * 11)
 let comboTextUI = uiBlock(3 * 11)
 let scoreBarUI = uiBlock(4 * 11)
 let scoreValueUI = uiBlock(5 * 11)
+let lifeBarUI = uiBlock(6 * 11)
+let lifeValueUI = uiBlock(7 * 11)
 
 let entityIndex = numref(ENTITY_INFO, 0)
 let archetype = numref(ENTITY_INFO, 1)
@@ -104,3 +109,44 @@ let touchVR = numref(TEMPORARY_DATA, 13)
 let touchVW = numref(TEMPORARY_DATA, 14)
 let touchPos = Point(touchX, touchY)
 let touchStartPos = Point(touchSX, touchSY)
+
+private struct LevelBucketAccessor
+operator func LevelBucketAccessor.subscript(index: Number) = LevelBucketData(
+    numref(LEVEL_BUCKET_BLOCK, index * 6 + 0),
+    numref(LEVEL_BUCKET_BLOCK, index * 6 + 1),
+    numref(LEVEL_BUCKET_BLOCK, index * 6 + 2),
+    numref(LEVEL_BUCKET_BLOCK, index * 6 + 3),
+    numref(LEVEL_BUCKET_BLOCK, index * 6 + 4),
+    numref(LEVEL_BUCKET_BLOCK, index * 6 + 5),
+)
+
+let buckets = LevelBucketAccessor()
+
+let perfectScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 0)
+let greatScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 1)
+let goodScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 2)
+let consecutivePerfectScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 3)
+let consecutivePerfectScoreStep = numref(LEVEL_SCORE_BLOCK, 4)
+let consecutivePerfectScoreCap = numref(LEVEL_SCORE_BLOCK, 5)
+let consecutiveGreatScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 6)
+let consecutiveGreatScoreStep = numref(LEVEL_SCORE_BLOCK, 7)
+let consecutiveGreatScoreCap = numref(LEVEL_SCORE_BLOCK, 8)
+let consecutiveGoodScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 9)
+let consecutiveGoodScoreStep = numref(LEVEL_SCORE_BLOCK, 10)
+let consecutiveGoodScoreCap = numref(LEVEL_SCORE_BLOCK, 11)
+
+let consecutivePerfectLifeIncrement = numref(LEVEL_LIFE_BLOCK, 0)
+let consecutivePerfectLifeStep = numref(LEVEL_LIFE_BLOCK, 1)
+let consecutiveGreatLifeIncrement = numref(LEVEL_LIFE_BLOCK, 2)
+let consecutiveGreatLifeStep = numref(LEVEL_LIFE_BLOCK, 3)
+let consecutiveGoodLifeIncrement = numref(LEVEL_LIFE_BLOCK, 4)
+let consecutiveGoodLifeStep = numref(LEVEL_LIFE_BLOCK, 5)
+
+struct LevelBucketData(
+    minPerfect: Number,
+    maxPerfect: Number,
+    minGreat: Number,
+    maxGreat: Number,
+    minGood: Number,
+    maxGood: Number,
+)
