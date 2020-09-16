@@ -78,7 +78,11 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
     }
 
     private fun updatePackage() {
-        pkg.scope.mergeIn(this.scope)
+        try {
+            pkg.scope.mergeIn(this.scope)
+        } catch (e: CompileError) {
+            throw CompileError("Package contains duplicate declarations with the same identifier", cause = e)
+        }
     }
 
     private fun importWildcard(identifier: List<String>) = scope.import(parentContext.getPackage(identifier).scope)

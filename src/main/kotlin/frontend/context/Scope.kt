@@ -2,6 +2,7 @@ package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.resolveMember
@@ -39,6 +40,10 @@ open class Scope(val parent: Scope?) {
         return values[identifier]?.get(signature)?.let {
             if (it.visibility >= minVisibility) it.lazyValue.value
             else null
+        }?.also {
+            if (it == AmbiguousImportMarker) {
+                compileError("Multiple imported symbols with the identifier $identifier and same signature exist.")
+            }
         }
     }
 
@@ -67,7 +72,7 @@ open class Scope(val parent: Scope?) {
             bySignature.forEach { (signature, valueMetadata) ->
                 imported.getOrPut(identifier) { mutableMapOf() }.let { bySignature ->
                     if (bySignature[signature]?.let { it.lazyValue != valueMetadata.lazyValue } == true) {
-                        compileError("Duplicate import with identifier $identifier and signature $signature.")
+                        bySignature[signature] = ValueMetadata(AmbiguousImportMarker, Visibility.PRIVATE)
                     } else {
                         bySignature[signature] = valueMetadata
                     }
@@ -84,7 +89,7 @@ open class Scope(val parent: Scope?) {
             bySignature.forEach { (signature, valueMetadata) ->
                 values.getOrPut(identifier) { mutableMapOf() }.let { bySignature ->
                     if (bySignature[signature]?.lazyValue?.let { it != valueMetadata.lazyValue } == true) {
-                        compileError("Ambiguous merge with identifier $identifier and signature $signature.")
+                        compileError("Duplicate declaration with identifier $identifier and signature $signature.")
                     }
                     if (valueMetadata.visibility >= Visibility.INTERNAL) bySignature[signature] = valueMetadata
                 }
@@ -92,16 +97,12 @@ open class Scope(val parent: Scope?) {
         }
     }
 
-    /**
-     * Checks the lazy values in this scope and finalizes them as it's
-     * desirable to detect errors even if they exist in unused values.
-     * TODO: properly implement the above (but things should still work in general without it)
-     */
-    fun finalize() {
-        values.values.forEach { bySignature -> bySignature.forEach { (_, v) -> v.lazyValue.value.finalize() } }
-    }
-
     data class ValueMetadata(val lazyValue: Lazy<Value>, val visibility: Visibility)
+}
+
+private object AmbiguousImportMarker : Value {
+    override val type = AnyType
+    override val bindingContext: Nothing? = null
 }
 
 /*
