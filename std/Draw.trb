@@ -74,3 +74,10 @@ func offsetRectangle(top: Number, bottom: Number, left: Number, right: Number) =
     Point(right, top),
     Point(right, bottom),
 )
+
+let drawCurvedL = builtins.DrawCurvedL.statement
+let drawCurvedR = builtins.DrawCurvedR.statement
+let drawCurvedLR = builtins.DrawCurvedLR.statement
+let drawCurvedB = builtins.DrawCurvedB.statement
+let drawCurvedT = builtins.DrawCurvedT.statement
+let drawCurvedBT = builtins.DrawCurvedBT.statement
