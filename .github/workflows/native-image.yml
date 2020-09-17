@@ -3,8 +3,6 @@ name: Native Image
 
 on:
   push:
-    tags:
-      - "v*"
     branches:
       - 'master'
 
