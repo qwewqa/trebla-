@@ -33,7 +33,7 @@ class AllocatedRawValue(val allocation: Allocation) : RawValue() {
     }
 }
 
-class LiteralRawValue(val value: Double) : RawValue() {
+data class LiteralRawValue(val value: Double) : RawValue() {
     override fun toIR(): IRNode {
         return value.toIR()
     }

@@ -91,11 +91,14 @@ sealed class StructValue(
     override val type: StructDeclaration,
 ) : Value, Allocated
 
-class NormalStructValue(
+data class NormalStructValue(
     val fields: Map<String, Value>,
-    searchContext: Context?,
-    type: StructDeclaration,
+    val searchContext: Context?,
+    override val type: StructDeclaration,
 ) : StructValue(searchContext, type), MemberAccessor {
+    override fun coerceImmutable(): NormalStructValue? =
+        NormalStructValue(fields.mapValues { (_, v) -> v.coerceImmutable() ?: return null }, null, type)
+
     override fun copyTo(allocator: Allocator, context: ExecutionContext): StructValue {
         return NormalStructValue(fields.mapValues { (_, value) ->
             when (value) {
@@ -127,11 +130,16 @@ class NormalStructValue(
     }
 }
 
-class RawStructValue(
+data class RawStructValue(
     val raw: RawValue,
-    searchContext: Context?,
-    type: StructDeclaration,
+    val searchContext: Context?,
+    override val type: StructDeclaration,
 ) : StructValue(searchContext, type) {
+    override fun coerceImmutable(): RawStructValue? {
+        val immutableRaw = raw.toIR().tryConstexprEvaluate()?.toLiteralRawValue() ?: return null
+        return RawStructValue(immutableRaw, null, type)
+    }
+
     override fun copyTo(allocator: Allocator, context: ExecutionContext): RawStructValue {
         val newValue = AllocatedRawValue(allocator.allocate())
         context.statements += AllocatedValueAssignment(newValue, raw)

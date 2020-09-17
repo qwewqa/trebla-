@@ -18,6 +18,13 @@ interface Value : Lazy<Value>, Entity {
     fun coerceTo(type: Type): Value? = if (type.accepts(this.type)) this else null
 
     /**
+     * Returns an immutable version of this value (possibly itself) or null if that is not possible.
+     * This value is intended for use as type parameters.
+     * In addition, for non singletons, the binding context should be dropped.
+     */
+    fun coerceImmutable(): Value? = null
+
+    /**
      * The context to search for receiver functions, apart from the accessing context.
      */
     val bindingContext: Context?

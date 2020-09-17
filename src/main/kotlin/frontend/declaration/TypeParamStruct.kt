@@ -30,7 +30,9 @@ class TypeParamStructDeclaration(
     private val specificTypes = mutableMapOf<Map<String, Value>, StructDeclaration>()
 
     override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context): Value {
-        val typeParams = subscriptParameters.pairedWithAndValidated(arguments).byParameterName()
+        val typeParams = subscriptParameters.pairedWithAndValidated(arguments).mapValues { (p, v) ->
+            v.coerceImmutable() ?: compileError("Struct type parameters must be immutable.", p.node)
+        }.byParameterName()
         return specificTypes[typeParams] ?: StructDeclaration(
             node,
             parentContext,

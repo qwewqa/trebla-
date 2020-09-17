@@ -14,6 +14,8 @@ interface Type : Value {
         return this == other || other.bindingHierarchy.flatten().any { accepts(it) }
     }
 
+    override fun coerceImmutable() = this
+
     /**
      * Receiver functions are resolved in order of the hierarchy.
      * The list contains each layer, in order.
