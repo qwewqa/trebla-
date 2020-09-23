@@ -223,16 +223,18 @@ Inside_SHARED: SHARED -> type(SHARED) ;
 Inside_STATIC: STATIC -> type(STATIC) ;
 Inside_OPERATOR: OPERATOR -> type(OPERATOR) ;
 Inside_INLINE: INLINE -> type(INLINE) ;
-Inside_INIT: INIT-> type(INIT) ;
-Inside_SPAWN: SPAWN-> type(SPAWN) ;
+Inside_INIT: INIT -> type(INIT) ;
+Inside_SPAWN: SPAWN -> type(SPAWN) ;
 Inside_INFIX: INFIX -> type(INFIX) ;
-Inside_DATA: DATA-> type(DATA) ;
-Inside_LEVEL: LEVEL-> type(LEVEL) ;
-Inside_LEVELDATA: LEVELDATA-> type(LEVELDATA) ;
-Inside_TEMP: TEMP-> type(TEMP) ;
+Inside_DATA: DATA -> type(DATA) ;
+Inside_LEVEL: LEVEL -> type(LEVEL) ;
+Inside_LEVELDATA: LEVELDATA -> type(LEVELDATA) ;
+Inside_TEMP: TEMP -> type(TEMP) ;
 Inside_RAW: RAW -> type(RAW) ;
 Inside_CONST: CONST -> type(CONST) ;
 Inside_NOTE: NOTE -> type(NOTE) ;
+
+Inside_QUOTE_OPEN: QUOTE_OPEN -> pushMode(LineString), type(QUOTE_OPEN) ;
 
 Inside_BooleanLiteral: BooleanLiteral -> type(BooleanLiteral) ;
 Inside_IntegerLiteral: IntegerLiteral -> type(IntegerLiteral) ;
