@@ -39,7 +39,7 @@ class BuiltinFunction(val function: SonoFunction) : Callable, Value, MemberAcces
             if (parameterValue !is RawStructValue) compileError("A builtin function must be called with only raw struct arguments.")
             parameterValue.raw
         }
-        val rawType = callingContext.scope.getFullyQualified(listOf("std", "Raw")) as StructDeclaration
+        val rawType = callingContext.getFullyQualified(listOf("std", "Raw")) as StructDeclaration
         return RawStructValue(BuiltinCallRawValue(function, argumentValues), callingContext, rawType)
     }
 

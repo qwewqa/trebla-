@@ -12,7 +12,7 @@ class OptionsAccessor(override val parentContext: Context) : Declaration,
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
 
-    private val options = parentContext.configuration.projectConfig.options.mapIndexed { i, option ->
+    private val options = parentContext.globalContext.configuration.projectConfig.options.mapIndexed { i, option ->
         val name = option["name"]
         val type = option["type"]
         if (name !is String) compileError("Option name invalid or does not exist.")
@@ -32,7 +32,7 @@ class OptionsAccessor(override val parentContext: Context) : Declaration,
         return RawStructValue(
             AllocatedRawValue(ConcreteAllocation(2, option.index)),
             accessingContext,
-            parentContext.scope.getFullyQualified("std", option.type.structName) as StructDeclaration
+            parentContext.getFullyQualified("std", option.type.structName) as StructDeclaration
         )
     }
 }

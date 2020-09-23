@@ -1,9 +1,6 @@
 package xyz.qwewqa.trebla.frontend
 
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.GlobalAllocatorContext
-import xyz.qwewqa.trebla.frontend.context.GlobalContext
-import xyz.qwewqa.trebla.frontend.context.Scope
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.ArchetypeDeclaration
 import xyz.qwewqa.trebla.frontend.declaration.Declaration
 import xyz.qwewqa.trebla.frontend.declaration.ScriptDeclaration
@@ -13,8 +10,8 @@ val defaultPackage = listOf("engine")
 
 class TreblaFile(override val node: TreblaFileNode, override val parentContext: GlobalContext) : Context, Entity,
     GlobalAllocatorContext {
-    override val configuration = parentContext.configuration
-    private val pkg = parentContext.getPackage(node.packageHeader?.identifier?.value ?: defaultPackage)
+    override val globalContext: GlobalContext = parentContext.globalContext
+    private val pkg = parentContext.getOrCreatePackage(node.packageHeader?.identifier?.value ?: defaultPackage)
     override val levelAllocator = parentContext.levelAllocator
     override val leveldataAllocator = parentContext.leveldataAllocator
     override val tempAllocator = parentContext.tempAllocator
@@ -29,8 +26,6 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
     val archetypes = mutableListOf<ArchetypeDeclaration>()
 
     private val deferredDeclarations = mutableListOf<Declaration>()
-
-    val scriptIndex = parentContext.scriptIndex
 
     /**
      * The first part of the file loading process.
@@ -88,7 +83,14 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
         }
     }
 
-    private fun importPackage(identifier: List<String>) = scope.import(parentContext.getPackage(identifier).scope)
+    private fun importPackage(identifier: List<String>) {
+        val other = parentContext.getPackage(identifier)
+            ?: compileError("No package with name ${identifier.joinToString(".")} exists")
+        scope.import(
+            other.scope,
+            if (pkg.isInternalTo(other)) Visibility.INTERNAL else Visibility.PUBLIC
+        )
+    }
 
     private fun importStd() {
         importPackage(listOf("std"))

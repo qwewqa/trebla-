@@ -67,7 +67,7 @@ class RangeValue(
             UnitValue
         }
     ) {
-    override val type = bindingContext.scope.getFullyQualified("std", "Range") as Type
+    override val type = bindingContext.getFullyQualified("std", "Range") as Type
     override fun getMember(name: String, accessingContext: Context?): Value? {
         return when (name) {
             "start" -> start.toStruct(bindingContext)

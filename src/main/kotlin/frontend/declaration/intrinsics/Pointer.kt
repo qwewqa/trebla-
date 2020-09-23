@@ -51,7 +51,7 @@ class SpecificPointerType(context: Context, val insideType: Type) :
     override val type = TypeType
     override val bindingContext = context
     override val allocationSize = 2
-    override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "Pointer") as Type))
+    override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "Pointer") as Type))
 
     override fun accepts(other: Type): Boolean {
         return super.accepts(other) || (other is SpecificPointerType && insideType.accepts(other.insideType))

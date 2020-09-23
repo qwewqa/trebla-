@@ -9,7 +9,7 @@ import xyz.qwewqa.trebla.grammar.trebla.*
 
 class ScriptDeclaration(override val node: ScriptDeclarationNode, override val parentContext: Context) :
     Declaration, ScriptContext, Callable {
-    override val configuration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
@@ -20,7 +20,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     override val dataAllocator = StandardAllocator(22, 32)
     override val sharedAllocator = StandardAllocator(24, 32)
 
-    var index = parentContext.configuration.sharedState.scriptIndex.getAndIncrement()
+    var index = parentContext.globalContext.scriptIndex++
 
     /*
     There are 3 contexts here:

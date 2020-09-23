@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -47,13 +46,13 @@ class WithContext(context: Context) :
 
 class CombinedContext(outer: Context, inner: Context) : Context {
     override val parentContext = outer
-    override val configuration: CompilerConfiguration = outer.configuration
+    override val globalContext: GlobalContext = outer.globalContext
     override val scope = CombinedScope(outer.scope, inner.scope)
 }
 
 class CombinedExecutionContext(outer: ExecutionContext, inner: Context) : ExecutionContext {
     override val parentContext = outer
-    override val configuration: CompilerConfiguration = outer.configuration
+    override val globalContext: GlobalContext = outer.globalContext
     override val scope = CombinedScope(outer.scope, inner.scope)
 
     override val localAllocator = outer.localAllocator

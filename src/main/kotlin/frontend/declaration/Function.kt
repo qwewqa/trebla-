@@ -3,7 +3,6 @@ package xyz.qwewqa.trebla.frontend.declaration
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.ir.IRNode
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
 import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
@@ -160,7 +159,7 @@ class FunctionExecutionContext(
 ) : ExecutionContext,
     Statement {
     override val parentContext = callingContext
-    override val configuration: CompilerConfiguration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
 
     // the parent of the scope comes from the context where the function was declared, not where it was called
     override val scope = FunctionScope(declarationContext.scope, argumentValues)
@@ -178,7 +177,7 @@ class FunctionSimpleContext(
     declarationContext: Context,
     argumentValues: Map<Parameter, Value>,
 ) : Context {
-    override val configuration: CompilerConfiguration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
 
     // the parent of the scope comes from the context where the function was declared, not where it was called
     override val scope = FunctionScope(declarationContext.scope, argumentValues)

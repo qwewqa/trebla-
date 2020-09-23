@@ -59,7 +59,7 @@ class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration)
     override val type = TypeType
     override val bindingContext = context
     override val allocationSize = 1
-    override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "EntityPointer") as Type))
+    override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "EntityPointer") as Type))
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         return EntityPointerValue(

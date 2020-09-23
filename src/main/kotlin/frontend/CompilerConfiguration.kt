@@ -7,9 +7,4 @@ import java.util.concurrent.atomic.AtomicInteger
 data class CompilerConfiguration(
     val projectConfig: ProjectConfiguration,
     val buildConfig: BuildConfiguration,
-    val sharedState: CompilerSharedState = CompilerSharedState(),
 )
-
-class CompilerSharedState {
-    val scriptIndex = AtomicInteger(0)
-}

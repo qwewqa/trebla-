@@ -1,10 +1,10 @@
 package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.ir.IRNode
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.Entity
+import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Statement
@@ -21,7 +21,7 @@ interface Context : MemberAccessor {
     val parentContext: Context?
     val source: Entity? get() = null
 
-    val configuration: CompilerConfiguration
+    val globalContext: GlobalContext
 
     val scope: Scope
 
@@ -31,6 +31,12 @@ interface Context : MemberAccessor {
 
     override val bindingContext: Context? get() = parentContext
 }
+
+fun Context.getFullyQualified(name: List<String>) =
+    globalContext.getPackage(name.dropLast(1))?.getMember(name.last(), null)
+        ?: compileError("${name.joinToString(".")} does not exist")
+
+fun Context.getFullyQualified(vararg name: String) = getFullyQualified(name.toList())
 
 object ContextType : BuiltinType("Context")
 
@@ -43,13 +49,13 @@ interface ExecutionContext : Context {
 }
 
 class SimpleContext(override val parentContext: Context) : Context {
-    override val configuration: CompilerConfiguration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
     override val scope = Scope(parentContext.scope)
 }
 
 class SimpleExecutionContext(override val parentContext: ExecutionContext) : ExecutionContext, Statement {
     override val scope = EagerScope(parentContext.scope)
-    override val configuration: CompilerConfiguration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
     override val localAllocator = parentContext.localAllocator
     override val statements = mutableListOf<Statement>()
 
@@ -65,14 +71,14 @@ fun Context.createSimpleChild() = when (this) {
 
 class InnerExecutionContext(override val parentContext: ExecutionContext) : ExecutionContext {
     override val scope = EagerScope(parentContext.scope)
-    override val configuration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
     override val localAllocator = parentContext.localAllocator
     override val statements = parentContext.statements
 }
 
 class ReadOnlyContext(override val parentContext: Context) : Context {
     override val scope = ReadOnlyScope(parentContext.scope)
-    override val configuration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
 }
 
 fun List<StatementNode>.evaluateIn(context: Context): Value =
@@ -80,6 +86,7 @@ fun List<StatementNode>.evaluateIn(context: Context): Value =
         .asSequence()
         .map { it.parseAndApplyTo(context) }
         .lastOrNull() ?: UnitValue
+
 fun List<StatementNode>.evaluateInChildOf(context: Context): Value = evaluateIn(context.createSimpleChild())
 
 fun BlockNode.evaluateIn(context: Context) = value.evaluateIn(context)

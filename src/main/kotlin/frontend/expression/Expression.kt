@@ -37,6 +37,6 @@ fun ExpressionNode.tryConstexprEval(context: Context) =
 
 fun StatementNode.parseAndApplyTo(context: Context) = parse(context).applyTo(context)
 
-val Context.booleanType get() = scope.getFullyQualified("std", "Boolean") as StructDeclaration
-val Context.numberType get() = scope.getFullyQualified("std", "Number") as StructDeclaration
-val Context.rawType get() = scope.getFullyQualified("std", "Raw") as StructDeclaration
+val Context.booleanType get() = getFullyQualified("std", "Boolean") as StructDeclaration
+val Context.numberType get() = getFullyQualified("std", "Number") as StructDeclaration
+val Context.rawType get() = getFullyQualified("std", "Raw") as StructDeclaration

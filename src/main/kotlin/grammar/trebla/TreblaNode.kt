@@ -330,7 +330,7 @@ data class NumberLiteralNode(
         RawStructValue(
             LiteralRawValue(this.value),
             context,
-            (context.scope.getFullyQualified("std", "Number") as StructDeclaration)
+            (context.getFullyQualified("std", "Number") as StructDeclaration)
         )
     )
 }
@@ -343,7 +343,7 @@ data class BooleanLiteralNode(
         RawStructValue(
             LiteralRawValue(if (this.value) 1.0 else 0.0),
             context,
-            (context.scope.getFullyQualified("std", "Boolean") as StructDeclaration)
+            (context.getFullyQualified("std", "Boolean") as StructDeclaration)
         )
     )
 }

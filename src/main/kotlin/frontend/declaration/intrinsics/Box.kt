@@ -87,7 +87,7 @@ class SpecificBoxType(context: Context, val insideType: Allocatable) : Allocatab
     override val type = TypeType
     override val bindingContext = context
     override val allocationSize = insideType.allocationSize
-    override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "Box") as Type))
+    override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "Box") as Type))
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         val ptr = when (allocator) {
@@ -115,7 +115,7 @@ class ResolveBoxPointer(context: Context) :
     Callable by CallableDSL(
         context,
         {
-            "box" type (context.scope.getFullyQualified("std", "Box") as Type)
+            "box" type (context.getFullyQualified("std", "Box") as Type)
             "entityIndex" type NumberType
         },
         {
@@ -160,7 +160,7 @@ class ResolveLocalBoxPointer(context: Context) :
     Callable by CallableDSL(
         context,
         {
-            "box" type (context.scope.getFullyQualified("std", "Box") as Type)
+            "box" type (context.getFullyQualified("std", "Box") as Type)
         },
         {
             val box: BoxValue = "box".cast()

@@ -67,14 +67,16 @@ open class Scope(val parent: Scope?) {
      * Imported symbols are shadowed by symbols declared locally.
      * Imported symbols in the other scope are not imported.
      */
-    open fun import(other: Scope) {
+    open fun import(other: Scope, minVisibility: Visibility = Visibility.PUBLIC) {
         other.values.forEach { (identifier, bySignature) ->
             bySignature.forEach { (signature, valueMetadata) ->
-                imported.getOrPut(identifier) { mutableMapOf() }.let { bySignature ->
-                    if (bySignature[signature]?.let { it.lazyValue != valueMetadata.lazyValue } == true) {
-                        bySignature[signature] = ValueMetadata(AmbiguousImportMarker, Visibility.PRIVATE)
-                    } else {
-                        bySignature[signature] = valueMetadata
+                if (valueMetadata.visibility >= minVisibility) {
+                    imported.getOrPut(identifier) { mutableMapOf() }.let { bySignature ->
+                        if (bySignature[signature]?.let { it.lazyValue != valueMetadata.lazyValue } == true) {
+                            bySignature[signature] = ValueMetadata(AmbiguousImportMarker, Visibility.PRIVATE)
+                        } else {
+                            bySignature[signature] = valueMetadata
+                        }
                     }
                 }
             }
@@ -105,25 +107,6 @@ private object AmbiguousImportMarker : Value {
     override val bindingContext: Nothing? = null
 }
 
-/*
-Not that pretty. Might want to find a better way of doing this at some point.
- */
-fun Scope.getFullyQualifiedOrNull(name: List<String>): Entity? {
-    if (name.isEmpty()) error("Declaration name is empty")
-    parent?.let { return parent.getFullyQualifiedOrNull(name) }
-    val base = get(name[0]) ?: return null
-    return name
-        .drop(1)
-        .fold(base as Entity) { a, v ->
-            (a as? Context)?.scope?.get(v) ?: (a as? MemberAccessor)?.resolveMember(v, null) ?: return null
-        }
-}
-
-fun Scope.getFullyQualified(name: List<String>) = getFullyQualifiedOrNull(name)
-    ?: compileError("${name.joinToString(".")} does not exist")
-
-fun Scope.getFullyQualified(vararg name: String) = getFullyQualified(name.toList())
-
 sealed class Signature {
     object Default : Signature() {
         override fun toString() = "Default"
@@ -143,7 +126,7 @@ class ReadOnlyScope(parent: Scope? = null) : Scope(parent) {
         compileError("Scope is read only.")
     }
 
-    override fun import(other: Scope) {
+    override fun import(other: Scope, minVisibility: Visibility) {
         compileError("Scope is read only.")
     }
 

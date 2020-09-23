@@ -65,7 +65,7 @@ class ExecutionCallback(
     script: ScriptDeclaration,
 ) : Callback, ExecutionContext {
     override val scope = EagerScope(script.scope)
-    override val configuration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
     override val localAllocator = TemporaryAllocator()
     override val statements = mutableListOf<Statement>()
 
@@ -84,7 +84,7 @@ class NonExecutionCallback(
     script: ScriptDeclaration,
 ) : Callback {
     override val scope = EagerScope(script.scope)
-    override val configuration = parentContext.configuration
+    override val globalContext: GlobalContext = parentContext.globalContext
 
     override var returnValue: Value? = null
 

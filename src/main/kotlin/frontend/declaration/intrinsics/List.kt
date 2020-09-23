@@ -49,7 +49,7 @@ class ListOf(context: Context) :
 data class UnsizedListType(val containedType: Type, override val bindingContext: Context) :
     Type, MemberAccessor, Subscriptable {
     override val type = TypeType
-    override val bindingHierarchy = listOf(listOf(bindingContext.scope.getFullyQualified("std", "List") as Type))
+    override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "List") as Type))
 
     private val subscriptDelegate = SubscriptableDSL(
         bindingContext,

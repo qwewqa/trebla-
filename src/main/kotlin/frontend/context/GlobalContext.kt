@@ -13,18 +13,19 @@ import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 import java.util.concurrent.atomic.AtomicInteger
 
-class GlobalContext(override val configuration: CompilerConfiguration) : GlobalAllocatorContext, Context {
+class GlobalContext(val configuration: CompilerConfiguration) : GlobalAllocatorContext, Context {
     override val parentContext: Context? = null
     override val scope = Scope(null)
     override val levelAllocator = StandardAllocator(LEVEL_MEMORY_BLOCK, 256)
     override val leveldataAllocator = StandardAllocator(LEVEL_DATA_BLOCK, 256)
     override val tempAllocator = StandardAllocator(TEMPORARY_MEMORY_BLOCK, 16)
+    override val globalContext: GlobalContext = this
 
     private val files = mutableListOf<TreblaFile>()
 
-    // Not currently multithreading apart from parsing,
-    // But this acts as a wrapper and is atomic.
-    var scriptIndex = AtomicInteger(0)
+    private val packages: MutableMap<List<String>, Package> = mutableMapOf()
+
+    var scriptIndex = 0
 
     fun process(): CompileData {
         with(files) {
@@ -43,24 +44,14 @@ class GlobalContext(override val configuration: CompilerConfiguration) : GlobalA
     }
 
     /**
-     * Gets the package with the given [name], creating new packages as necessary.
+     * Gets the package with the given [name], creating a package as necessary.
      */
-    fun getPackage(name: List<String>): Package {
+    fun getOrCreatePackage(name: List<String>): Package {
         if (name.isEmpty()) error("Package name is empty")
-        val base = (scope.get(name[0]) ?: Package(name[0], this).also { it.applyTo(this) }) as? Package ?: compileError(
-            "${
-                name.joinToString(
-                    "."
-                )
-            } is not a package"
-        )
-        return name
-            .drop(1)
-            .fold(base) { a, v ->
-                (a.scope.get(v) ?: Package(v, a).also { it.applyTo(a) }) as? Package
-                    ?: compileError("${name.joinToString(".")} is not a package")
-            }
+        return packages.getOrPut(name) { Package(name, this) }
     }
+
+    fun getPackage(name: List<String>) = packages[name]
 
     fun getNestedValue(name: List<String>) = getNestedValueOrNull(name)
         ?: compileError("Value ${name.joinToString(".")} does not exist")
@@ -74,9 +65,9 @@ class GlobalContext(override val configuration: CompilerConfiguration) : GlobalA
     }
 
     init {
-        intrinsicObjects.forEach { (pkg, declaration) -> declaration.applyTo(getPackage(pkg)) }
+        intrinsicObjects.forEach { (pkg, declaration) -> declaration.applyTo(getOrCreatePackage(pkg)) }
         intrinsics.forEach { (pkg, declaration) ->
-            val target = getPackage(pkg)
+            val target = getOrCreatePackage(pkg)
             declaration(target).applyTo(target)
         }
     }
