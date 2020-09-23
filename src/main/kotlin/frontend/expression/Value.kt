@@ -12,7 +12,7 @@ import xyz.qwewqa.trebla.frontend.declaration.Type
  * In short, a value encapsulates data on how to do something, from manipulating memory in the case of struct values,
  * to any declaration like function declarations.
  */
-interface Value : Lazy<Value>, Entity {
+interface Value : Entity {
     val type: Type
 
     fun coerceTo(type: Type): Value? = if (type.accepts(this.type)) this else null
@@ -23,12 +23,6 @@ interface Value : Lazy<Value>, Entity {
      * In addition, for non singletons, the binding context should be dropped.
      */
     fun coerceImmutable(): Value? = null
-
-    /**
-     * This implements [Lazy] such that it can be used without being wrapped.
-     */
-    override val value get() = this
-    override fun isInitialized() = true
 
     /**
      * Performs any final checks to this value, if relevant.

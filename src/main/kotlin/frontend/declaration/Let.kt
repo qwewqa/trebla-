@@ -33,7 +33,7 @@ class LetDeclaration(
     }
 
     override fun applyTo(context: Context): UnitValue {
-        context.scope.add(
+        context.scope.addLazy(
             lazy {
                 val value = node.expression.parseAndApplyTo(context)
                 value.coerceTo(typeConstraint) ?: compileError("Expression does not satisfy explicit type.")

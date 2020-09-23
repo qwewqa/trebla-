@@ -810,6 +810,18 @@ public class TreblaParserBaseListener implements TreblaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterLineStringLiteral(TreblaParser.LineStringLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLineStringLiteral(TreblaParser.LineStringLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAdditiveOperator(TreblaParser.AdditiveOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}

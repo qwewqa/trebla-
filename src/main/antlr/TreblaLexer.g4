@@ -120,6 +120,8 @@ NOTE: 'note' ;
 
 //
 
+QUOTE_OPEN: '"' -> pushMode(LineString) ;
+
 FloatLiteral
     : ( (DecDigit*)? '.'
       | ((DecDigit | '_')* DecDigit)? '.')
@@ -240,3 +242,17 @@ Inside_Identifier: Identifier -> type(Identifier) ;
 Inside_Comment: (LineComment | DelimitedComment) -> channel(HIDDEN) ;
 Inside_WS: WS -> skip ;
 Inside_NL: NL -> skip ;
+
+mode LineString ;
+
+QUOTE_CLOSE
+    : '"' -> popMode
+    ;
+
+LineStrText
+    : ~('\\' | '"' | '$')+ | '$'
+    ;
+
+LineStrEscapedChar
+    : '\\' .
+    ;

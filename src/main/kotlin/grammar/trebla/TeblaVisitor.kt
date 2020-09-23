@@ -216,6 +216,16 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         }
     }
 
+    override fun visitLineStringLiteral(ctx: TreblaParser.LineStringLiteralContext): TreblaNode {
+        return StringLiteralNode(
+            ctx, filename,
+            ctx.children.drop(1).dropLast(1).map {
+                if (it.text[0] == '\\') StringEscape(ctx, filename, it.text[1])
+                else StringText(ctx, filename, it.text)
+            }
+        )
+    }
+
     override fun visitExpression(ctx: TreblaParser.ExpressionContext): TreblaNode {
         return visitGenericInfixFunction(ctx, true)
     }

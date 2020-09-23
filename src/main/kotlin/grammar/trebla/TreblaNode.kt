@@ -1,9 +1,11 @@
 package xyz.qwewqa.trebla.grammar.trebla
 
 import org.antlr.v4.runtime.tree.ParseTree
+import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
 import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.StringValue
 import xyz.qwewqa.trebla.frontend.expression.*
 
 /**
@@ -344,6 +346,40 @@ data class BooleanLiteralNode(
             (context.getFullyQualified("std", "Boolean") as StructDeclaration)
         )
     )
+}
+
+data class StringLiteralNode(
+    override val context: ParseTree,
+    override val filename: String, val value: List<StringComponent>,
+) : AtomicLiteralNode {
+    override fun parse(context: Context): Expression {
+        return ValueExpression(StringValue(
+            value.joinToString("") {
+                when (it) {
+                    is StringText -> it.value
+                    is StringEscape -> it.convert() ?: compileError("Illegal escape in string literal.", it)
+                }
+            }
+        ))
+    }
+}
+
+sealed class StringComponent : TreblaNode
+data class StringText(override val context: ParseTree, override val filename: String, val value: String) :
+    StringComponent()
+
+data class StringEscape(override val context: ParseTree, override val filename: String, val value: Char) :
+    StringComponent() {
+    fun convert() = when (value) {
+        '\\' -> "\\"
+        'r' -> "\r"
+        'n' -> "\n"
+        'b' -> "\b"
+        't' -> "\t"
+        '\'' -> "'"
+        '\"' -> "\""
+        else -> null
+    }
 }
 
 data class SimpleIdentifierNode(

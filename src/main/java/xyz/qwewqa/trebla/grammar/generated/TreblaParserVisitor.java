@@ -409,6 +409,12 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteralConstant(TreblaParser.LiteralConstantContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TreblaParser#lineStringLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLineStringLiteral(TreblaParser.LineStringLiteralContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TreblaParser#additiveOperator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

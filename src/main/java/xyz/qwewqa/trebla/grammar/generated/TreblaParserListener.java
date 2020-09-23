@@ -670,6 +670,16 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitLiteralConstant(TreblaParser.LiteralConstantContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#lineStringLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void enterLineStringLiteral(TreblaParser.LineStringLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#lineStringLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void exitLineStringLiteral(TreblaParser.LineStringLiteralContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#additiveOperator}.
 	 * @param ctx the parse tree
 	 */

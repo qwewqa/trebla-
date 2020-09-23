@@ -218,6 +218,7 @@ postfixUnaryExpression
 atomicExpression
     : parenthesizedExpression
     | literalConstant
+    | lineStringLiteral
     | conditionalExpression
     | loopExpression
     | simpleIdentifier
@@ -357,6 +358,10 @@ literalConstant
     : BooleanLiteral
     | IntegerLiteral
     | FloatLiteral
+    ;
+
+lineStringLiteral
+    : QUOTE_OPEN (LineStrText | LineStrEscapedChar)* QUOTE_CLOSE
     ;
 
 additiveOperator

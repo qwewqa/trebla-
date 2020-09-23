@@ -14,7 +14,14 @@ open class Scope(val parent: Scope?) {
     /**
      * Adds the given value to this scope.
      */
-    open fun add(
+    fun add(
+        value: Value,
+        identifier: String,
+        signature: Signature = Signature.Default,
+        visibility: Visibility = Visibility.PUBLIC,
+    ) = addLazy(lazyOf(value), identifier, signature, visibility)
+
+    open fun addLazy(
         value: Lazy<Value>,
         identifier: String,
         signature: Signature = Signature.Default,
@@ -102,9 +109,12 @@ open class Scope(val parent: Scope?) {
     data class ValueMetadata(val lazyValue: Lazy<Value>, val visibility: Visibility)
 }
 
-private object AmbiguousImportMarker : Value {
+private object AmbiguousImportMarker : Value, Lazy<Value> {
     override val type = AnyType
     val bindingContext: Nothing? = null
+
+    override val value = this
+    override fun isInitialized() = true
 }
 
 sealed class Signature {
@@ -122,7 +132,7 @@ sealed class Signature {
 }
 
 class ReadOnlyScope(parent: Scope? = null) : Scope(parent) {
-    override fun add(value: Lazy<Value>, identifier: String, signature: Signature, visibility: Visibility) {
+    override fun addLazy(value: Lazy<Value>, identifier: String, signature: Signature, visibility: Visibility) {
         compileError("Scope is read only.")
     }
 
@@ -136,12 +146,12 @@ class ReadOnlyScope(parent: Scope? = null) : Scope(parent) {
 }
 
 /**
- * A scope where add immediately tries to resolve the lazy value.
+ * A scope where addLazy immediately tries to resolve the lazy value.
  */
 open class EagerScope(parent: Scope?) : Scope(parent) {
-    override fun add(value: Lazy<Value>, identifier: String, signature: Signature, visibility: Visibility) {
+    override fun addLazy(value: Lazy<Value>, identifier: String, signature: Signature, visibility: Visibility) {
         value.value
-        super.add(value, identifier, signature, visibility)
+        super.addLazy(value, identifier, signature, visibility)
     }
 }
 
