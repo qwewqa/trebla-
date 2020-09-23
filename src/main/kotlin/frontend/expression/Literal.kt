@@ -10,7 +10,6 @@ import xyz.qwewqa.trebla.grammar.trebla.NumberLiteralNode
 class NumberLiteral(override val node: NumberLiteralNode) : Expression {
     override fun applyTo(context: Context): Value = RawStructValue(
         LiteralRawValue(node.value),
-        context,
         context.getFullyQualified(listOf("std", "Number")) as StructDeclaration
     )
 }
@@ -18,7 +17,6 @@ class NumberLiteral(override val node: NumberLiteralNode) : Expression {
 class BooleanLiteral(override val node: BooleanLiteralNode) : Expression {
     override fun applyTo(context: Context): Value = RawStructValue(
         LiteralRawValue(if (node.value) 1.0 else 0.0),
-        context,
         context.getFullyQualified(listOf("std", "Number")) as StructDeclaration
     )
 }

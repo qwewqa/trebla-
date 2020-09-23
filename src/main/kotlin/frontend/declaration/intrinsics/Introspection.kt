@@ -7,7 +7,6 @@ import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.declaration.TypeType
 import xyz.qwewqa.trebla.frontend.expression.Allocatable
-import xyz.qwewqa.trebla.frontend.expression.Allocated
 import xyz.qwewqa.trebla.frontend.expression.Callable
 import xyz.qwewqa.trebla.frontend.expression.Value
 
@@ -17,7 +16,7 @@ class SizeOf(context: Context) :
             "sizeOf",
             CallableType
         ),
-        Callable by CallableDSL(
+        Callable by CallableDelegate(
             context,
             {
                 "type" type TypeType
@@ -35,7 +34,7 @@ class TypeOf(context: Context) :
         "typeOf",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             "value" type AnyType
@@ -51,7 +50,7 @@ class TypeAccepts(context: Context) :
         "typeAccepts",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             "constraint" type TypeType

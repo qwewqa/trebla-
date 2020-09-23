@@ -12,7 +12,7 @@ class Box(context: Context) :
         "Box",
         TypeType
     ),
-    Subscriptable by SubscriptableDSL(
+    Subscriptable by SubscriptableDelegate(
         context,
         {
             "type" type TypeType
@@ -26,13 +26,13 @@ class Box(context: Context) :
     Type
 
 class BoxValue(
-    override val bindingContext: Context,
+    val context: Context,
     override val type: SpecificBoxType,
     val block: Int,
     val index: Int,
 ) : MemberAccessor, Dereferenceable, Allocated {
-    private val blockStruct = RawStructValue(block.toLiteralRawValue(), bindingContext, bindingContext.numberType)
-    private val indexStruct = RawStructValue(index.toLiteralRawValue(), bindingContext, bindingContext.numberType)
+    private val blockStruct = RawStructValue(block.toLiteralRawValue(), context.numberType)
+    private val indexStruct = RawStructValue(index.toLiteralRawValue(), context.numberType)
 
     override fun getMember(name: String, accessingContext: Context?): Value? = when (name) {
         "block" -> blockStruct
@@ -57,16 +57,15 @@ class BoxValue(
         // Returns a pointer, since a box is really only meaningful when local.
         // Effectively does the same thing as turning this into a (nonlocal) pointer
         return PointerValue(
-            bindingContext,
-            SpecificPointerType(bindingContext, type.insideType),
+            context,
+            SpecificPointerType(context, type.insideType),
             RawStructValue(
                 when (block) {
                     ENTITY_SHARED_MEMORY_BLOCK -> ENTITY_SHARED_MEMORY_ARRAY_BLOCK
                     ENTITY_DATA_BLOCK -> ENTITY_DATA_ARRAY_BLOCK
                     else -> compileError("Only data and shared allocated structs can be reallocated.")
                 }.toLiteralRawValue(),
-                bindingContext,
-                bindingContext.numberType
+                context.numberType
             ),
             RawStructValue(
                 BuiltinCallRawValue(
@@ -76,8 +75,7 @@ class BoxValue(
                         index.toLiteralRawValue()
                     )
                 ),
-                bindingContext,
-                bindingContext.numberType
+                context.numberType
             )
         )
     }
@@ -85,7 +83,7 @@ class BoxValue(
 
 class SpecificBoxType(context: Context, val insideType: Allocatable) : Allocatable {
     override val type = TypeType
-    override val bindingContext = context
+    val bindingContext = context
     override val allocationSize = insideType.allocationSize
     override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "Box") as Type))
 
@@ -112,7 +110,7 @@ class ResolveBoxPointer(context: Context) :
         "resolveBoxPointer",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             "box" type (context.getFullyQualified("std", "Box") as Type)
@@ -129,7 +127,7 @@ class ResolveBoxPointer(context: Context) :
             PointerValue(
                 callingContext,
                 SpecificPointerType(callingContext, box.type.insideType),
-                RawStructValue(newBlock.toLiteralRawValue(), callingContext, context.numberType),
+                RawStructValue(newBlock.toLiteralRawValue(), context.numberType),
                 RawStructValue(
                     BuiltinCallRawValue(
                         SonoFunction.Add,
@@ -144,7 +142,6 @@ class ResolveBoxPointer(context: Context) :
                             box.index.toLiteralRawValue()
                         )
                     ),
-                    callingContext,
                     context.numberType
                 )
             )
@@ -157,7 +154,7 @@ class ResolveLocalBoxPointer(context: Context) :
         "resolveLocalBoxPointer",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             "box" type (context.getFullyQualified("std", "Box") as Type)
@@ -167,8 +164,8 @@ class ResolveLocalBoxPointer(context: Context) :
             PointerValue(
                 callingContext,
                 SpecificPointerType(callingContext, box.type.insideType),
-                RawStructValue(box.block.toLiteralRawValue(), callingContext, context.numberType),
-                RawStructValue(box.index.toLiteralRawValue(), callingContext, context.numberType),
+                RawStructValue(box.block.toLiteralRawValue(), context.numberType),
+                RawStructValue(box.index.toLiteralRawValue(), context.numberType),
             )
         }
     )
@@ -178,7 +175,7 @@ class ResolveLocalBoxPointer(context: Context) :
  * allocates itself on the respective block and returns a box (like a pointer with location known at compile time),
  * which the property takes as its value.
  */
-class TransientBoxValue(override val bindingContext: Context, val inside: Allocated) : Allocated {
+class TransientBoxValue(val context: Context, val inside: Allocated) : Allocated {
     override val type = TransientBoxType
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated {
@@ -191,7 +188,7 @@ class TransientBoxValue(override val bindingContext: Context, val inside: Alloca
         val dyn = DynamicAllocator(ptr.block.toLiteralRawValue(), ptr.index.toLiteralRawValue())
         val new = inside.copyTo(dyn, context)
         return BoxValue(
-            bindingContext,
+            context,
             SpecificBoxType(context, new.type),
             ptr.block,
             ptr.index,
@@ -224,7 +221,7 @@ class BoxCallable(context: Context) :
         "box",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             "value" type AnyType

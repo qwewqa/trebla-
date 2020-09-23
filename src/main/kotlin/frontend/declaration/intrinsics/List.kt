@@ -15,7 +15,7 @@ class TreblaList(context: Context) :
         "List",
         TypeType
     ),
-    Subscriptable by SubscriptableDSL(
+    Subscriptable by SubscriptableDelegate(
         context,
         {
             "type" type TypeType
@@ -33,7 +33,7 @@ class ListOf(context: Context) :
         "listOf",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             unmanaged
@@ -46,13 +46,13 @@ class ListOf(context: Context) :
         },
     )
 
-data class UnsizedListType(val containedType: Type, override val bindingContext: Context) :
+data class UnsizedListType(val containedType: Type, val context: Context) :
     Type, MemberAccessor, Subscriptable {
     override val type = TypeType
-    override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "List") as Type))
+    override val bindingHierarchy = listOf(listOf(context.getFullyQualified("std", "List") as Type))
 
-    private val subscriptDelegate = SubscriptableDSL(
-        bindingContext,
+    private val subscriptDelegate = SubscriptableDelegate(
+        context,
         {
             "size" type NumberType
         },
@@ -60,7 +60,7 @@ data class UnsizedListType(val containedType: Type, override val bindingContext:
 
             val size = "size".cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()?.roundToInt()
                 ?: compileError("List size must be a compile time constant.")
-            SizedListType(size, this@UnsizedListType, bindingContext)
+            SizedListType(size, this@UnsizedListType, context)
         }
     )
 
@@ -73,7 +73,7 @@ data class UnsizedListType(val containedType: Type, override val bindingContext:
     }
 }
 
-data class SizedListType(val size: Int, val unsizedType: UnsizedListType, override val bindingContext: Context) :
+data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val context: Context) :
     Type, Allocatable, MemberAccessor {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(unsizedType))
@@ -105,7 +105,7 @@ data class SizedListType(val size: Int, val unsizedType: UnsizedListType, overri
     override fun getMember(name: String, accessingContext: Context?): Value? {
         return when (name) {
             "containedType" -> containedType
-            "size" -> size.toStruct(bindingContext)
+            "size" -> size.toStruct(context)
             else -> null
         }
     }
@@ -114,7 +114,7 @@ data class SizedListType(val size: Int, val unsizedType: UnsizedListType, overri
 class ListValue(val parentContext: Context, override val type: SizedListType, val values: List<Value>) : Allocated,
     MemberAccessor,
     Subscriptable {
-    override val bindingContext = parentContext
+    val bindingContext = parentContext
 
     override val subscriptParameters by lazy {
         listOf(
@@ -175,7 +175,7 @@ class ListValue(val parentContext: Context, override val type: SizedListType, va
 
 class ListValueForEach(val context: Context, val listValue: ListValue, val indexed: Boolean) : Callable, Value {
     override val type = CallableType
-    override val bindingContext = context
+    val bindingContext = context
 
     override val parameters by lazy {
         listOf(
@@ -203,7 +203,7 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
         listValue.values.subList(start, stop).forEach {
             if (indexed) operation.callWith(
                 listOf(
-                    ValueArgument(null, RawStructValue(LiteralRawValue(index.toDouble()), context, context.numberType)),
+                    ValueArgument(null, RawStructValue(LiteralRawValue(index.toDouble()), context.numberType)),
                     ValueArgument(null, it)
                 ),
                 callingContext,
@@ -217,7 +217,7 @@ class ListValueForEach(val context: Context, val listValue: ListValue, val index
 
 class ListGet(val context: Context, val listValue: ListValue) : Callable, Value {
     override val type = CallableType
-    override val bindingContext = context
+    val bindingContext = context
 
     override val parameters by lazy {
         listOf(

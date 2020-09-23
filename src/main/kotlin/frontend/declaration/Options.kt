@@ -31,7 +31,6 @@ class OptionsAccessor(override val parentContext: Context) : Declaration,
         val option = options[name] ?: return null
         return RawStructValue(
             AllocatedRawValue(ConcreteAllocation(2, option.index)),
-            accessingContext,
             parentContext.getFullyQualified("std", option.type.structName) as StructDeclaration
         )
     }

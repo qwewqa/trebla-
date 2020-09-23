@@ -15,9 +15,8 @@ class ForExpression(override val node: ForExpressionNode) : Expression {
         val innerContext = InnerExecutionContext(context)
         node.initializer?.parseAndApplyTo(innerContext)
         val conditionContext = SimpleExecutionContext(innerContext)
-        val condition = node.condition?.parseAndApplyTo(conditionContext) ?: RawStructValue(LiteralRawValue(1.0),
-            innerContext,
-            innerContext.booleanType)
+        val condition = node.condition?.parseAndApplyTo(conditionContext)
+            ?: RawStructValue(LiteralRawValue(1.0), innerContext.booleanType)
         val afterthought = node.afterthought?.parse(innerContext)
         if (condition !is RawStructValue || condition.type != innerContext.booleanType)
             compileError("For statement condition must be a boolean.", node.condition)

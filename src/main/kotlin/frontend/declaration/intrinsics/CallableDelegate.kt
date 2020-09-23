@@ -18,7 +18,7 @@ open class SimpleDeclaration(
     override val visibility: Visibility = Visibility.PUBLIC,
 ) : Declaration
 
-class CallableDSL(
+class CallableDelegate(
     val parentContext: Context,
     parameters: IntrinsicParameterDSLContext.() -> Unit,
     private val operation: IntrinsicFunctionDSLContext.() -> Value,
@@ -38,7 +38,7 @@ class CallableDSL(
         } ?: IntrinsicFunctionDSLContext(null, arguments, callingContext).operation()
 }
 
-class SubscriptableDSL(
+class SubscriptableDelegate(
     val parentContext: Context,
     parameters: IntrinsicParameterDSLContext.() -> Unit,
     private val operation: IntrinsicFunctionDSLContext.() -> Value,
@@ -120,8 +120,8 @@ class IntrinsicFunctionDSLContext(
     }
 }
 
-fun Number.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context, context.numberType)
-fun Boolean.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context, context.booleanType)
+fun Number.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context.numberType)
+fun Boolean.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context.booleanType)
 
 fun Double.isIntOrCompileError() = toInt().also {
     if (it.toDouble() != this) compileError("Value $this is not an integer.")

@@ -20,6 +20,8 @@ class StructDeclaration(
     override val visibility: Visibility
     override val type = TypeType
 
+    override val bindingScope = parentContext.scope
+
     // Eventually embedding a struct in another struct might be supported, like in Go
     // In this case, the binding hierarchy would include it.
     override val bindingHierarchy = if (parentType != null) listOf(listOf(parentType)) else listOf(listOf(StructType))
@@ -40,21 +42,19 @@ class StructDeclaration(
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Allocated {
         if (!isRaw) {
-            return NormalStructValue(fields.pairedWithAndValidated(arguments).byParameterName(),
-                callingContext,
-                this)
+            return NormalStructValue(fields.pairedWithAndValidated(arguments).byParameterName(), this)
         } else {
             if (arguments.size != 1) compileError("A raw struct constructor should get exactly one argument.")
             val arg = arguments.first()
             if (arg.name != null) compileError("A raw struct constructor does not take a named argument.")
             val value = arg.value
             if (value !is RawStructValue) compileError("A raw struct constructor only takes another raw struct.")
-            return RawStructValue(value.raw, callingContext, this)
+            return RawStructValue(value.raw, this)
         }
     }
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
-        return if (isRaw) RawStructValue(AllocatedRawValue(allocator.allocate()), context, this)
+        return if (isRaw) RawStructValue(AllocatedRawValue(allocator.allocate()), this)
         else callWith(parameters.map {
             ValueArgument(
                 it.name,
@@ -87,17 +87,15 @@ object StructType : BuiltinType("Struct")
  * The value resulting from a struct construction.
  */
 sealed class StructValue(
-    override var bindingContext: Context?,
     override val type: StructDeclaration,
 ) : Value, Allocated
 
 data class NormalStructValue(
     val fields: Map<String, Value>,
-    val searchContext: Context?,
     override val type: StructDeclaration,
-) : StructValue(searchContext, type), MemberAccessor {
+) : StructValue(type), MemberAccessor {
     override fun coerceImmutable(): NormalStructValue? =
-        NormalStructValue(fields.mapValues { (_, v) -> v.coerceImmutable() ?: return null }, null, type)
+        NormalStructValue(fields.mapValues { (_, v) -> v.coerceImmutable() ?: return null }, type)
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): StructValue {
         return NormalStructValue(fields.mapValues { (_, value) ->
@@ -106,7 +104,7 @@ data class NormalStructValue(
                 !is Allocated -> value
                 else -> compileError("Invalid copy.")
             }
-        }, bindingContext, type)
+        }, type)
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
@@ -124,7 +122,6 @@ data class NormalStructValue(
             fields.mapValues { (_, v) ->
                 (v as? Allocated)?.offsetReallocate(offset) ?: v
             },
-            bindingContext,
             type,
         )
     }
@@ -132,18 +129,17 @@ data class NormalStructValue(
 
 data class RawStructValue(
     val raw: RawValue,
-    val searchContext: Context?,
     override val type: StructDeclaration,
-) : StructValue(searchContext, type) {
+) : StructValue(type) {
     override fun coerceImmutable(): RawStructValue? {
         val immutableRaw = raw.toIR().tryConstexprEvaluate()?.toLiteralRawValue() ?: return null
-        return RawStructValue(immutableRaw, null, type)
+        return RawStructValue(immutableRaw, type)
     }
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): RawStructValue {
         val newValue = AllocatedRawValue(allocator.allocate())
         context.statements += AllocatedValueAssignment(newValue, raw)
-        return RawStructValue(newValue, bindingContext, type)
+        return RawStructValue(newValue, type)
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
@@ -173,7 +169,6 @@ data class RawStructValue(
                             raw.allocation.index.toLiteralRawValue()
                         )
                     ),
-                    bindingContext,
                     type
                 )
                 else -> compileError("Reallocation not available for dynamic or temporary allocated raw structs.")

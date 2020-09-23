@@ -84,12 +84,10 @@ class AllocatedValueAssignment(val lhs: AllocatedRawValue, val rhs: RawValue) : 
 
 fun RawValue.toNumberStruct(context: Context) = RawStructValue(
     this,
-    context,
     context.numberType
 )
 
 fun RawValue.toBooleanStruct(context: Context) = RawStructValue(
     this,
-    context,
     context.booleanType
 )

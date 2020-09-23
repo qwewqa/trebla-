@@ -53,16 +53,14 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
             }
             "===" -> {
                 RawStructValue((rhs === lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(),
-                    context,
                     context.booleanType)
             }
             "!==" -> {
                 RawStructValue((rhs !== lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(),
-                    context,
                     context.booleanType)
             }
             else -> {
-                val func = lhs.resolveMemberWithoutTypeMembers(functionName, context)
+                val func = lhs.resolveNonTypeMember(functionName, context)
                 if (func !is Callable) compileError("Operator '${node.op}' ($functionName) not defined by a function.")
                 if (isOperator && !func.isOperator) compileError("Operator '${node.op}' ($functionName) has a function but is not marked as operator.")
                 if (!isOperator && !func.isInfix) compileError("$functionName is a function but is not marked as infix.")
@@ -109,7 +107,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         // must be copied into a temporary variable.
         // Otherwise, the action would be rerun each time the value was accessed (or not at all if never accessed).
         // In simpler cases, it's up to the backend to optimize (at least once implemented).
-        return RawStructValue(IRRawValue(resultValue), context, booleanType).copyTo(context.localAllocator, context)
+        return RawStructValue(IRRawValue(resultValue), booleanType).copyTo(context.localAllocator, context)
     }
 
     private fun doNonExecutionBoolean(

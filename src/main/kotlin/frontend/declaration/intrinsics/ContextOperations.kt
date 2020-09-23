@@ -10,7 +10,7 @@ class LocalContext(context: Context) :
         "localContext",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {},
         {
@@ -24,7 +24,7 @@ class WithContext(context: Context) :
         "withContext",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             "context" type ContextType

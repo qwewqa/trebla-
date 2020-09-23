@@ -329,7 +329,6 @@ data class NumberLiteralNode(
     override fun parse(context: Context) = ValueExpression(
         RawStructValue(
             LiteralRawValue(this.value),
-            context,
             (context.getFullyQualified("std", "Number") as StructDeclaration)
         )
     )
@@ -342,7 +341,6 @@ data class BooleanLiteralNode(
     override fun parse(context: Context) = ValueExpression(
         RawStructValue(
             LiteralRawValue(if (this.value) 1.0 else 0.0),
-            context,
             (context.getFullyQualified("std", "Boolean") as StructDeclaration)
         )
     )

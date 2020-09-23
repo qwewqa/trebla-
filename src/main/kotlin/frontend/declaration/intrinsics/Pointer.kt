@@ -12,7 +12,7 @@ class Pointer(context: Context) :
         "Pointer",
         TypeType
     ),
-    Subscriptable by SubscriptableDSL(
+    Subscriptable by SubscriptableDelegate(
         context,
         {
             "type" type TypeType
@@ -26,7 +26,7 @@ class Pointer(context: Context) :
 class SpecificPointerType(context: Context, val insideType: Type) :
     Callable,
     Allocatable {
-    private val callableDelegate = CallableDSL(
+    private val callableDelegate = CallableDelegate(
         context,
         {
             "block" type NumberType
@@ -49,7 +49,7 @@ class SpecificPointerType(context: Context, val insideType: Type) :
         callableDelegate.callWith(arguments, callingContext)
 
     override val type = TypeType
-    override val bindingContext = context
+    val bindingContext = context
     override val allocationSize = 2
     override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "Pointer") as Type))
 
@@ -61,8 +61,8 @@ class SpecificPointerType(context: Context, val insideType: Type) :
         return PointerValue(
             context,
             this,
-            RawStructValue(AllocatedRawValue(allocator.allocate()), context, context.numberType),
-            RawStructValue(AllocatedRawValue(allocator.allocate()), context, context.numberType),
+            RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
+            RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
         )
     }
 
@@ -71,15 +71,15 @@ class SpecificPointerType(context: Context, val insideType: Type) :
 }
 
 class PointerValue(
-    override val bindingContext: Context,
+    val context: Context,
     override val type: SpecificPointerType,
     val block: RawStructValue,
     val index: RawStructValue,
 ) : Allocated,
     MemberAccessor,
     Dereferenceable,
-    Subscriptable by SubscriptableDSL(
-        bindingContext,
+    Subscriptable by SubscriptableDelegate(
+        context,
         {
             "index" type NumberType
         },
@@ -91,8 +91,8 @@ class PointerValue(
                 ?: compileError("Only pointers to lists containing an allocatable type are subscriptable")
             val listIndex = "index".cast<RawStructValue>()
             PointerValue(
-                bindingContext,
-                SpecificPointerType(bindingContext, listContainedType),
+                context,
+                SpecificPointerType(context, listContainedType),
                 block,
                 SonoFunction.Add.raw(
                     index.raw,
@@ -100,7 +100,7 @@ class PointerValue(
                         listIndex.raw,
                         elementSize.toLiteralRawValue()
                     )
-                ).toNumberStruct(bindingContext)
+                ).toNumberStruct(context)
             )
         }
     ) {
@@ -122,14 +122,14 @@ class PointerValue(
     // (Entity Memory is different if you access the pointer from another entity)
     // Global pointers (to shared/data) are still meaningful, so this is allowed.
     override fun offsetReallocate(offset: RawValue): Allocated = PointerValue(
-        bindingContext,
+        context,
         type,
         this.block.offsetReallocate(offset),
         this.index.offsetReallocate(offset),
     )
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = PointerValue(
-        bindingContext,
+        this.context,
         type,
         block.copyTo(allocator, context),
         index.copyTo(allocator, context),
@@ -151,7 +151,7 @@ class Deref(context: Context) :
         "deref",
         CallableType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             "pointer" type AnyType

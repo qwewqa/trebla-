@@ -1,9 +1,7 @@
 package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.MemberAccessor
-import xyz.qwewqa.trebla.frontend.context.Signature
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
@@ -34,31 +32,29 @@ class MemberAccessExpression(override val node: UnaryFunctionNode, op: MemberAcc
  * 1. Direct members
  * 2. (Only if this value is a type) a value in accessing context that receives this value as a type (unbound)
  * 3. The value in accessing context that receives the type of this value (bound)
- * 4. The value in the the binding context of this value that receives the type of this value (bound)
+ * 4. The value in the the scope of the type of this value that receives the type of this value (bound; public only)
  */
 fun Value.resolveMember(name: String, context: Context?) =
     (this as? MemberAccessor)?.getMember(name, context)
-        ?: context?.let { (this as? Type)?.resolveBinding(name, it) }
-        ?: resolveMemberWithoutTypeMembers(name, context)
-
-/**
- * Same as [resolveMember] but without unbound type member access.
- * E.g. `Number.equals` normally gives an unbound function,
- * but with this, it gives a bound function of the equals function defined on the type of `Number` (which is TypeType)
- */
-fun Value.resolveMemberWithoutTypeMembers(name: String, context: Context?) =
-    (this as? MemberAccessor)?.getMember(name, context)
-        ?: context?.let { type.resolveBinding(name, it)?.tryBind(this, context) }
-        ?: this.bindingContext?.let { bindingContext ->
-            context?.let { type.resolveBinding(name, bindingContext)?.tryBind(this, it) }
+        ?: context?.let { (this as? Type)?.resolveBinding(name, context.scope, Visibility.PRIVATE) }
+        ?: context?.let { type.resolveBinding(name, context.scope, Visibility.PRIVATE)?.tryBind(this, context) }
+        ?: type.bindingScope?.let { typeScope ->
+            context?.let { type.resolveBinding(name, typeScope, Visibility.PUBLIC)?.tryBind(this, context) }
         }
 
-fun Type.resolveBinding(name: String, context: Context): Value? =
-    context.scope.find(name, Signature.Receiver(this))
+fun Value.resolveNonTypeMember(name: String, context: Context?) =
+    (this as? MemberAccessor)?.getMember(name, context)
+        ?: context?.let { type.resolveBinding(name, it.scope, Visibility.PRIVATE)?.tryBind(this, context) }
+        ?: type.bindingScope?.let { scope ->
+            context?.let { type.resolveBinding(name, scope, Visibility.PUBLIC)?.tryBind(this, it) }
+        }
+
+fun Type.resolveBinding(name: String, scope: Scope, minVisibility: Visibility): Value? =
+    scope.find(name, Signature.Receiver(this), minVisibility)
         ?: this.bindingHierarchy.asSequence()
             .mapNotNull { layer ->
                 layer
-                    .map { type -> type.resolveBinding(name, context) }
+                    .map { type -> type.resolveBinding(name, scope, minVisibility) }
                     .toSet()
                     .let {
                         when (it.size) {
@@ -69,7 +65,7 @@ fun Type.resolveBinding(name: String, context: Context): Value? =
                     }
             }
             .firstOrNull()
-        ?: context.scope.find(name, Signature.Receiver(AnyType))
+        ?: scope.find(name, Signature.Receiver(AnyType), minVisibility)
 
 private fun Value.tryBind(toValue: Value, context: Context) =
     (this as? Bindable)?.boundTo(toValue, context) ?: this

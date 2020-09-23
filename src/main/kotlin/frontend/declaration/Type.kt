@@ -1,10 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.ReadOnlyContext
-import xyz.qwewqa.trebla.frontend.context.Signature
-import xyz.qwewqa.trebla.frontend.context.Visibility
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.TypeNode
@@ -24,13 +21,14 @@ interface Type : Value {
      * Ambiguity in the same layer will result in an error.
      */
     val bindingHierarchy: List<Collection<Type>> get() = emptyList()
+
+    val bindingScope: Scope? get() = null
 }
 
 fun Type.accepts(other: Value) = accepts(other.type)
 
 open class BuiltinType(override val identifier: String) : Type, Declaration {
     override val type: Type = TypeType
-    override val bindingContext: Context? = null
     override val parentContext: Context? = null
 
     override val signature = Signature.Default
@@ -47,7 +45,7 @@ object TypeType : BuiltinType("Type")
  * A union type, intended as a type constraint for functions where either of
  * a list of types is acceptable.
  */
-class UnionType(val types: List<Type>, override val bindingContext: Context? = null) : Type {
+class UnionType(val types: List<Type>, override val bindingScope: Scope? = null) : Type {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(AnyType))
 

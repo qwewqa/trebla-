@@ -44,8 +44,6 @@ interface Declaration : Value, Expression {
      */
     val loadEarly: Boolean get() = false
 
-    override val bindingContext get() = parentContext
-
     /*
     By default, a declaration adds itself, but not all declarations may do so, like property declarations.
      */

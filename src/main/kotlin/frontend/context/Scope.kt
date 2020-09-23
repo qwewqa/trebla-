@@ -104,7 +104,7 @@ open class Scope(val parent: Scope?) {
 
 private object AmbiguousImportMarker : Value {
     override val type = AnyType
-    override val bindingContext: Nothing? = null
+    val bindingContext: Nothing? = null
 }
 
 sealed class Signature {

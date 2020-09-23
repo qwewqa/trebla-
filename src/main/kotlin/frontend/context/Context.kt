@@ -29,7 +29,7 @@ interface Context : MemberAccessor {
 
     override fun getMember(name: String, accessingContext: Context?) = scope.find(name)
 
-    override val bindingContext: Context? get() = parentContext
+    val bindingContext: Context? get() = parentContext
 }
 
 fun Context.getFullyQualified(name: List<String>) =

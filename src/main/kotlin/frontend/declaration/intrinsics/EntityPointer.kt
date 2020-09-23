@@ -12,7 +12,7 @@ class EntityPointer(context: Context) :
         "EntityPointer",
         TypeType
     ),
-    Subscriptable by SubscriptableDSL(
+    Subscriptable by SubscriptableDelegate(
         context,
         {
             "script" type ScriptType
@@ -26,7 +26,7 @@ class EntityPointer(context: Context) :
 class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration) :
     Callable,
     Allocatable {
-    val callableDelegate = CallableDSL(
+    val callableDelegate = CallableDelegate(
         context,
         {
             "index" type NumberType
@@ -41,7 +41,6 @@ class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration)
                             SHARED_BLOCK_SIZE.toLiteralRawValue()
                         )
                     ),
-                    callingContext,
                     context.numberType
                 ),
                 this@SpecificEntityPointerType,
@@ -57,13 +56,13 @@ class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration)
         callableDelegate.callWith(arguments, callingContext)
 
     override val type = TypeType
-    override val bindingContext = context
+    val bindingContext = context
     override val allocationSize = 1
     override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "EntityPointer") as Type))
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         return EntityPointerValue(
-            RawStructValue(AllocatedRawValue(allocator.allocate()), context, context.numberType),
+            RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
             this,
             context
         )
@@ -77,7 +76,7 @@ class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration)
 class EntityPointerValue(
     val offset: RawStructValue, // this is the offset, not index (offset = index * 32 currently)
     override val type: SpecificEntityPointerType,
-    override val bindingContext: Context?,
+    val context: Context?,
 ) : MemberAccessor,
     Allocated {
     val script = type.script
@@ -95,7 +94,7 @@ class EntityPointerValue(
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = EntityPointerValue(
         offset.copyTo(allocator, context),
         type,
-        bindingContext
+        this.context
     )
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
@@ -108,6 +107,6 @@ class EntityPointerValue(
     override fun offsetReallocate(offset: RawValue): Allocated = EntityPointerValue(
         this.offset.offsetReallocate(offset),
         type,
-        bindingContext
+        context
     )
 }

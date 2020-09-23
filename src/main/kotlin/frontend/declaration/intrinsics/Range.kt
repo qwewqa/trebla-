@@ -19,7 +19,7 @@ class Range(context: Context) :
         "Range",
         TypeType
     ),
-    Callable by CallableDSL(
+    Callable by CallableDelegate(
         context,
         {
             "arg1" type NumberType
@@ -44,13 +44,13 @@ class Range(context: Context) :
     Type
 
 class RangeValue(
-    override val bindingContext: Context,
+    val context: Context,
     val start: Int,
     val stop: Int,
     val step: Int,
 ) : MemberAccessor,
-    Callable by CallableDSL(
-        bindingContext,
+    Callable by CallableDelegate(
+        context,
         {
             "operation" type CallableType
         },
@@ -67,12 +67,12 @@ class RangeValue(
             UnitValue
         }
     ) {
-    override val type = bindingContext.getFullyQualified("std", "Range") as Type
+    override val type = context.getFullyQualified("std", "Range") as Type
     override fun getMember(name: String, accessingContext: Context?): Value? {
         return when (name) {
-            "start" -> start.toStruct(bindingContext)
-            "stop" -> stop.toStruct(bindingContext)
-            "step" -> step.toStruct(bindingContext)
+            "start" -> start.toStruct(context)
+            "stop" -> stop.toStruct(context)
+            "step" -> step.toStruct(context)
             else -> null
         }
     }

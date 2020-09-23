@@ -25,11 +25,6 @@ interface Value : Lazy<Value>, Entity {
     fun coerceImmutable(): Value? = null
 
     /**
-     * The context to search for receiver functions, apart from the accessing context.
-     */
-    val bindingContext: Context?
-
-    /**
      * This implements [Lazy] such that it can be used without being wrapped.
      */
     override val value get() = this

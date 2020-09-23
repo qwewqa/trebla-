@@ -31,7 +31,7 @@ object Builtins : MemberAccessor, Declaration {
  */
 class BuiltinFunction(val function: SonoFunction) : Callable, Value, MemberAccessor {
     override val type = CallableType
-    override val bindingContext: Context? = null
+    val bindingContext: Context? = null
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): RawStructValue {
         val argumentValues = arguments.map {
@@ -40,7 +40,7 @@ class BuiltinFunction(val function: SonoFunction) : Callable, Value, MemberAcces
             parameterValue.raw
         }
         val rawType = callingContext.getFullyQualified(listOf("std", "Raw")) as StructDeclaration
-        return RawStructValue(BuiltinCallRawValue(function, argumentValues), callingContext, rawType)
+        return RawStructValue(BuiltinCallRawValue(function, argumentValues), rawType)
     }
 
     override fun getMember(name: String, accessingContext: Context?): Value? = when (name) {
@@ -51,7 +51,7 @@ class BuiltinFunction(val function: SonoFunction) : Callable, Value, MemberAcces
 
 class ExecutedBuiltinFunction(val builtin: BuiltinFunction) : Callable, Value {
     override val type = CallableType
-    override val bindingContext: Context? = null
+    val bindingContext: Context? = null
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         if (callingContext !is ExecutionContext) compileError("Builtin not executable in non-execution context.")

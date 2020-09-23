@@ -123,7 +123,7 @@ class FunctionDeclaration(
 object CallableType : BuiltinType("Callable")
 
 class BoundFunction(
-    override val bindingContext: Context?,
+    val context: Context?,
     val receiver: Value,
     val function: FunctionDeclaration,
 ) : Callable, Entity,

@@ -8,7 +8,7 @@ import xyz.qwewqa.trebla.grammar.trebla.LambdaNode
 
 class LambdaExpression(override val node: LambdaNode, val declaringContext: Context) : Expression, Callable, Value {
     override val type = LambdaType
-    override val bindingContext = declaringContext
+    val bindingContext = declaringContext
     override val parameters by lazy {
         node.parameters?.value?.map {
             Parameter(
