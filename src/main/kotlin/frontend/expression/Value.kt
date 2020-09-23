@@ -14,6 +14,7 @@ import xyz.qwewqa.trebla.frontend.declaration.Type
  */
 interface Value : Entity {
     val type: Type
+    val embedded: List<Value> get() = emptyList()
 
     val commonName: String? get() = null
 
@@ -25,11 +26,6 @@ interface Value : Entity {
      * In addition, for non singletons, the binding context should be dropped.
      */
     fun coerceImmutable(): Value? = null
-
-    /**
-     * Performs any final checks to this value, if relevant.
-     */
-    fun finalize() = Unit
 
     fun repr() = toString()
 }

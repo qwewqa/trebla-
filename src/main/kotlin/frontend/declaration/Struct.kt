@@ -37,21 +37,23 @@ class StructDeclaration(
         typeParameters.forEach { (id, v) ->
             paramContext.scope.add(v, id)
         }
-        node.fields.value.parse(parentContext)
+        node.fields.map { it.parameter }.parse(parentContext)
     }
     val fieldNames by lazy { fields.map { it.name }.toSet() }
     override val parameters by lazy { fields }
 
+    val embeddedFieldNames = node.fields.filter { it.isEmbed }.map { it.parameter.identifier.value }
+
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Allocated {
-        if (!isRaw) {
-            return NormalStructValue(fields.pairedWithAndValidated(arguments).byParameterName(), this)
+        return if (!isRaw) {
+            NormalStructValue(fields.pairedWithAndValidated(arguments).byParameterName(), this)
         } else {
             if (arguments.size != 1) compileError("A raw struct constructor should get exactly one argument.")
             val arg = arguments.first()
             if (arg.name != null) compileError("A raw struct constructor does not take a named argument.")
             val value = arg.value
             if (value !is RawStructValue) compileError("A raw struct constructor only takes another raw struct.")
-            return RawStructValue(value.raw, this)
+            RawStructValue(value.raw, this)
         }
     }
 
@@ -98,6 +100,8 @@ data class NormalStructValue(
 ) : StructValue(type), MemberAccessor {
     override fun coerceImmutable(): NormalStructValue? =
         NormalStructValue(fields.mapValues { (_, v) -> v.coerceImmutable() ?: return null }, type)
+
+    override val embedded = type.embeddedFieldNames.map { fields.getValue(it) }
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): StructValue {
         return NormalStructValue(fields.mapValues { (_, value) ->

@@ -49,7 +49,7 @@ class TypeParamStructDeclaration(
             if (selectSingle("raw")) compileError("Type parameters not supported on raw structs")
         }
 
-        val allParameters = node.fields.value + node.typeParameters.value
+        val allParameters = node.fields.map { it.parameter } + node.typeParameters.value
         if (allParameters.map { it.identifier.value }.let { it.size != it.toSet().size }) {
             compileError("Duplicate type or value parameter name.", node)
         }

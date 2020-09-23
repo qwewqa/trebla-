@@ -60,7 +60,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
                     context.booleanType)
             }
             else -> {
-                val func = lhs.resolveNonTypeMember(functionName, context)
+                val func = lhs.resolveDirectBindingMember(functionName, context)
                 if (func !is Callable) compileError("Operator '${node.op}' ($functionName) not defined by a function.")
                 if (isOperator && !func.isOperator) compileError("Operator '${node.op}' ($functionName) has a function but is not marked as operator.")
                 if (!isOperator && !func.isInfix) compileError("$functionName is a function but is not marked as infix.")

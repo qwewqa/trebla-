@@ -34,17 +34,19 @@ class MemberAccessExpression(override val node: UnaryFunctionNode, op: MemberAcc
  * 3. The value in accessing context that receives the type of this value (bound)
  * 4. The value in the the scope of the type of this value that receives the type of this value (bound; public only)
  */
-fun Value.resolveMember(name: String, context: Context?) =
+fun Value.resolveMember(name: String, context: Context?): Value? =
     (this as? MemberAccessor)?.getMember(name, context)
         ?: context?.let { (this as? Type)?.resolveBinding(name, context.scope, Visibility.PRIVATE) }
         ?: context?.let { type.resolveBinding(name, context.scope, Visibility.PRIVATE)?.tryBind(this, context) }
         ?: type.bindingScope?.let { typeScope ->
             context?.let { type.resolveBinding(name, typeScope, Visibility.PUBLIC)?.tryBind(this, context) }
         }
+        ?: embedded.mapNotNull { it.resolveMember(name, context) }.toSet().let {
+            if (it.size > 1) compileError("Ambigious member due to embeds.") else it.singleOrNull()
+        }
 
-fun Value.resolveNonTypeMember(name: String, context: Context?) =
-    (this as? MemberAccessor)?.getMember(name, context)
-        ?: context?.let { type.resolveBinding(name, it.scope, Visibility.PRIVATE)?.tryBind(this, context) }
+fun Value.resolveDirectBindingMember(name: String, context: Context?) =
+    context?.let { type.resolveBinding(name, it.scope, Visibility.PRIVATE)?.tryBind(this, context) }
         ?: type.bindingScope?.let { scope ->
             context?.let { type.resolveBinding(name, scope, Visibility.PUBLIC)?.tryBind(this, it) }
         }

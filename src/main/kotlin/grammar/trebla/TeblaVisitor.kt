@@ -77,12 +77,12 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
             ctx.modifierList().visit() as ModifierListNode,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
             ctx.structTypeParameters().visit() as ParametersNode,
-            ctx.structFields().visit() as ParametersNode,
+            ctx.structFields().structField().visit() as List<StructFieldNode>,
         )
     }
 
-    override fun visitStructFields(ctx: TreblaParser.StructFieldsContext): TreblaNode {
-        return ParametersNode(ctx, filename, ctx.parameter().visit() as List<ParameterNode>)
+    override fun visitStructField(ctx: TreblaParser.StructFieldContext): TreblaNode {
+        return StructFieldNode(ctx, filename, ctx.parameter().visit() as ParameterNode, ctx.EMBED().exist)
     }
 
     override fun visitStructTypeParameters(ctx: TreblaParser.StructTypeParametersContext): TreblaNode {

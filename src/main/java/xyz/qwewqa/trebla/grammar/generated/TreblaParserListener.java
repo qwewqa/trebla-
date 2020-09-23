@@ -140,6 +140,16 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitStructFields(TreblaParser.StructFieldsContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#structField}.
+	 * @param ctx the parse tree
+	 */
+	void enterStructField(TreblaParser.StructFieldContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#structField}.
+	 * @param ctx the parse tree
+	 */
+	void exitStructField(TreblaParser.StructFieldContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#scriptDeclaration}.
 	 * @param ctx the parse tree
 	 */

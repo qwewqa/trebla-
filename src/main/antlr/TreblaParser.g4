@@ -79,7 +79,11 @@ structTypeParameters
     ;
 
 structFields
-    :  (LPAREN (parameter (COMMA parameter)* COMMA?)? RPAREN)?
+    :  (LPAREN (structField (COMMA structField)* COMMA?)? RPAREN)?
+    ;
+
+structField
+    : EMBED? parameter
     ;
 
 scriptDeclaration
@@ -352,6 +356,7 @@ simpleIdentifier
     | NOTE
     | SETTER
     | GETTER
+    | EMBED
     ;
 
 literalConstant

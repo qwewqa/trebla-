@@ -98,12 +98,19 @@ data class StructDeclarationNode(
     val modifiers: ModifierListNode,
     val identifier: SimpleIdentifierNode,
     val typeParameters: ParametersNode,
-    val fields: ParametersNode,
+    val fields: List<StructFieldNode>,
 ) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
     override fun parse(context: Context): Declaration =
         if (typeParameters.value.isEmpty()) StructDeclaration(this, context)
         else TypeParamStructDeclaration(this, context)
 }
+
+data class StructFieldNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val parameter: ParameterNode,
+    val isEmbed: Boolean
+) : TreblaNode
 
 data class ScriptDeclarationNode(
     override val context: ParseTree,

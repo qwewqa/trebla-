@@ -117,6 +117,7 @@ TEMP: 'temp' ;
 RAW: 'raw' ;
 CONST: 'const' ;
 NOTE: 'note' ;
+EMBED: 'embed' ;
 
 //
 
@@ -233,6 +234,7 @@ Inside_TEMP: TEMP -> type(TEMP) ;
 Inside_RAW: RAW -> type(RAW) ;
 Inside_CONST: CONST -> type(CONST) ;
 Inside_NOTE: NOTE -> type(NOTE) ;
+Inside_EMBED: EMBED -> type(EMBED) ;
 
 Inside_QUOTE_OPEN: QUOTE_OPEN -> pushMode(LineString), type(QUOTE_OPEN) ;
 
