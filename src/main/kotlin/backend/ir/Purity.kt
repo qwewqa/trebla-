@@ -22,6 +22,8 @@ val impureFunctions = setOf(
     DestroyParticleEffect,
     Random,
     RandomInteger,
+    DebugPause,
+    DebugLog,
 )
 
 /**
@@ -45,6 +47,8 @@ val undroppableFunctions = setOf(
     SpawnParticleEffect,
     MoveParticleEffect,
     DestroyParticleEffect,
+    DebugPause,
+    DebugLog,
 )
 
 val orderedImpureFunctions = setOf(
