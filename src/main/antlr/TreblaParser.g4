@@ -27,7 +27,7 @@ importList
     ;
 
 importHeader
-    : IMPORT identifier (DOT MULT)? semi
+    : IMPORT identifier semi
     ;
 
 topLevelObject

@@ -1,6 +1,9 @@
 package xyz.qwewqa.trebla.frontend
 
-import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.GlobalAllocatorContext
+import xyz.qwewqa.trebla.frontend.context.GlobalContext
+import xyz.qwewqa.trebla.frontend.context.Scope
 import xyz.qwewqa.trebla.frontend.declaration.ArchetypeDeclaration
 import xyz.qwewqa.trebla.frontend.declaration.Declaration
 import xyz.qwewqa.trebla.frontend.declaration.ScriptDeclaration
@@ -62,7 +65,7 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
      */
     fun loadNormal() {
         importStd()
-        importLenient()
+        loadImports()
         deferredDeclarations.forEach { it.applyTo(this) }
         updatePackage()
     }
@@ -73,7 +76,7 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
      */
     fun loadFinal() {
         importStd()
-        importStrict()
+        loadImports()
         updatePackage()
     }
 
@@ -85,40 +88,16 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
         }
     }
 
-    private fun importWildcard(identifier: List<String>) = scope.import(parentContext.getPackage(identifier).scope)
-
-    private fun importSingle(identifier: List<String>): Boolean {
-        compileError("Only wildcard imports are supported.")
-    }
+    private fun importPackage(identifier: List<String>) = scope.import(parentContext.getPackage(identifier).scope)
 
     private fun importStd() {
-        importWildcard(listOf("std"))
+        importPackage(listOf("std"))
     }
 
-    /**
-     * At the stage this is used, all symbols should be loaded,
-     * so non-wildcard imports that don't do anything should error.
-     * Wildcard imports are free to do nothing as a package is free to have no public members.
-     */
-    private fun importStrict() {
+    private fun loadImports() {
         node.imports.imports.forEach { importStatement ->
             importStatement.runWithErrorMessage("Failed to import ${importStatement.identifier.value.joinToString(".")}.") {
-                val identifier = importStatement.identifier.value
-                if (importStatement.isWildcard) importWildcard(identifier)
-                else importSingle(identifier).also { success -> if (!success) compileError("Symbol does not exist or is not public.") }
-            }
-        }
-    }
-
-    /**
-     * Allow non-wildcard import statements that fail to do anything initially,
-     * because not every symbol may be loaded yet.
-     */
-    private fun importLenient() {
-        node.imports.imports.forEach { importStatement ->
-            importStatement.runWithErrorMessage("Failed to import ${importStatement.identifier.value.joinToString(".")}.") {
-                val identifier = importStatement.identifier.value
-                if (importStatement.isWildcard) importWildcard(identifier) else importSingle(identifier)
+                importPackage(importStatement.identifier.value)
             }
         }
     }

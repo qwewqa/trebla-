@@ -28,7 +28,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     override fun visitImportHeader(ctx: TreblaParser.ImportHeaderContext): TreblaNode {
-        return ImportHeaderNode(ctx, filename, ctx.identifier().visit() as IdentifierNode, ctx.MULT().exist)
+        return ImportHeaderNode(ctx, filename, ctx.identifier().visit() as IdentifierNode)
     }
 
     override fun visitFunctionValueParameters(ctx: TreblaParser.FunctionValueParametersContext): TreblaNode {
