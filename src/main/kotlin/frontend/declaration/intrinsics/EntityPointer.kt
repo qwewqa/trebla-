@@ -21,12 +21,17 @@ class EntityPointer(context: Context) :
             SpecificEntityPointerType(context, "script".cast())
         }
     ),
-    Type
+    Type {
+    override val commonName = "EntityPointer"
+}
 
 class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration) :
     Callable,
     Allocatable {
-    val callableDelegate = CallableDelegate(
+
+    override val commonName = "EntityPointer"
+
+    private val callableDelegate = CallableDelegate(
         context,
         {
             "index" type NumberType

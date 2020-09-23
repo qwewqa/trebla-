@@ -98,7 +98,7 @@ class PropertyDeclaration(
             }
         }
         if (typeConstraint != null && !typeConstraint.accepts(newValue))
-            compileError("Expression type does not match specified type.")
+            compileError("Value of type ${newValue.type.commonName} does not match specified type ${typeConstraint.commonName}.")
         context.scope.add(newValue, identifier, signature, visibility)
         UnitValue
     }

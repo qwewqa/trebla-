@@ -19,6 +19,8 @@ class TypeParamStructDeclaration(
     override val visibility: Visibility
     override val type = TypeType
 
+    override val commonName get() = identifier
+
     override val bindingHierarchy = listOf(listOf(StructType))
 
     override val loadEarly = true

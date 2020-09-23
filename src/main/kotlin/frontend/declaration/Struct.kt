@@ -20,6 +20,8 @@ class StructDeclaration(
     override val visibility: Visibility
     override val type = TypeType
 
+    override val commonName get() = identifier
+
     override val bindingScope = parentContext.scope
 
     // Eventually embedding a struct in another struct might be supported, like in Go

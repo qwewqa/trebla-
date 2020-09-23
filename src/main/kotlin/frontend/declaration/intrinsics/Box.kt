@@ -23,7 +23,9 @@ class Box(context: Context) :
             SpecificBoxType(context, type)
         }
     ),
-    Type
+    Type {
+    override val commonName = "Box"
+}
 
 class BoxValue(
     val context: Context,
@@ -86,6 +88,8 @@ class SpecificBoxType(context: Context, val insideType: Allocatable) : Allocatab
     val bindingContext = context
     override val allocationSize = insideType.allocationSize
     override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "Box") as Type))
+
+    override val commonName = "Box"
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         val ptr = when (allocator) {

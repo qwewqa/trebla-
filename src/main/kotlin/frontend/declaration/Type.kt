@@ -11,6 +11,8 @@ interface Type : Value {
         return this == other || other.bindingHierarchy.flatten().any { accepts(it) }
     }
 
+    override val commonName: String
+
     override fun coerceImmutable() = this
 
     /**
@@ -33,6 +35,8 @@ open class BuiltinType(override val identifier: String) : Type, Declaration {
 
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
+
+    override val commonName get() = identifier
 }
 
 object AnyType : BuiltinType("Any") {
@@ -48,6 +52,8 @@ object TypeType : BuiltinType("Type")
 class UnionType(val types: List<Type>, override val bindingScope: Scope? = null) : Type {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(AnyType))
+
+    override val commonName = "UnionType(${types.joinToString { it.commonName }})"
 
     override fun accepts(other: Type): Boolean {
         return types.any { it.accepts(other) } || super.accepts(other)

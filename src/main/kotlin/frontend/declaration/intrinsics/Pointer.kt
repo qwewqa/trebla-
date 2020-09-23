@@ -21,7 +21,9 @@ class Pointer(context: Context) :
             SpecificPointerType(context, "type".cast())
         }
     ),
-    Type
+    Type {
+    override val commonName = "Pointer"
+}
 
 class SpecificPointerType(context: Context, val insideType: Type) :
     Callable,
@@ -41,6 +43,8 @@ class SpecificPointerType(context: Context, val insideType: Type) :
             )
         }
     )
+
+    override val commonName = "Pointer"
 
     override val parameters: List<Parameter>?
         get() = callableDelegate.parameters

@@ -36,7 +36,8 @@ class LetDeclaration(
         context.scope.addLazy(
             lazy {
                 val value = node.expression.parseAndApplyTo(context)
-                value.coerceTo(typeConstraint) ?: compileError("Expression does not satisfy explicit type.")
+                value.coerceTo(typeConstraint)
+                    ?: compileError("Value of type ${value.type.commonName} does not satisfy explicit type ${typeConstraint.commonName}.")
             },
             identifier, signature, visibility,
         )

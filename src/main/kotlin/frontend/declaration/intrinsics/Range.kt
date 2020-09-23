@@ -41,7 +41,9 @@ class Range(context: Context) :
             RangeValue(context, start.isIntOrCompileError(), stop.isIntOrCompileError(), step.isIntOrCompileError())
         }
     ),
-    Type
+    Type {
+    override val commonName = "Pointer"
+}
 
 class RangeValue(
     val context: Context,

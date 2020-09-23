@@ -3,7 +3,9 @@ package xyz.qwewqa.trebla.frontend.expression
 import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.declaration.AnyType
+import xyz.qwewqa.trebla.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.declaration.applyIn
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.*
 
@@ -152,5 +154,6 @@ fun Map<Parameter, Value>.byParameterName() = entries.associate { (param, value)
 Want some more specific error reporting at some point. This can do for now.
  */
 fun Map<Parameter, Value>.applyTyping() = mapValues { (param, arg) ->
-    arg.coerceTo(param.type) ?: compileError("Argument does not satisfy type constraint.")
+    arg.coerceTo(param.type)
+        ?: compileError("Argument of type ${arg.type.commonName} does not satisfy type constraint ${param.type.commonName}.")
 }

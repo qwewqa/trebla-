@@ -25,7 +25,9 @@ class TreblaList(context: Context) :
             UnsizedListType(type, context)
         },
     ),
-    Type
+    Type {
+    override val commonName = "List"
+}
 
 class ListOf(context: Context) :
     SimpleDeclaration(
@@ -50,6 +52,8 @@ data class UnsizedListType(val containedType: Type, val context: Context) :
     Type, MemberAccessor, Subscriptable {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(context.getFullyQualified("std", "List") as Type))
+
+    override val commonName = "List"
 
     private val subscriptDelegate = SubscriptableDelegate(
         context,
@@ -78,6 +82,8 @@ data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val co
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(unsizedType))
     val containedType = unsizedType.containedType
+
+    override val commonName = "List"
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         if (containedType !is Allocatable) {

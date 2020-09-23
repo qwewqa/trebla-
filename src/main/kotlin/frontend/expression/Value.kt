@@ -15,6 +15,8 @@ import xyz.qwewqa.trebla.frontend.declaration.Type
 interface Value : Entity {
     val type: Type
 
+    val commonName: String? get() = null
+
     fun coerceTo(type: Type): Value? = if (type.accepts(this.type)) this else null
 
     /**
