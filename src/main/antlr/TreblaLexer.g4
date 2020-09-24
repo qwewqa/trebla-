@@ -118,6 +118,7 @@ RAW: 'raw' ;
 CONST: 'const' ;
 NOTE: 'note' ;
 EMBED: 'embed' ;
+ENUM: 'enum' ;
 
 //
 
@@ -235,6 +236,7 @@ Inside_RAW: RAW -> type(RAW) ;
 Inside_CONST: CONST -> type(CONST) ;
 Inside_NOTE: NOTE -> type(NOTE) ;
 Inside_EMBED: EMBED -> type(EMBED) ;
+Inside_ENUM: ENUM -> type(ENUM) ;
 
 Inside_QUOTE_OPEN: QUOTE_OPEN -> pushMode(LineString), type(QUOTE_OPEN) ;
 

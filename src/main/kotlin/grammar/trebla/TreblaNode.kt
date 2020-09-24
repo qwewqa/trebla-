@@ -3,6 +3,8 @@ package xyz.qwewqa.trebla.grammar.trebla
 import org.antlr.v4.runtime.tree.ParseTree
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.Signature
+import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.StringValue
@@ -111,6 +113,44 @@ data class StructFieldNode(
     val parameter: ParameterNode,
     val isEmbed: Boolean
 ) : TreblaNode
+
+data class EnumDeclarationNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val modifiers: ModifierListNode,
+    val identifier: SimpleIdentifierNode,
+    val variants: List<EnumVariant>
+) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
+    override fun parse(context: Context): Declaration {
+        TODO()
+    }
+}
+
+data class EnumVariant(
+    override val context: ParseTree,
+    override val filename: String,
+    val definition: EnumVariantDefinition,
+    val ordinal: Int?,
+) : TreblaNode
+sealed class EnumVariantDefinition : TreblaNode
+
+data class EnumStructVariant(
+    override val context: ParseTree,
+    override val filename: String,
+    val value: StructDeclarationNode,
+) : EnumVariantDefinition()
+
+data class EnumValueVariant(
+    override val context: ParseTree,
+    override val filename: String,
+    val identifier: String,
+) : EnumVariantDefinition()
+
+data class EnumUnitVariant(
+    override val context: ParseTree,
+    override val filename: String,
+    val identifier: String,
+) : EnumVariantDefinition()
 
 data class ScriptDeclarationNode(
     override val context: ParseTree,

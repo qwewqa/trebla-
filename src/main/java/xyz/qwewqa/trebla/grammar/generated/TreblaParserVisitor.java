@@ -97,6 +97,42 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStructField(TreblaParser.StructFieldContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TreblaParser#enumDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumDeclaration(TreblaParser.EnumDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#enumVariants}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumVariants(TreblaParser.EnumVariantsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#enumVariant}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumVariant(TreblaParser.EnumVariantContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#enumVariantDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumVariantDefinition(TreblaParser.EnumVariantDefinitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#enumStruct}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumStruct(TreblaParser.EnumStructContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#enumValue}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumValue(TreblaParser.EnumValueContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TreblaParser#scriptDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

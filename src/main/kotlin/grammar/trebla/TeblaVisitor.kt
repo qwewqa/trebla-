@@ -89,6 +89,51 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         return ParametersNode(ctx, filename, ctx.parameter().visit() as List<ParameterNode>)
     }
 
+    override fun visitEnumDeclaration(ctx: TreblaParser.EnumDeclarationContext): TreblaNode {
+        return EnumDeclarationNode(
+            ctx, filename,
+            ctx.modifierList().visit() as ModifierListNode,
+            ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
+            ctx.enumVariants().enumVariant().visit() as List<EnumVariant>,
+        )
+    }
+
+    override fun visitEnumVariant(ctx: TreblaParser.EnumVariantContext): TreblaNode {
+        return EnumVariant(
+            ctx,
+            filename,
+            ctx.enumVariantDefinition().visit() as EnumVariantDefinition,
+            ctx.IntegerLiteral()?.text?.filter { it != '_' }?.toInt()
+        )
+    }
+
+    override fun visitEnumValue(ctx: TreblaParser.EnumValueContext): TreblaNode {
+        return EnumValueVariant(
+            ctx, filename,
+            ctx.simpleIdentifier().text,
+        )
+    }
+
+    override fun visitEnumStruct(ctx: TreblaParser.EnumStructContext): TreblaNode {
+        return if (ctx.structFields().LPAREN().exist) {
+            EnumStructVariant(
+                ctx, filename,
+                StructDeclarationNode(
+                    ctx, filename,
+                    ModifierListNode(ctx, filename, emptyList()),
+                    ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
+                    ParametersNode(ctx, filename, emptyList()),
+                    ctx.structFields().structField().visit() as List<StructFieldNode>,
+                )
+            )
+        } else {
+            EnumUnitVariant(
+                ctx, filename,
+                ctx.simpleIdentifier().text,
+            )
+        }
+    }
+
     override fun visitScriptDeclaration(ctx: TreblaParser.ScriptDeclarationContext): TreblaNode {
         return ScriptDeclarationNode(
             ctx, filename,

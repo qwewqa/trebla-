@@ -150,6 +150,66 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitStructField(TreblaParser.StructFieldContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#enumDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumDeclaration(TreblaParser.EnumDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#enumDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumDeclaration(TreblaParser.EnumDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#enumVariants}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumVariants(TreblaParser.EnumVariantsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#enumVariants}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumVariants(TreblaParser.EnumVariantsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#enumVariant}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumVariant(TreblaParser.EnumVariantContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#enumVariant}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumVariant(TreblaParser.EnumVariantContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#enumVariantDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumVariantDefinition(TreblaParser.EnumVariantDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#enumVariantDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumVariantDefinition(TreblaParser.EnumVariantDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#enumStruct}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumStruct(TreblaParser.EnumStructContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#enumStruct}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumStruct(TreblaParser.EnumStructContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#enumValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumValue(TreblaParser.EnumValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#enumValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumValue(TreblaParser.EnumValueContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#scriptDeclaration}.
 	 * @param ctx the parse tree
 	 */

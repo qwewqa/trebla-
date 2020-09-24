@@ -35,6 +35,7 @@ topLevelObject
     | propertyDeclaration
     | letDeclaration
     | structDeclaration
+    | enumDeclaration
     | scriptDeclaration
     | archetypeDeclaration
     ;
@@ -84,6 +85,31 @@ structFields
 
 structField
     : EMBED? parameter
+    ;
+
+enumDeclaration
+    : modifierList ENUM NL* simpleIdentifier NL*
+    enumVariants
+    ;
+
+enumVariants
+    : LCURL anysemi* (enumVariant (anysemi+ enumVariant?)*)? RCURL
+    ;
+
+enumVariant
+    : enumVariantDefinition (NL* ASSIGNMENT NL* IntegerLiteral)?
+    ;
+
+enumVariantDefinition
+    : enumValue | enumStruct
+    ;
+
+enumStruct
+    : simpleIdentifier NL* structFields
+    ;
+
+enumValue
+    : VAL NL* simpleIdentifier
     ;
 
 scriptDeclaration
@@ -173,6 +199,7 @@ declaration
     | propertyDeclaration
     | letDeclaration
     | structDeclaration
+    | enumDeclaration
     ;
 
 expression
