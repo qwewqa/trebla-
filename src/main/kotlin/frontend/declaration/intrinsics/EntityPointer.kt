@@ -7,11 +7,7 @@ import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
 class EntityPointer(context: Context) :
-    SimpleDeclaration(
-        context,
-        "EntityPointer",
-        TypeType
-    ),
+    BuiltinType("EntityPointer"),
     Subscriptable by SubscriptableDelegate(
         context,
         {
@@ -20,10 +16,7 @@ class EntityPointer(context: Context) :
         {
             SpecificEntityPointerType(context, "script".cast())
         }
-    ),
-    Type {
-    override val commonName = "EntityPointer"
-}
+    )
 
 class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration) :
     Callable,
@@ -91,7 +84,7 @@ class EntityPointerValue(
         return (script.dataProperties[name] ?: script.sharedProperties[name] ?: script.sharedLetDeclarations[name])?.let {
             // This could indeed leak some values in an entity like functions (via a let declaration or within a struct)
             // Trying to use such a value would lead to undefined behavior
-            if (it is Allocated) it.offsetReallocate(offset.raw)
+            if (it is Allocated) it.toEntityArrayValue(offset.raw)
             else it
         }
     }
@@ -109,8 +102,8 @@ class EntityPointerValue(
         offset.copyFrom(other.offset, context)
     }
 
-    override fun offsetReallocate(offset: RawValue): Allocated = EntityPointerValue(
-        this.offset.offsetReallocate(offset),
+    override fun toEntityArrayValue(offset: RawValue): Allocated = EntityPointerValue(
+        this.offset.toEntityArrayValue(offset),
         type,
         context
     )

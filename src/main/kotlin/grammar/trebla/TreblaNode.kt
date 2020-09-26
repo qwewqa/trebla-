@@ -3,8 +3,6 @@ package xyz.qwewqa.trebla.grammar.trebla
 import org.antlr.v4.runtime.tree.ParseTree
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.Signature
-import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.StringValue
@@ -119,38 +117,43 @@ data class EnumDeclarationNode(
     override val filename: String,
     val modifiers: ModifierListNode,
     val identifier: SimpleIdentifierNode,
-    val variants: List<EnumVariant>
+    val variants: List<EnumVariantNode>
 ) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
     override fun parse(context: Context): Declaration {
-        TODO()
+        return EnumDeclaration(
+            this,
+            context,
+        )
     }
 }
 
-data class EnumVariant(
+data class EnumVariantNode(
     override val context: ParseTree,
     override val filename: String,
-    val definition: EnumVariantDefinition,
+    val definition: EnumVariantDefinitionNode,
     val ordinal: Int?,
 ) : TreblaNode
-sealed class EnumVariantDefinition : TreblaNode
 
-data class EnumStructVariant(
+sealed class EnumVariantDefinitionNode : TreblaNode
+
+data class EnumStructVariantNode(
     override val context: ParseTree,
     override val filename: String,
-    val value: StructDeclarationNode,
-) : EnumVariantDefinition()
+    val identifier: SimpleIdentifierNode,
+    val fields: List<StructFieldNode>,
+) : EnumVariantDefinitionNode()
 
-data class EnumValueVariant(
+data class EnumValueVariantNode(
     override val context: ParseTree,
     override val filename: String,
-    val identifier: String,
-) : EnumVariantDefinition()
+    val identifier: SimpleIdentifierNode,
+) : EnumVariantDefinitionNode()
 
-data class EnumUnitVariant(
+data class EnumUnitVariantNode(
     override val context: ParseTree,
     override val filename: String,
-    val identifier: String,
-) : EnumVariantDefinition()
+    val identifier: SimpleIdentifierNode,
+) : EnumVariantDefinitionNode()
 
 data class ScriptDeclarationNode(
     override val context: ParseTree,

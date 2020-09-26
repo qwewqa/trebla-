@@ -24,8 +24,6 @@ class StructDeclaration(
 
     override val bindingScope = parentContext.scope
 
-    // Eventually embedding a struct in another struct might be supported, like in Go
-    // In this case, the binding hierarchy would include it.
     override val bindingHierarchy = if (parentType != null) listOf(listOf(parentType)) else listOf(listOf(StructType))
 
     override val loadEarly = true
@@ -123,10 +121,10 @@ data class NormalStructValue(
 
     override fun getMember(name: String, accessingContext: Context?): Value? = fields[name] ?: type.typeParameters[name]
 
-    override fun offsetReallocate(offset: RawValue): Allocated {
+    override fun toEntityArrayValue(offset: RawValue): Allocated {
         return NormalStructValue(
             fields.mapValues { (_, v) ->
-                (v as? Allocated)?.offsetReallocate(offset) ?: v
+                (v as? Allocated)?.toEntityArrayValue(offset) ?: v
             },
             type,
         )
@@ -143,44 +141,18 @@ data class RawStructValue(
     }
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): RawStructValue {
-        val newValue = AllocatedRawValue(allocator.allocate())
-        context.statements += AllocatedValueAssignment(newValue, raw)
-        return RawStructValue(newValue, type)
+        return RawStructValue(raw.copyTo(allocator, context), type)
     }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
         if (other !is RawStructValue || type != other.type) compileError("Incompatible assigment.")
-        when (raw) {
-            is AllocatedRawValue -> context.statements += AllocatedValueAssignment(raw, other.raw)
-            else -> {
-                val thisValue = raw.toIR().tryConstexprEvaluate()
-                val otherValue = other.raw.toIR().tryConstexprEvaluate()
-                if (thisValue == null || thisValue != otherValue) compileError("Value is not mutable.")
-            }
-        }
+        raw.copyFrom(other.raw, context)
     }
 
-    override fun offsetReallocate(offset: RawValue): RawStructValue {
-        return when (raw) {
-            is AllocatedRawValue -> when (raw.allocation) {
-                is ConcreteAllocation -> RawStructValue(
-                    AllocatedRawValue(
-                        DynamicAllocation(
-                            when (this.raw.allocation.block) {
-                                ENTITY_SHARED_MEMORY_BLOCK -> ENTITY_SHARED_MEMORY_ARRAY_BLOCK
-                                ENTITY_DATA_BLOCK -> ENTITY_DATA_ARRAY_BLOCK
-                                else -> compileError("Only data and shared allocated structs can be reallocated.")
-                            }.toLiteralRawValue(),
-                            offset,
-                            raw.allocation.index.toLiteralRawValue()
-                        )
-                    ),
-                    type
-                )
-                else -> compileError("Reallocation not available for dynamic or temporary allocated raw structs.")
-            }
-            is LiteralRawValue -> this
-            else -> compileError("Reallocation only available for allocated or constant raw structs.")
-        }
+    override fun toEntityArrayValue(offset: RawValue): RawStructValue {
+        return RawStructValue(
+            raw.toEntityArrayValue(offset),
+            type
+        )
     }
 }

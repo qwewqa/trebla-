@@ -4,21 +4,14 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.MemberAccessor
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
-import xyz.qwewqa.trebla.frontend.declaration.CallableType
-import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.declaration.TypeType
-import xyz.qwewqa.trebla.frontend.declaration.UnionType
+import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.Callable
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.ValueArgument
 
 class Range(context: Context) :
-    SimpleDeclaration(
-        context,
-        "Range",
-        TypeType
-    ),
+    BuiltinType("Range"),
     Callable by CallableDelegate(
         context,
         {
@@ -40,10 +33,7 @@ class Range(context: Context) :
             if (step == 0.0) compileError("Range step must not be zero.")
             RangeValue(context, start.isIntOrCompileError(), stop.isIntOrCompileError(), step.isIntOrCompileError())
         }
-    ),
-    Type {
-    override val commonName = "Pointer"
-}
+    )
 
 class RangeValue(
     val context: Context,

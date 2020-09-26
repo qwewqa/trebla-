@@ -10,11 +10,7 @@ import xyz.qwewqa.trebla.frontend.expression.*
 import kotlin.math.roundToInt
 
 class TreblaList(context: Context) :
-    SimpleDeclaration(
-        context,
-        "List",
-        TypeType
-    ),
+    BuiltinType("List"),
     Subscriptable by SubscriptableDelegate(
         context,
         {
@@ -24,10 +20,7 @@ class TreblaList(context: Context) :
             val type = "type".cast<Type>()
             UnsizedListType(type, context)
         },
-    ),
-    Type {
-    override val commonName = "List"
-}
+    )
 
 class ListOf(context: Context) :
     SimpleDeclaration(
@@ -136,12 +129,12 @@ class ListValue(val parentContext: Context, override val type: SizedListType, va
         return values[index]
     }
 
-    override fun offsetReallocate(offset: RawValue): Allocated =
+    override fun toEntityArrayValue(offset: RawValue): Allocated =
         ListValue(
             parentContext,
             type,
             values.map {
-                (it as? Allocated)?.offsetReallocate(offset)
+                (it as? Allocated)?.toEntityArrayValue(offset)
                     ?: compileError("Reallocation not possible for lists containing non-allocated values")
             }
         )

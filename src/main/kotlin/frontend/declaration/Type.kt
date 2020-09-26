@@ -11,6 +11,8 @@ interface Type : Value {
         return this == other || other.bindingHierarchy.flatten().any { accepts(it) }
     }
 
+    override val type: Type get() = TypeType
+
     override val commonName: String
 
     override fun coerceImmutable() = this
@@ -30,7 +32,6 @@ interface Type : Value {
 fun Type.accepts(other: Value) = accepts(other.type)
 
 open class BuiltinType(override val identifier: String) : Type, Declaration {
-    override val type: Type = TypeType
     override val parentContext: Context? = null
 
     override val signature = Signature.Default

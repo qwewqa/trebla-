@@ -7,11 +7,7 @@ import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
 class Pointer(context: Context) :
-    SimpleDeclaration(
-        context,
-        "Pointer",
-        TypeType
-    ),
+    BuiltinType("Pointer"),
     Subscriptable by SubscriptableDelegate(
         context,
         {
@@ -20,10 +16,7 @@ class Pointer(context: Context) :
         {
             SpecificPointerType(context, "type".cast())
         }
-    ),
-    Type {
-    override val commonName = "Pointer"
-}
+    )
 
 class SpecificPointerType(context: Context, val insideType: Type) :
     Callable,
@@ -125,11 +118,11 @@ class PointerValue(
     // In the case of local pointers, accessing this won't exactly give a meaningful result
     // (Entity Memory is different if you access the pointer from another entity)
     // Global pointers (to shared/data) are still meaningful, so this is allowed.
-    override fun offsetReallocate(offset: RawValue): Allocated = PointerValue(
+    override fun toEntityArrayValue(offset: RawValue): Allocated = PointerValue(
         context,
         type,
-        this.block.offsetReallocate(offset),
-        this.index.offsetReallocate(offset),
+        this.block.toEntityArrayValue(offset),
+        this.index.toEntityArrayValue(offset),
     )
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = PointerValue(

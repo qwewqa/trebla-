@@ -2,6 +2,7 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.backend.ir.*
+import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 
@@ -91,3 +92,42 @@ fun RawValue.toBooleanStruct(context: Context) = RawStructValue(
     this,
     context.booleanType
 )
+
+fun RawValue.copyFrom(other: RawValue, context: ExecutionContext) {
+    when (this) {
+        is AllocatedRawValue -> context.statements += AllocatedValueAssignment(this, other)
+        else -> {
+            val thisValue = this.toIR().tryConstexprEvaluate()
+            val otherValue = other.toIR().tryConstexprEvaluate()
+            if (thisValue == null || thisValue != otherValue) compileError("Value is not mutable.")
+        }
+    }
+}
+
+fun RawValue.copyTo(allocator: Allocator, context: ExecutionContext): AllocatedRawValue {
+    val newValue = AllocatedRawValue(allocator.allocate())
+    context.statements += AllocatedValueAssignment(newValue, this)
+    return newValue
+}
+
+fun RawValue.toEntityArrayValue(offset: RawValue): RawValue {
+    return when (this) {
+        is AllocatedRawValue -> when (allocation) {
+            is ConcreteAllocation ->
+                AllocatedRawValue(
+                    DynamicAllocation(
+                        when (allocation.block) {
+                            ENTITY_SHARED_MEMORY_BLOCK -> ENTITY_SHARED_MEMORY_ARRAY_BLOCK
+                            ENTITY_DATA_BLOCK -> ENTITY_DATA_ARRAY_BLOCK
+                            else -> compileError("Only data and shared allocated structs can be reallocated.")
+                        }.toLiteralRawValue(),
+                        offset,
+                        this.allocation.index.toLiteralRawValue()
+                    )
+                )
+            else -> compileError("Reallocation not available for dynamic or temporary allocated raw structs.")
+        }
+        is LiteralRawValue -> this
+        else -> compileError("Reallocation only available for allocated or constant raw structs.")
+    }
+}

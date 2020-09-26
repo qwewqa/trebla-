@@ -7,11 +7,7 @@ import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
 class Box(context: Context) :
-    SimpleDeclaration(
-        context,
-        "Box",
-        TypeType
-    ),
+    BuiltinType("Box"),
     Subscriptable by SubscriptableDelegate(
         context,
         {
@@ -22,10 +18,7 @@ class Box(context: Context) :
                 ("type".cast<Type>() as? Allocatable) ?: compileError("Only box of allocatable types are allowed.")
             SpecificBoxType(context, type)
         }
-    ),
-    Type {
-    override val commonName = "Box"
-}
+    )
 
 class BoxValue(
     val context: Context,
@@ -55,7 +48,7 @@ class BoxValue(
         compileError("Box cannot be mutated.")
     }
 
-    override fun offsetReallocate(offset: RawValue): Allocated {
+    override fun toEntityArrayValue(offset: RawValue): Allocated {
         // Returns a pointer, since a box is really only meaningful when local.
         // Effectively does the same thing as turning this into a (nonlocal) pointer
         return PointerValue(
@@ -203,7 +196,7 @@ class TransientBoxValue(val context: Context, val inside: Allocated) : Allocated
         compileError("Assignment to a transient box is not allowed.")
     }
 
-    override fun offsetReallocate(offset: RawValue): Allocated {
+    override fun toEntityArrayValue(offset: RawValue): Allocated {
         // The only place this should be called is as the result of a property
         // But after copying (copyOn), this should have turned into a normal box
         error("Unexpected call.")

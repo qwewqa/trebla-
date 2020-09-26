@@ -94,42 +94,37 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
             ctx, filename,
             ctx.modifierList().visit() as ModifierListNode,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
-            ctx.enumVariants().enumVariant().visit() as List<EnumVariant>,
+            ctx.enumVariants().enumVariant().visit() as List<EnumVariantNode>,
         )
     }
 
     override fun visitEnumVariant(ctx: TreblaParser.EnumVariantContext): TreblaNode {
-        return EnumVariant(
+        return EnumVariantNode(
             ctx,
             filename,
-            ctx.enumVariantDefinition().visit() as EnumVariantDefinition,
+            ctx.enumVariantDefinition().visit() as EnumVariantDefinitionNode,
             ctx.IntegerLiteral()?.text?.filter { it != '_' }?.toInt()
         )
     }
 
     override fun visitEnumValue(ctx: TreblaParser.EnumValueContext): TreblaNode {
-        return EnumValueVariant(
+        return EnumValueVariantNode(
             ctx, filename,
-            ctx.simpleIdentifier().text,
+            ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
         )
     }
 
     override fun visitEnumStruct(ctx: TreblaParser.EnumStructContext): TreblaNode {
         return if (ctx.structFields().LPAREN().exist) {
-            EnumStructVariant(
+            EnumStructVariantNode(
                 ctx, filename,
-                StructDeclarationNode(
-                    ctx, filename,
-                    ModifierListNode(ctx, filename, emptyList()),
-                    ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
-                    ParametersNode(ctx, filename, emptyList()),
-                    ctx.structFields().structField().visit() as List<StructFieldNode>,
-                )
+                ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
+                ctx.structFields().structField().visit() as List<StructFieldNode>,
             )
         } else {
-            EnumUnitVariant(
+            EnumUnitVariantNode(
                 ctx, filename,
-                ctx.simpleIdentifier().text,
+                ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
             )
         }
     }

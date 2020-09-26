@@ -69,7 +69,7 @@ interface Allocated : Value {
      * Working assumption is that both shared and data have a size of 32 * entities, so only a single offset is needed.
      * [offset] can then just be a Get call from an already computed 32*entities rather than multiplying each time.
      */
-    fun offsetReallocate(offset: RawValue): Allocated
+    fun toEntityArrayValue(offset: RawValue): Allocated
 }
 
 /**
