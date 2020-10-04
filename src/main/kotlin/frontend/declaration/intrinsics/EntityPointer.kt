@@ -75,8 +75,7 @@ class EntityPointerValue(
     val offset: RawStructValue, // this is the offset, not index (offset = index * 32 currently)
     override val type: SpecificEntityPointerType,
     val context: Context?,
-) : MemberAccessor,
-    Allocated {
+) : Allocated {
     val script = type.script
 
     override fun getMember(name: String, accessingContext: Context?): Value? {

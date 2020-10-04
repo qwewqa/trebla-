@@ -35,7 +35,7 @@ class MemberAccessExpression(override val node: UnaryFunctionNode, op: MemberAcc
  * 4. The value in the the scope of the type of this value that receives the type of this value (bound; public only)
  */
 fun Value.resolveMember(name: String, context: Context?): Value? =
-    (this as? MemberAccessor)?.getMember(name, context)
+    getMember(name, context)
         ?: context?.let { (this as? Type)?.resolveBinding(name, context.scope, Visibility.PRIVATE) }
         ?: context?.let { type.resolveBinding(name, context.scope, Visibility.PRIVATE)?.tryBind(this, context) }
         ?: type.bindingScope?.let { typeScope ->

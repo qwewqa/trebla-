@@ -28,6 +28,7 @@ interface Value : Entity {
     fun coerceImmutable(): Value? = null
 
     fun repr() = toString()
+    fun getMember(name: String, accessingContext: Context?): Value? = null
 }
 
 interface Allocatable : Type {

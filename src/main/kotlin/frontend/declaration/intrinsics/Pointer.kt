@@ -73,7 +73,6 @@ class PointerValue(
     val block: RawStructValue,
     val index: RawStructValue,
 ) : Allocated,
-    MemberAccessor,
     Dereferenceable,
     Subscriptable by SubscriptableDelegate(
         context,

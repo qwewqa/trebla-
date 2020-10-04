@@ -95,7 +95,7 @@ sealed class StructValue(
 data class NormalStructValue(
     val fields: Map<String, Value>,
     override val type: StructDeclaration,
-) : StructValue(type), MemberAccessor {
+) : StructValue(type) {
     override fun coerceImmutable(): NormalStructValue? =
         NormalStructValue(fields.mapValues { (_, v) -> v.coerceImmutable() ?: return null }, type)
 
@@ -136,8 +136,7 @@ data class RawStructValue(
     override val type: StructDeclaration,
 ) : StructValue(type) {
     override fun coerceImmutable(): RawStructValue? {
-        val immutableRaw = raw.toIR().tryConstexprEvaluate()?.toLiteralRawValue() ?: return null
-        return RawStructValue(immutableRaw, type)
+        return RawStructValue(raw.coerceImmutable() ?: return null, type)
     }
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): RawStructValue {

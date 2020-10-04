@@ -10,7 +10,7 @@ import xyz.qwewqa.trebla.frontend.expression.*
  * A member access yields [BuiltinFunction] callable which may be called with an arbitrary number of arguments,
  * which must be of a raw type.
  */
-object Builtins : MemberAccessor, Declaration {
+object Builtins : Declaration {
     override val parentContext: Context? = null
     override val type = AnyType
 
@@ -29,7 +29,7 @@ object Builtins : MemberAccessor, Declaration {
  * A builtin function.
  * Builtin functions are part of Sonolus.
  */
-class BuiltinFunction(val function: SonoFunction) : Callable, Value, MemberAccessor {
+class BuiltinFunction(val function: SonoFunction) : Callable, Value {
     override val type = CallableType
     val bindingContext: Context? = null
 

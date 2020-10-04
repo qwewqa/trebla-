@@ -131,3 +131,5 @@ fun RawValue.toEntityArrayValue(offset: RawValue): RawValue {
         else -> compileError("Reallocation only available for allocated or constant raw structs.")
     }
 }
+
+fun RawValue.coerceImmutable() = toIR().tryConstexprEvaluate()?.toLiteralRawValue()

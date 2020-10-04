@@ -41,8 +41,7 @@ class ListOf(context: Context) :
         },
     )
 
-data class UnsizedListType(val containedType: Type, val context: Context) :
-    Type, MemberAccessor, Subscriptable {
+data class UnsizedListType(val containedType: Type, val context: Context) : Type, Subscriptable {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(context.getFullyQualified("std", "List") as Type))
 
@@ -70,8 +69,7 @@ data class UnsizedListType(val containedType: Type, val context: Context) :
     }
 }
 
-data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val context: Context) :
-    Type, Allocatable, MemberAccessor {
+data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val context: Context) : Type, Allocatable {
     override val type = TypeType
     override val bindingHierarchy = listOf(listOf(unsizedType))
     val containedType = unsizedType.containedType
@@ -111,7 +109,6 @@ data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val co
 }
 
 class ListValue(val parentContext: Context, override val type: SizedListType, val values: List<Value>) : Allocated,
-    MemberAccessor,
     Subscriptable {
     val bindingContext = parentContext
 

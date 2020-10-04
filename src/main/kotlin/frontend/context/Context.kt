@@ -17,7 +17,7 @@ import xyz.qwewqa.trebla.grammar.trebla.StatementNode
 /**
  * A context contains declarations, which are stored in its scope.
  */
-interface Context : MemberAccessor {
+interface Context : Value {
     val parentContext: Context?
     val source: Entity? get() = null
 

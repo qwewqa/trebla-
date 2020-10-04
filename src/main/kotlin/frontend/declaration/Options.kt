@@ -5,8 +5,7 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.AllocatedRawValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 
-class OptionsAccessor(override val parentContext: Context) : Declaration,
-    MemberAccessor {
+class OptionsAccessor(override val parentContext: Context) : Declaration {
     override val identifier = "options"
     override val type = AnyType
     override val signature = Signature.Default

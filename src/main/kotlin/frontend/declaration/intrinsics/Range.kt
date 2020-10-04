@@ -2,7 +2,6 @@ package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.MemberAccessor
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.Callable
@@ -40,7 +39,7 @@ class RangeValue(
     val start: Int,
     val stop: Int,
     val step: Int,
-) : MemberAccessor,
+) : Value,
     Callable by CallableDelegate(
         context,
         {

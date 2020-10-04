@@ -11,7 +11,7 @@ class Package(
     val identifier: List<String>,
     override val parentContext: GlobalContext,
     override val node: TreblaNode? = null,
-) : GlobalAllocatorContext, MemberAccessor {
+) : GlobalAllocatorContext {
     override val globalContext: GlobalContext = parentContext.globalContext
     override val type = PackageType
     override val bindingContext: Context = parentContext

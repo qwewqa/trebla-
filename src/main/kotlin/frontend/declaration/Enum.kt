@@ -10,8 +10,7 @@ class EnumDeclaration(
     override val parentContext: Context,
 ) : Declaration,
     Type,
-    Allocatable,
-    MemberAccessor {
+    Allocatable {
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility: Visibility
@@ -38,6 +37,7 @@ class EnumDeclaration(
                 currentOrdinal++
             }
         }
+
         fun process(ordinal: Int, definition: EnumVariantDefinitionNode) = when (definition) {
             is EnumUnitVariantNode -> EnumUnitVariantData(ordinal, definition, this)
             is EnumStructVariantNode -> EnumStructVariantData(ordinal, definition, this)
@@ -59,8 +59,16 @@ class EnumDeclaration(
         }
     }
 
+    val variantsByOrdinal by lazy {
+        variants.associateBy { it.ordinal }
+    }
+
+    val variantsByIdentifier by lazy {
+        variants.associateBy { it.identifier }
+    }
+
     val dataSize by lazy {
-        variants.sumBy { it.size }
+        variants.maxOfOrNull { it.size } ?: 0
     }
 
     override val allocationSize by lazy {
@@ -75,9 +83,8 @@ class EnumDeclaration(
         )
     }
 
-    override fun getMember(name: String, accessingContext: Context?): Value? {
-        TODO()
-    }
+    override fun getMember(name: String, accessingContext: Context?) =
+        variantsByIdentifier[name]?.getCase()
 
     init {
         node.modifiers.parse {
@@ -88,9 +95,27 @@ class EnumDeclaration(
 
 data class EnumValue(override val type: EnumDeclaration, val ordinal: RawValue, val data: List<RawValue>) : Value,
     Allocated {
+    override fun coerceImmutable(): Value? {
+        val ordinal = ordinal.coerceImmutable() ?: return null
+        val variant = type.variantsByOrdinal[ordinal.value.toInt()]
+            ?: compileError("Unexpected ordinal ${ordinal.value}.")
+        val dataSize = variant.size
+        val data = data.take(dataSize).map { it.coerceImmutable() ?: return null } +
+                List(data.size - dataSize) { LiteralRawValue(0.0) }
+        return EnumValue(type, ordinal, data)
+    }
+
+    /*
+    Copies (both to and from) could be optimized by not copying extraneous data values where
+    the variant is known at compile time, and this could be implemented in the future.
+     */
     override fun copyFrom(other: Value, context: ExecutionContext) {
+        if (other is EnumUnitVariant) {
+            copyFrom(other.value, context)
+            return
+        }
         if (other !is EnumValue || other.type != this.type) {
-            compileError("Incompatible assignment from ${other.type.commonName} to ${type.commonName}.")
+            compileError("Incompatible assignment to ${type.commonName} from ${other.type.commonName}.")
         }
         ordinal.copyFrom(other.ordinal, context)
         data.zip(other.data).forEach { (a, b) -> a.copyFrom(b, context) }
@@ -103,9 +128,60 @@ data class EnumValue(override val type: EnumDeclaration, val ordinal: RawValue, 
     override fun toEntityArrayValue(offset: RawValue): Allocated {
         return EnumValue(type, ordinal.toEntityArrayValue(offset), data.map { it.toEntityArrayValue(offset) })
     }
+
+    override fun getMember(name: String, accessingContext: Context?) = when (name) {
+        "ordinal" -> ordinal.toNumberStruct(type.parentContext)
+        else -> null
+    }
+}
+
+sealed class EnumVariant : Value {
+    abstract val data: EnumVariantData
+}
+
+// Also includes value variants
+data class EnumUnitVariant(override val data: EnumVariantData) : EnumVariant(), Allocated {
+    override val type = data.parentEnum
+
+    val value = EnumValue(
+        data.parentEnum,
+        data.ordinal.toLiteralRawValue(),
+        List(data.parentEnum.dataSize) { 0.toLiteralRawValue() },
+    )
+
+    override fun copyFrom(other: Value, context: ExecutionContext) {
+        compileError("Enum variants cannot be mutated.")
+    }
+
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated {
+        return value.copyTo(allocator, context)
+    }
+
+    override fun toEntityArrayValue(offset: RawValue): Allocated {
+        return value.toEntityArrayValue(offset)
+    }
+
+    override fun getMember(name: String, accessingContext: Context?) = when (name) {
+        "ordinal" -> data.ordinal.toLiteralRawValue().toNumberStruct(type.parentContext)
+        else -> null
+    }
+}
+
+data class EnumStructVariant(override val data: EnumStructVariantData) : EnumVariant(), Callable {
+    override val type = data.parentEnum
+
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+        TODO("Not yet implemented")
+    }
+
+    override fun getMember(name: String, accessingContext: Context?) = when (name) {
+        "ordinal" -> data.ordinal.toLiteralRawValue().toNumberStruct(type.parentContext)
+        else -> null
+    }
 }
 
 sealed class EnumVariantData(val parentEnum: EnumDeclaration) {
+    abstract val identifier: String
     abstract val ordinal: Int
 
     /**
@@ -114,11 +190,18 @@ sealed class EnumVariantData(val parentEnum: EnumDeclaration) {
     abstract val size: Int
 
     open val node: TreblaNode? = null
+
+    abstract fun getCase(): Value
 }
 
 class EnumNoneVariantData(parentEnum: EnumDeclaration) : EnumVariantData(parentEnum) {
+    override val identifier = "None"
     override val ordinal = 0
     override val size = 0
+
+    override fun getCase(): Value {
+        return EnumUnitVariant(this)
+    }
 }
 
 class EnumUnitVariantData(
@@ -127,7 +210,12 @@ class EnumUnitVariantData(
     parentEnum: EnumDeclaration,
 ) :
     EnumVariantData(parentEnum) {
+    override val identifier = node.identifier.value
     override val size = 0
+
+    override fun getCase(): Value {
+        return EnumUnitVariant(this)
+    }
 }
 
 class EnumValueVariantData(
@@ -135,9 +223,14 @@ class EnumValueVariantData(
     override val node: EnumValueVariantNode,
     parentEnum: EnumDeclaration,
 ) : EnumVariantData(parentEnum) {
+    override val identifier = node.identifier.value
     override val size = 0
     val value = parentEnum.parentContext.scope.find(node.identifier.value)
         ?: compileError("Unknown symbol ${node.identifier.value}", node.identifier)
+
+    override fun getCase(): Value {
+        return EnumUnitVariant(this)
+    }
 }
 
 /**
@@ -148,6 +241,8 @@ class EnumStructVariantData(
     override val node: EnumStructVariantNode,
     parentEnum: EnumDeclaration,
 ) : EnumVariantData(parentEnum) {
+    override val identifier = node.identifier.value
+
     val fields by lazy {
         node.fields.map { it.parameter }.parse(parentEnum.parentContext)
     }
@@ -156,5 +251,9 @@ class EnumStructVariantData(
         fields.map { it.type }.sumBy {
             (it as? Allocatable)?.allocationSize ?: compileError("Enum structs must have sized fields.", node)
         }
+    }
+
+    override fun getCase(): Value {
+        return EnumStructVariant(this)
     }
 }

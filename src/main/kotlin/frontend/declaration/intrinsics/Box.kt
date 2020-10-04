@@ -25,7 +25,7 @@ class BoxValue(
     override val type: SpecificBoxType,
     val block: Int,
     val index: Int,
-) : MemberAccessor, Dereferenceable, Allocated {
+) : Dereferenceable, Allocated {
     private val blockStruct = RawStructValue(block.toLiteralRawValue(), context.numberType)
     private val indexStruct = RawStructValue(index.toLiteralRawValue(), context.numberType)
 
