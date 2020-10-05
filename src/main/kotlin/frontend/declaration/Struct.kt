@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -75,6 +74,18 @@ class StructDeclaration(
         (it.type as? Allocatable)?.allocationSize ?: compileError("Struct has unsized members.")
     }
 
+    override fun fromFlat(values: List<RawValue>) = if (isRaw) {
+        RawStructValue(values[0], this)
+    } else {
+        var remaining = values
+        NormalStructValue(fields.associate {
+            val type = (it.type as? Allocatable) ?: compileError("Struct has unsized members.")
+            it.name to type
+                .fromFlat(remaining.take(type.allocationSize))
+                .also { remaining = remaining.drop(type.allocationSize) }
+        }, this)
+    }
+
     init {
         node.modifiers.parse {
             visibility = selectFromMap(visibilityModifiers) ?: Visibility.PUBLIC
@@ -129,6 +140,10 @@ data class NormalStructValue(
             type,
         )
     }
+
+    override fun flat() = fields.flatMap {
+        (it as? Allocated)?.flat() ?: compileError("Struct contains non allocated members and cannot be flattened.")
+    }
 }
 
 data class RawStructValue(
@@ -154,4 +169,6 @@ data class RawStructValue(
             type
         )
     }
+
+    override fun flat() = listOf(raw)
 }

@@ -42,6 +42,8 @@ interface Allocatable : Type {
      * The size this allocatable takes.
      */
     val allocationSize: Int
+
+    fun fromFlat(values: List<RawValue>): Allocated
 }
 
 /**
@@ -71,6 +73,8 @@ interface Allocated : Value {
      * [offset] can then just be a Get call from an already computed 32*entities rather than multiplying each time.
      */
     fun toEntityArrayValue(offset: RawValue): Allocated
+
+    fun flat(): List<RawValue>
 }
 
 /**

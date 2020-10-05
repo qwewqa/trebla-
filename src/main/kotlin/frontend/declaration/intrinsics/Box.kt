@@ -74,12 +74,20 @@ class BoxValue(
             )
         )
     }
+
+    override fun flat(): List<RawValue> {
+        TODO("Not yet implemented")
+    }
 }
 
 class SpecificBoxType(context: Context, val insideType: Allocatable) : Allocatable {
     override val type = TypeType
     val bindingContext = context
     override val allocationSize = insideType.allocationSize
+    override fun fromFlat(values: List<RawValue>): Allocated {
+        TODO("Not yet implemented")
+    }
+
     override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "Box") as Type))
 
     override val commonName = "Box"
@@ -201,11 +209,19 @@ class TransientBoxValue(val context: Context, val inside: Allocated) : Allocated
         // But after copying (copyOn), this should have turned into a normal box
         error("Unexpected call.")
     }
+
+    override fun flat(): List<RawValue> {
+        TODO("Not yet implemented")
+    }
 }
 
 object TransientBoxType : BuiltinType("TransientBox"), Allocatable {
     override val allocationSize: Int
         get() = compileError("A transient box is not sized.")
+
+    override fun fromFlat(values: List<RawValue>): Allocated {
+        TODO("Not yet implemented")
+    }
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         compileError("A transient box cannot be allocated.")

@@ -75,13 +75,17 @@ class EnumDeclaration(
         dataSize + 1
     }
 
-    override fun allocateOn(allocator: Allocator, context: Context): Allocated {
-        return EnumValue(
-            this,
-            AllocatedRawValue(allocator.allocate()),
-            List(dataSize) { AllocatedRawValue(allocator.allocate()) },
-        )
-    }
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated = EnumValue(
+        this,
+        AllocatedRawValue(allocator.allocate()),
+        List(dataSize) { AllocatedRawValue(allocator.allocate()) },
+    )
+
+    override fun fromFlat(values: List<RawValue>) = EnumValue(
+        this,
+        values[0],
+        values.drop(1)
+    )
 
     override fun getMember(name: String, accessingContext: Context?) =
         variantsByIdentifier[name]?.getCase()
@@ -133,6 +137,8 @@ data class EnumValue(override val type: EnumDeclaration, val ordinal: RawValue, 
         "ordinal" -> ordinal.toNumberStruct(type.parentContext)
         else -> null
     }
+
+    override fun flat() = listOf(ordinal) + data
 }
 
 sealed class EnumVariant : Value {
@@ -153,13 +159,11 @@ data class EnumUnitVariant(override val data: EnumVariantData) : EnumVariant(), 
         compileError("Enum variants cannot be mutated.")
     }
 
-    override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated {
-        return value.copyTo(allocator, context)
-    }
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = value.copyTo(allocator, context)
 
-    override fun toEntityArrayValue(offset: RawValue): Allocated {
-        return value.toEntityArrayValue(offset)
-    }
+    override fun toEntityArrayValue(offset: RawValue): Allocated = value.toEntityArrayValue(offset)
+
+    override fun flat(): List<RawValue> = value.flat()
 
     override fun getMember(name: String, accessingContext: Context?) = when (name) {
         "ordinal" -> data.ordinal.toLiteralRawValue().toNumberStruct(type.parentContext)

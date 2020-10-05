@@ -18,7 +18,7 @@ class EntityPointer(context: Context) :
         }
     )
 
-class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration) :
+class SpecificEntityPointerType(val context: Context, val script: ScriptDeclaration) :
     Callable,
     Allocatable {
 
@@ -54,17 +54,20 @@ class SpecificEntityPointerType(context: Context, val script: ScriptDeclaration)
         callableDelegate.callWith(arguments, callingContext)
 
     override val type = TypeType
-    val bindingContext = context
     override val allocationSize = 1
-    override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "EntityPointer") as Type))
+    override val bindingHierarchy = listOf(listOf(context.getFullyQualified("std", "EntityPointer") as Type))
 
-    override fun allocateOn(allocator: Allocator, context: Context): Allocated {
-        return EntityPointerValue(
-            RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
-            this,
-            context
-        )
-    }
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated = EntityPointerValue(
+        RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
+        this,
+        context
+    )
+
+    override fun fromFlat(values: List<RawValue>): Allocated = EntityPointerValue(
+        RawStructValue(values[0], context.numberType),
+        this,
+        context
+    )
 
     override fun equals(other: Any?) = other is SpecificEntityPointerType && other.script == script
     override fun hashCode() = script.hashCode()
@@ -106,4 +109,6 @@ class EntityPointerValue(
         type,
         context
     )
+
+    override fun flat(): List<RawValue> = listOf(offset.raw)
 }

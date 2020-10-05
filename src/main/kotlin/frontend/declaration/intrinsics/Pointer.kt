@@ -18,7 +18,7 @@ class Pointer(context: Context) :
         }
     )
 
-class SpecificPointerType(context: Context, val insideType: Type) :
+class SpecificPointerType(val context: Context, val insideType: Type) :
     Callable,
     Allocatable {
     private val callableDelegate = CallableDelegate(
@@ -46,25 +46,28 @@ class SpecificPointerType(context: Context, val insideType: Type) :
         callableDelegate.callWith(arguments, callingContext)
 
     override val type = TypeType
-    val bindingContext = context
     override val allocationSize = 2
-    override val bindingHierarchy = listOf(listOf(bindingContext.getFullyQualified("std", "Pointer") as Type))
+    override val bindingHierarchy = listOf(listOf(context.getFullyQualified("std", "Pointer") as Type))
 
-    override fun accepts(other: Type): Boolean {
-        return super.accepts(other) || (other is SpecificPointerType && insideType.accepts(other.insideType))
-    }
+    override fun accepts(other: Type): Boolean =
+        super.accepts(other) || (other is SpecificPointerType && insideType.accepts(other.insideType))
 
-    override fun allocateOn(allocator: Allocator, context: Context): Allocated {
-        return PointerValue(
-            context,
-            this,
-            RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
-            RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
-        )
-    }
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated = PointerValue(
+        this.context,
+        this,
+        RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
+        RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
+    )
 
     override fun equals(other: Any?) = other is SpecificPointerType && other.insideType == insideType
     override fun hashCode() = insideType.hashCode()
+
+    override fun fromFlat(values: List<RawValue>): Allocated = PointerValue(
+        this.context,
+        this,
+        RawStructValue(values[0], context.numberType),
+        RawStructValue(values[1], context.numberType),
+    )
 }
 
 class PointerValue(
@@ -135,6 +138,8 @@ class PointerValue(
         if (type.insideType !is Allocatable) compileError("Cannot dereference pointer to non-allocatable type")
         return type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
     }
+
+    override fun flat() = listOf(block.raw, index.raw)
 }
 
 interface Dereferenceable {

@@ -106,12 +106,19 @@ data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val co
             else -> null
         }
     }
+
+    override fun fromFlat(values: List<RawValue>): Allocated {
+        if (containedType !is Allocatable) {
+            // probably shouldn't happen since there'd be no way to even get a flat version
+            compileError("Unexpected list construction from flat.")
+        }
+        val chunks = values.chunked(containedType.allocationSize)
+        return ListValue(context, this, List(size) { containedType.fromFlat(chunks[it]) })
+    }
 }
 
 class ListValue(val parentContext: Context, override val type: SizedListType, val values: List<Value>) : Allocated,
     Subscriptable {
-    val bindingContext = parentContext
-
     override val subscriptParameters by lazy {
         listOf(
             Parameter("index", parentContext.numberType),
@@ -166,6 +173,10 @@ class ListValue(val parentContext: Context, override val type: SizedListType, va
             "get" to ListGet(parentContext, this),
             "size" to type.size.toStruct(parentContext)
         )
+    }
+
+    override fun flat() = values.flatMap {
+        (it as? Allocated)?.flat() ?: compileError("List has non allocated members and cannot be flattened.")
     }
 }
 
