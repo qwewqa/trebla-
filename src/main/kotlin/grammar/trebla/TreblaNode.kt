@@ -143,12 +143,6 @@ data class EnumStructVariantNode(
     val fields: List<StructFieldNode>,
 ) : EnumVariantDefinitionNode()
 
-data class EnumValueVariantNode(
-    override val context: ParseTree,
-    override val filename: String,
-    val identifier: SimpleIdentifierNode,
-) : EnumVariantDefinitionNode()
-
 data class EnumUnitVariantNode(
     override val context: ParseTree,
     override val filename: String,

@@ -100,16 +100,11 @@ enumVariant
     : enumVariantDefinition (NL* ASSIGNMENT NL* IntegerLiteral)?
     ;
 
+// Despire the fact that fields are just optional
+// In the visitor, this produces two different node types
+// Depending on whether there are parens (unit vs struct-like variant)
 enumVariantDefinition
-    : enumValue | enumStruct
-    ;
-
-enumStruct
     : simpleIdentifier NL* structFields
-    ;
-
-enumValue
-    : VAL NL* simpleIdentifier
     ;
 
 scriptDeclaration

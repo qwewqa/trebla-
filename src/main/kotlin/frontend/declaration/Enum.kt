@@ -41,7 +41,6 @@ class EnumDeclaration(
         fun process(ordinal: Int, definition: EnumVariantDefinitionNode) = when (definition) {
             is EnumUnitVariantNode -> EnumUnitVariantData(ordinal, definition, this)
             is EnumStructVariantNode -> EnumStructVariantData(ordinal, definition, this)
-            is EnumValueVariantNode -> EnumValueVariantData(ordinal, definition, this)
         }
         val (auto, explicit) = node.variants.partition { it.ordinal == null }
         (explicit.map {
@@ -145,7 +144,6 @@ sealed class EnumVariant : Value {
     abstract val data: EnumVariantData
 }
 
-// Also includes value variants
 data class EnumUnitVariant(override val data: EnumVariantData) : EnumVariant(), Allocated {
     override val type = data.parentEnum
 
@@ -216,21 +214,6 @@ class EnumUnitVariantData(
     EnumVariantData(parentEnum) {
     override val identifier = node.identifier.value
     override val size = 0
-
-    override fun getCase(): Value {
-        return EnumUnitVariant(this)
-    }
-}
-
-class EnumValueVariantData(
-    override val ordinal: Int,
-    override val node: EnumValueVariantNode,
-    parentEnum: EnumDeclaration,
-) : EnumVariantData(parentEnum) {
-    override val identifier = node.identifier.value
-    override val size = 0
-    val value = parentEnum.parentContext.scope.find(node.identifier.value)
-        ?: compileError("Unknown symbol ${node.identifier.value}", node.identifier)
 
     override fun getCase(): Value {
         return EnumUnitVariant(this)

@@ -107,14 +107,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         )
     }
 
-    override fun visitEnumValue(ctx: TreblaParser.EnumValueContext): TreblaNode {
-        return EnumValueVariantNode(
-            ctx, filename,
-            ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
-        )
-    }
-
-    override fun visitEnumStruct(ctx: TreblaParser.EnumStructContext): TreblaNode {
+    override fun visitEnumVariantDefinition(ctx: TreblaParser.EnumVariantDefinitionContext): TreblaNode {
         return if (ctx.structFields().LPAREN().exist) {
             EnumStructVariantNode(
                 ctx, filename,

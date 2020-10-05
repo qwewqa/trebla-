@@ -190,26 +190,6 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitEnumVariantDefinition(TreblaParser.EnumVariantDefinitionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TreblaParser#enumStruct}.
-	 * @param ctx the parse tree
-	 */
-	void enterEnumStruct(TreblaParser.EnumStructContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#enumStruct}.
-	 * @param ctx the parse tree
-	 */
-	void exitEnumStruct(TreblaParser.EnumStructContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#enumValue}.
-	 * @param ctx the parse tree
-	 */
-	void enterEnumValue(TreblaParser.EnumValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#enumValue}.
-	 * @param ctx the parse tree
-	 */
-	void exitEnumValue(TreblaParser.EnumValueContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TreblaParser#scriptDeclaration}.
 	 * @param ctx the parse tree
 	 */

@@ -234,30 +234,6 @@ public class TreblaParserBaseListener implements TreblaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEnumStruct(TreblaParser.EnumStructContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEnumStruct(TreblaParser.EnumStructContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEnumValue(TreblaParser.EnumValueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEnumValue(TreblaParser.EnumValueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterScriptDeclaration(TreblaParser.ScriptDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
