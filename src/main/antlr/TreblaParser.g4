@@ -289,10 +289,23 @@ ifExpression
     ;
 
 whenExpression
-    : CONST? WHEN NL* LCURL NL* ((whenEntry | whenElseEntry) NL*)* RCURL
+    : CONST? WHEN NL* LCURL NL* (whenEntry NL*)* RCURL
+    ;
+
+whenMatchExpression
+    : WHEN NL* LPAREN expression RPAREN NL*
+    LCURL NL* (whenMatchEntry NL*)* RCURL
     ;
 
 whenEntry
+    : whenConditionalEntry | whenElseEntry
+    ;
+
+whenMatchEntry
+    : whenMatchVariantEntry | whenElseEntry
+    ;
+
+whenConditionalEntry
     : expression NL* ARROW NL* controlStructureBody
     ;
 
@@ -300,12 +313,7 @@ whenElseEntry
     : ELSE NL* ARROW NL* controlStructureBody
     ;
 
-whenMatchExpression
-    : WHEN NL* LPAREN expression RPAREN NL*
-    LCURL NL* ((whenMatchEntry | whenElseEntry) NL*)* RCURL
-    ;
-
-whenMatchEntry
+whenMatchVariantEntry
     : IS NL* expression NL* (AS NL* destructuringTuple)? NL* ARROW NL* controlStructureBody
     ;
 

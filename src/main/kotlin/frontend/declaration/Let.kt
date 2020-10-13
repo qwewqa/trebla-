@@ -33,6 +33,9 @@ class LetDeclaration(
     }
 
     override fun applyTo(context: Context): UnitValue {
+        if (identifier.all { it == '_' }) {
+            compileError("All underscore identifiers are reserved.")
+        }
         context.scope.addLazy(
             lazy {
                 val value = node.expression.parseAndApplyTo(context)

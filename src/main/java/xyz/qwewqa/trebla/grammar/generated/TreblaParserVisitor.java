@@ -355,11 +355,29 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWhenExpression(TreblaParser.WhenExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TreblaParser#whenMatchExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TreblaParser#whenEntry}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitWhenEntry(TreblaParser.WhenEntryContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#whenMatchEntry}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#whenConditionalEntry}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhenConditionalEntry(TreblaParser.WhenConditionalEntryContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TreblaParser#whenElseEntry}.
 	 * @param ctx the parse tree
@@ -367,17 +385,11 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWhenElseEntry(TreblaParser.WhenElseEntryContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TreblaParser#whenMatchExpression}.
+	 * Visit a parse tree produced by {@link TreblaParser#whenMatchVariantEntry}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#whenMatchEntry}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx);
+	T visitWhenMatchVariantEntry(TreblaParser.WhenMatchVariantEntryContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TreblaParser#destructuringTuple}.
 	 * @param ctx the parse tree

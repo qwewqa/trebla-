@@ -3,7 +3,8 @@ package xyz.qwewqa.trebla.frontend.expression
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.grammar.trebla.WhenEntryNode
+import xyz.qwewqa.trebla.grammar.trebla.WhenConditionalEntryNode
+import xyz.qwewqa.trebla.grammar.trebla.WhenElseEntryNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenExpressionNode
 
 class WhenExpression(override val node: WhenExpressionNode) : Expression {
@@ -18,7 +19,7 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
         context.statements += IRRawValue(
             conditionals.foldRight(elseContext) { entry, prev ->
                 val conditionContext = SimpleExecutionContext(context)
-                val condition = entry.condition!!.parseAndApplyTo(conditionContext).asBooleanStruct(context)
+                val condition = entry.condition.parseAndApplyTo(conditionContext).asBooleanStruct(context)
                 SonoFunction.If.calledWith(
                     SonoFunction.Execute.calledWith(
                         conditionContext.toIR(),
@@ -37,7 +38,7 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
     private fun applyConstant(context: Context): Value {
         val (conditionals, default) = getEntries()
         conditionals.forEach { entry ->
-            if (entry.condition!!.parseAndEvaluateConstantBoolean(context)) {
+            if (entry.condition.parseAndEvaluateConstantBoolean(context)) {
                 return entry.body.evaluateInChildOf(context)
             }
         }
@@ -45,12 +46,11 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
         compileError("Const when expression has no default and no conditions were satisfied.")
     }
 
-    private fun getEntries(): Pair<List<WhenEntryNode>, WhenEntryNode?> {
-        val entries = node.entries.groupBy { it.condition != null }
-        val conditionals = entries[true] ?: emptyList()
-        val default = entries[false]?.also {
+    private fun getEntries(): Pair<List<WhenConditionalEntryNode>, WhenElseEntryNode?> {
+        val conditionals = node.entries.filterIsInstance<WhenConditionalEntryNode>()
+        val default = node.entries.filterIsInstance<WhenElseEntryNode>().also {
             if (it.size > 1) compileError("when expression should only have one default.")
-        }?.firstOrNull()
+        }.firstOrNull()
         return conditionals to default
     }
 }

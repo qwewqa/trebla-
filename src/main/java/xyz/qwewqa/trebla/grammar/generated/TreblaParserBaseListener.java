@@ -702,6 +702,18 @@ public class TreblaParserBaseListener implements TreblaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterWhenEntry(TreblaParser.WhenEntryContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -709,6 +721,30 @@ public class TreblaParserBaseListener implements TreblaParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitWhenEntry(TreblaParser.WhenEntryContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterWhenConditionalEntry(TreblaParser.WhenConditionalEntryContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhenConditionalEntry(TreblaParser.WhenConditionalEntryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -726,25 +762,13 @@ public class TreblaParserBaseListener implements TreblaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx) { }
+	@Override public void enterWhenMatchVariantEntry(TreblaParser.WhenMatchVariantEntryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx) { }
+	@Override public void exitWhenMatchVariantEntry(TreblaParser.WhenMatchVariantEntryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

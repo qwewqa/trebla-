@@ -31,6 +31,9 @@ class PropertyDeclaration(
     }
 
     override fun applyTo(context: Context): UnitValue = runWithErrorMessage("Error in property declaration.") {
+        if (identifier.all { it == '_' }) {
+            compileError("All underscore identifiers are reserved.")
+        }
         val initializer = node.expression?.parse(context)
         val typeConstraint = typeConstraint // loads lazy delegate and allows smart casts
         val allocator = when (variant) {

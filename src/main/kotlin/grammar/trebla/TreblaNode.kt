@@ -301,6 +301,9 @@ data class IfExpressionNode(
     override fun parse(context: Context) = IfExpression(this)
 }
 
+interface WhenEntryNode : TreblaNode
+interface WhenMatchEntryNode : TreblaNode
+
 data class WhenExpressionNode(
     override val context: ParseTree,
     override val filename: String,
@@ -310,12 +313,37 @@ data class WhenExpressionNode(
     override fun parse(context: Context) = WhenExpression(this)
 }
 
-data class WhenEntryNode(
+data class WhenConditionalEntryNode(
     override val context: ParseTree,
     override val filename: String,
-    val condition: ExpressionNode?,
+    val condition: ExpressionNode,
     val body: BlockNode,
-) : TreblaNode
+) : TreblaNode, WhenEntryNode
+
+data class WhenMatchExpressionNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val expression: ExpressionNode,
+    val entries: List<WhenMatchEntryNode>,
+) : ExpressionNode {
+    override fun parse(context: Context): Expression {
+        TODO("Not yet implemented")
+    }
+}
+
+data class WhenMatchVariantNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val variant: ExpressionNode,
+    val destructure: DestructuringTupleNode?,
+    val body: BlockNode,
+) : TreblaNode, WhenMatchEntryNode
+
+data class WhenElseEntryNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val body: BlockNode,
+) : TreblaNode, WhenEntryNode, WhenMatchEntryNode
 
 data class TryExpressionNode(
     override val context: ParseTree,
@@ -446,3 +474,9 @@ data class LambdaNode(
 ) : ExpressionNode {
     override fun parse(context: Context) = LambdaExpression(this, context)
 }
+
+data class DestructuringTupleNode(
+    override val context: ParseTree,
+    override val filename: String,
+    val value: List<String>,
+) : TreblaNode

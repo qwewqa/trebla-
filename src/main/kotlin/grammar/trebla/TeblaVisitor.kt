@@ -350,14 +350,54 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         return WhenExpressionNode(
             ctx, filename,
             ctx.CONST().exist,
-            ctx.whenEntry().visit() as List<WhenEntryNode>
+            ctx.whenEntry().visit() as List<WhenEntryNode>,
+        )
+    }
+
+    override fun visitWhenMatchExpression(ctx: TreblaParser.WhenMatchExpressionContext): TreblaNode {
+        return WhenMatchExpressionNode(
+            ctx, filename,
+            ctx.expression().visit() as ExpressionNode,
+            ctx.whenMatchEntry().visit() as List<WhenMatchEntryNode>,
         )
     }
 
     override fun visitWhenEntry(ctx: TreblaParser.WhenEntryContext): TreblaNode {
-        return WhenEntryNode(
+        return when {
+            ctx.whenConditionalEntry().exist -> ctx.whenConditionalEntry()!!.visit()
+            ctx.whenElseEntry().exist -> ctx.whenElseEntry()!!.visit()
+            else -> error("Unexpected when entry.")
+        }
+    }
+
+    override fun visitWhenMatchEntry(ctx: TreblaParser.WhenMatchEntryContext): TreblaNode {
+        return when {
+            ctx.whenMatchVariantEntry().exist -> ctx.whenMatchVariantEntry()!!.visit()
+            ctx.whenElseEntry().exist -> ctx.whenElseEntry()!!.visit()
+            else -> error("Unexpected when entry.")
+        }
+    }
+
+    override fun visitWhenConditionalEntry(ctx: TreblaParser.WhenConditionalEntryContext): TreblaNode {
+        return WhenConditionalEntryNode(
             ctx, filename,
-            ctx.expression()?.visit() as ExpressionNode?,
+            ctx.expression().visit() as ExpressionNode,
+            ctx.controlStructureBody().visit() as BlockNode
+        )
+    }
+
+    override fun visitWhenMatchVariantEntry(ctx: TreblaParser.WhenMatchVariantEntryContext): TreblaNode {
+        return WhenMatchVariantNode(
+            ctx, filename,
+            ctx.expression().visit() as ExpressionNode,
+            ctx.destructuringTuple()?.visit() as DestructuringTupleNode?,
+            ctx.controlStructureBody().visit() as BlockNode,
+        )
+    }
+
+    override fun visitWhenElseEntry(ctx: TreblaParser.WhenElseEntryContext): TreblaNode {
+        return WhenElseEntryNode(
+            ctx, filename,
             ctx.controlStructureBody().visit() as BlockNode
         )
     }
@@ -424,6 +464,12 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
             ctx.simpleIdentifier()?.visit() as SimpleIdentifierNode?,
             ctx.expression().visit() as ExpressionNode
         )
+    }
+
+    override fun visitDestructuringTuple(ctx: TreblaParser.DestructuringTupleContext): TreblaNode {
+        return DestructuringTupleNode(ctx,
+            filename,
+            ctx.simpleIdentifier().visit().map { (it as SimpleIdentifierNode).value })
     }
 
     private fun visitGenericInfixFunction(ctx: ParserRuleContext, rightAssociative: Boolean = false): TreblaNode {

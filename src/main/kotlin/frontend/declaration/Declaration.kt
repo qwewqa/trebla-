@@ -48,6 +48,9 @@ interface Declaration : Value, Expression {
     By default, a declaration adds itself, but not all declarations may do so, like property declarations.
      */
     override fun applyTo(context: Context): UnitValue {
+        if (identifier.all { it == '_' }) {
+            compileError("All underscore identifiers are reserved.")
+        }
         context.scope.add(this, identifier, signature, visibility)
         return UnitValue
     }
