@@ -60,3 +60,5 @@ infix func Number.through(other: Number) = const if (other > this) {
 }
 
 infix func Range.by(n: Number) = Range(this.start, this.stop, n)
+
+infix func Enum.matches(variant: Enum) = typeOf(this) == variant.parent && this.ordinal == variant.ordinal

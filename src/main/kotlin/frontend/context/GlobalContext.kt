@@ -97,6 +97,7 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to ContextType,
     listOf("std") to LambdaType,
     listOf("std") to StringType,
+    listOf("std") to EnumType,
 )
 
 // constructors for intrinsics that require the context
