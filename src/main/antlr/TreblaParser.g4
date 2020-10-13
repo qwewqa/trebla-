@@ -279,6 +279,7 @@ valueArgument
 conditionalExpression
     : ifExpression
     | whenExpression
+    | whenMatchExpression
     | tryExpression
     ;
 
@@ -288,11 +289,28 @@ ifExpression
     ;
 
 whenExpression
-    : CONST? WHEN NL* LCURL NL* (whenEntry NL*)* RCURL
+    : CONST? WHEN NL* LCURL NL* ((whenEntry | whenElseEntry) NL*)* RCURL
     ;
 
 whenEntry
-    : (expression | ELSE) NL* ARROW NL* controlStructureBody
+    : expression NL* ARROW NL* controlStructureBody
+    ;
+
+whenElseEntry
+    : ELSE NL* ARROW NL* controlStructureBody
+    ;
+
+whenMatchExpression
+    : WHEN NL* LPAREN expression RPAREN NL*
+    LCURL NL* ((whenMatchEntry | whenElseEntry) NL*)* RCURL
+    ;
+
+whenMatchEntry
+    : IS NL* expression NL* (AS NL* destructuringTuple)? NL* ARROW NL* controlStructureBody
+    ;
+
+destructuringTuple
+    : LPAREN (simpleIdentifier (COMMA simpleIdentifier)* COMMA?)? RPAREN
     ;
 
 tryExpression

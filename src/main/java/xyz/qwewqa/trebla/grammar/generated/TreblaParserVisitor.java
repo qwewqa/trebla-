@@ -361,6 +361,30 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWhenEntry(TreblaParser.WhenEntryContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TreblaParser#whenElseEntry}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhenElseEntry(TreblaParser.WhenElseEntryContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#whenMatchExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#whenMatchEntry}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TreblaParser#destructuringTuple}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDestructuringTuple(TreblaParser.DestructuringTupleContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TreblaParser#tryExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -590,6 +590,46 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitWhenEntry(TreblaParser.WhenEntryContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#whenElseEntry}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhenElseEntry(TreblaParser.WhenElseEntryContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#whenElseEntry}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhenElseEntry(TreblaParser.WhenElseEntryContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#whenMatchExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#whenMatchExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhenMatchExpression(TreblaParser.WhenMatchExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#whenMatchEntry}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#whenMatchEntry}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhenMatchEntry(TreblaParser.WhenMatchEntryContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TreblaParser#destructuringTuple}.
+	 * @param ctx the parse tree
+	 */
+	void enterDestructuringTuple(TreblaParser.DestructuringTupleContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#destructuringTuple}.
+	 * @param ctx the parse tree
+	 */
+	void exitDestructuringTuple(TreblaParser.DestructuringTupleContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#tryExpression}.
 	 * @param ctx the parse tree
 	 */

@@ -94,6 +94,7 @@ EXCEPT: 'except' ;
 FOR: 'for' ;
 GETTER: 'get' ;
 SETTER: 'set' ;
+IS: 'is' ;
 AS: 'as' ;
 PACKAGE: 'package' ;
 
@@ -216,6 +217,10 @@ Inside_EXCEPT: EXCEPT -> type(EXCEPT) ;
 Inside_WHILE: WHILE -> type(WHILE) ;
 Inside_WHEN: WHEN -> type(WHEN) ;
 Inside_FOR: FOR -> type(FOR) ;
+Inside_GETTER: GETTER -> type(GETTER) ;
+Inside_SETTER: SETTER -> type(SETTER) ;
+Inside_IS: IS -> type(IS) ;
+Inside_AS: AS -> type(AS) ;
 
 Inside_PUBLIC: PUBLIC -> type(PUBLIC) ;
 Inside_PRIVATE: PRIVATE -> type(PRIVATE) ;
