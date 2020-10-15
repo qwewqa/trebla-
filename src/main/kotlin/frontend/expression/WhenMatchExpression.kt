@@ -41,7 +41,7 @@ class WhenMatchExpression(override val node: WhenMatchExpressionNode) : Expressi
                     compileError("Destructure requires a struct enum variant.")
                 }
                 (destructureIdentifiers zip variant.destructure(matchValue)).forEach { (identifier, value) ->
-                    bodyContext.scope.add(value, identifier)
+                    if (identifier != null) bodyContext.scope.add(value, identifier)
                 }
             }
             entryNode.body.evaluateIn(bodyContext)

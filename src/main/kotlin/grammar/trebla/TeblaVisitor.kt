@@ -467,9 +467,14 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     override fun visitDestructuringTuple(ctx: TreblaParser.DestructuringTupleContext): TreblaNode {
-        return DestructuringTupleNode(ctx,
+        return DestructuringTupleNode(
+            ctx,
             filename,
-            ctx.simpleIdentifier().visit().map { (it as SimpleIdentifierNode).value })
+            ctx.simpleIdentifier().visit().map {
+                val identifier = (it as SimpleIdentifierNode).value
+                if (identifier.all { ch -> ch == '_' }) null else identifier
+            }
+        )
     }
 
     private fun visitGenericInfixFunction(ctx: ParserRuleContext, rightAssociative: Boolean = false): TreblaNode {

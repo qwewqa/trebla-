@@ -476,5 +476,5 @@ data class LambdaNode(
 data class DestructuringTupleNode(
     override val context: ParseTree,
     override val filename: String,
-    val value: List<String>,
+    val value: List<String?>,
 ) : TreblaNode
