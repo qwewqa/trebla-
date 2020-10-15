@@ -2,6 +2,9 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.CallableDelegate
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.SimpleDeclaration
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.asTreblaAnyList
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.grammar.trebla.*
 
@@ -22,6 +25,8 @@ class EnumDeclaration(
 
     override val bindingHierarchy: List<List<Type>> = listOf(listOf(EnumType))
 
+    override val loadEarly = true
+
     val variants by lazy {
         val occupied = mutableSetOf<Int>()
         // It's notable that this starts at 1 instead of 0 as might be expected
@@ -39,8 +44,8 @@ class EnumDeclaration(
         }
 
         fun process(ordinal: Int, definition: EnumVariantDefinitionNode) = when (definition) {
-            is EnumUnitVariantNode -> EnumUnitVariantData(ordinal, definition, this)
-            is EnumStructVariantNode -> EnumStructVariantData(ordinal, definition, this)
+            is EnumUnitVariantNode -> EnumUnitVariant(ordinal, definition, this)
+            is EnumStructVariantNode -> EnumStructVariant(ordinal, definition, this)
         }
         val (auto, explicit) = node.variants.partition { it.ordinal == null }
         (explicit.map {
@@ -51,11 +56,7 @@ class EnumDeclaration(
         } + auto.map {
             val ordinal = nextOrdinal()
             process(ordinal, it.definition)
-        }).toMutableList().also {
-            if (0 !in occupied) {
-                it += EnumNoneVariantData(this)
-            }
-        }
+        })
     }
 
     val variantsByOrdinal by lazy {
@@ -74,6 +75,10 @@ class EnumDeclaration(
         dataSize + 1
     }
 
+    val hasZeroOrdinal by lazy {
+        0 in variantsByOrdinal.keys
+    }
+
     override fun allocateOn(allocator: Allocator, context: Context): Allocated = EnumValue(
         this,
         AllocatedRawValue(allocator.allocate()),
@@ -86,8 +91,7 @@ class EnumDeclaration(
         values.drop(1)
     )
 
-    override fun getMember(name: String, accessingContext: Context?) =
-        variantsByIdentifier[name]?.value
+    override fun getMember(name: String, accessingContext: Context?) = variantsByIdentifier[name]
 
     init {
         node.modifiers.parse {
@@ -142,18 +146,35 @@ data class EnumValue(override val type: EnumDeclaration, val ordinal: RawValue, 
     override fun flat() = listOf(ordinal) + data
 }
 
-sealed class EnumVariant : Value {
-    abstract val data: EnumVariantData
+sealed class EnumVariant(val parentEnum: EnumDeclaration) : Value {
+    abstract val identifier: String
+    abstract val ordinal: Int
+
+    /**
+     * Allocation size excluding the ordinal
+     */
+    abstract val size: Int
+
+    override val node: TreblaNode? = null
 }
 
-data class EnumUnitVariant(override val data: EnumVariantData) : EnumVariant(), Allocated {
-    override val type = data.parentEnum
+class EnumUnitVariant(
+    override val ordinal: Int,
+    override val node: EnumUnitVariantNode,
+    parentEnum: EnumDeclaration,
+) : EnumVariant(parentEnum), Allocated {
+    override val identifier = node.identifier.value
+    override val size = 0
 
-    val value = EnumValue(
-        data.parentEnum,
-        data.ordinal.toLiteralRawValue(),
-        List(data.parentEnum.dataSize) { 0.toLiteralRawValue() },
-    )
+    override val type = parentEnum
+
+    val value by lazy {
+        EnumValue(
+            parentEnum,
+            ordinal.toLiteralRawValue(),
+            List(parentEnum.dataSize) { 0.toLiteralRawValue() },
+        )
+    }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
         compileError("Enum variants cannot be mutated.")
@@ -166,75 +187,28 @@ data class EnumUnitVariant(override val data: EnumVariantData) : EnumVariant(), 
     override fun flat(): List<RawValue> = value.flat()
 
     override fun getMember(name: String, accessingContext: Context?) = when (name) {
-        "ordinal" -> data.ordinal.toLiteralRawValue().toNumberStruct(type.parentContext)
-        "parent" -> data.parentEnum
+        "ordinal" -> ordinal.toLiteralRawValue().toNumberStruct(type.parentContext)
+        "parent" -> parentEnum
         "value" -> value
         else -> null
     }
 }
 
-data class EnumStructVariant(override val data: EnumStructVariantData) : EnumVariant(), Callable {
-    override val type = data.parentEnum
-
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
-        val args = data.fields.pairedWithAndValidated(arguments).byParameterName()
-        return EnumValue(type, data.ordinal.toLiteralRawValue(), data.fields.flatMap { (args.getValue(it.name) as Allocated).flat() })
-    }
-
-    override fun getMember(name: String, accessingContext: Context?) = when (name) {
-        "ordinal" -> data.ordinal.toLiteralRawValue().toNumberStruct(type.parentContext)
-        "parent" -> data.parentEnum
-        else -> null
-    }
-}
-
-sealed class EnumVariantData(val parentEnum: EnumDeclaration) {
-    abstract val identifier: String
-    abstract val ordinal: Int
-
-    /**
-     * Allocation size excluding the ordinal
-     */
-    abstract val size: Int
-
-    open val node: TreblaNode? = null
-
-    abstract val value: EnumVariant
-}
-
-class EnumNoneVariantData(parentEnum: EnumDeclaration) : EnumVariantData(parentEnum) {
-    override val identifier = "None"
-    override val ordinal = 0
-    override val size = 0
-
-    override val value by lazy { EnumUnitVariant(this) }
-}
-
-class EnumUnitVariantData(
-    override val ordinal: Int,
-    override val node: EnumUnitVariantNode,
-    parentEnum: EnumDeclaration,
-) :
-    EnumVariantData(parentEnum) {
-    override val identifier = node.identifier.value
-    override val size = 0
-
-    override val value by lazy { EnumUnitVariant(this) }
-}
-
 /**
  * A struct-like variant. Not really a struct, but looks similar.
  */
-class EnumStructVariantData(
+class EnumStructVariant(
     override val ordinal: Int,
     override val node: EnumStructVariantNode,
     parentEnum: EnumDeclaration,
-) : EnumVariantData(parentEnum) {
+) : EnumVariant(parentEnum), Callable {
     override val identifier = node.identifier.value
 
     init {
-        if (node.fields.any { it.isEmbed }) {
-            compileError("Enum structs do not support embedding.")
+        node.fields.forEach {
+            if (it.isEmbed) {
+                compileError("Enum structs do not support embedding.", it)
+            }
         }
     }
 
@@ -248,9 +222,30 @@ class EnumStructVariantData(
 
     override val size by lazy {
         fields.map { it.type }.sumBy {
-            (it as? Allocatable)?.allocationSize ?: compileError("Enum structs must have sized fields.", node)
+            (it as Allocatable).allocationSize
         }
     }
 
-    override val value by lazy { EnumStructVariant(this) }
+    fun destructure(value: EnumValue): List<Allocated> {
+        val types = fields.map { (it.type as Allocatable) }
+        val remaining = ArrayDeque(value.data)
+        return types.map { type ->
+            type.fromFlat(List(type.allocationSize) { remaining.removeFirst() })
+        }
+    }
+
+    override val type = CallableType
+
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
+        val args = fields.pairedWithAndValidated(arguments).byParameterName()
+        return EnumValue(parentEnum,
+            ordinal.toLiteralRawValue(),
+            fields.flatMap { (args.getValue(it.name) as Allocated).flat() })
+    }
+
+    override fun getMember(name: String, accessingContext: Context?) = when (name) {
+        "ordinal" -> ordinal.toLiteralRawValue().toNumberStruct(parentEnum.parentContext)
+        "parent" -> parentEnum
+        else -> null
+    }
 }

@@ -40,7 +40,7 @@ fun IRNode.constexprEvaluate(context: ConstexprEvaluationContext): Double {
                 val cond = arguments[0].constexprEvaluate(context)
                 val branches = arguments.drop(1).let {
                     val conditions = it.filterIndexed { index, _ -> index % 2 == 0 }
-                    val actions = it.filterIndexed { index, _ -> index % 2 == 0 }
+                    val actions = it.filterIndexed { index, _ -> index % 2 == 1 }
                     conditions.zip(actions)
                 }
                 for ((condition, action) in branches) {
@@ -56,7 +56,7 @@ fun IRNode.constexprEvaluate(context: ConstexprEvaluationContext): Double {
                 val cond = arguments[0].constexprEvaluate(context)
                 val branches = arguments.drop(1).dropLast(1).let {
                     val conditions = it.filterIndexed { index, _ -> index % 2 == 0 }
-                    val actions = it.filterIndexed { index, _ -> index % 2 == 0 }
+                    val actions = it.filterIndexed { index, _ -> index % 2 == 1 }
                     conditions.zip(actions)
                 }
                 for ((condition, action) in branches) {

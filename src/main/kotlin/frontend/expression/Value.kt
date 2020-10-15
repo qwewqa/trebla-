@@ -31,6 +31,12 @@ interface Value : Entity {
     fun getMember(name: String, accessingContext: Context?): Value? = null
 }
 
+/**
+ * A type that may have a representation in memory.
+ * The methods in this interface are expected to throw exceptions in some cases (such as List[Any]),
+ * though it may make sense to eventually tighten restrictions in implementors
+ * and provide alternatives in relevant cases in the future.
+ */
 interface Allocatable : Type {
     /**
      * Creates a new instance of the allocatable type

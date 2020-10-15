@@ -93,7 +93,7 @@ enumDeclaration
     ;
 
 enumVariants
-    : LCURL anysemi* (enumVariant (anysemi+ enumVariant?)*)? RCURL
+    : LCURL NL* (enumVariant (NL* COMMA NL* enumVariant?)*)? NL* COMMA? NL* RCURL
     ;
 
 enumVariant
@@ -118,6 +118,7 @@ scriptBody
 
 scriptMemberDeclaration
     : (functionDeclaration
+    | enumDeclaration
     | propertyDeclaration
     | letDeclaration
     | structDeclaration

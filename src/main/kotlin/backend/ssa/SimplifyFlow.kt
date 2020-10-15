@@ -47,7 +47,6 @@ private fun SSANode.simplifyFlowUncleaned(): SSANode = when (this) {
             val (even, odd) = arguments.drop(1).dropLast(1).withIndex().partition { (i, _) -> i % 2 == 0 }
             val branches = even.zip(odd).associate { p -> (p.first.value as? SSAValue)?.value to p.second.value }
             branches[it]?.let { b -> simplifyTo(b) }
-            // if all branch conditions are known but none are satisfied, switch does not do anything
                 ?: if (null !in branches) simplifyTo(arguments.last()) else null
         } ?: copy(arguments = arguments.map { it.simplifyFlowUncleaned() })
         SonoFunction.SwitchIntegerWithDefault -> (arguments[0] as? SSAValue)?.value?.let {

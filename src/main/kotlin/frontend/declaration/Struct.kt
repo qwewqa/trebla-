@@ -141,8 +141,8 @@ data class NormalStructValue(
         )
     }
 
-    override fun flat() = fields.flatMap {
-        (it as? Allocated)?.flat() ?: compileError("Struct contains non allocated members and cannot be flattened.")
+    override fun flat() = fields.flatMap { (_, v) ->
+        (v as? Allocated)?.flat() ?: compileError("Struct contains non allocated members and cannot be flattened.")
     }
 }
 

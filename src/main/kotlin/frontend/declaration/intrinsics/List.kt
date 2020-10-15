@@ -265,3 +265,5 @@ class ListGet(val context: Context, val listValue: ListValue) : Callable, Value 
         return returns
     }
 }
+
+fun List<Value>.asTreblaAnyList(context: Context) = ListValue(context, SizedListType(size, UnsizedListType(AnyType, context), context), this)

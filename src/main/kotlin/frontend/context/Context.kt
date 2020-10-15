@@ -64,8 +64,13 @@ class SimpleExecutionContext(override val parentContext: ExecutionContext) : Exe
     }
 }
 
-fun Context.createSimpleChild() = when (this) {
+fun Context.createAndAddChild() = when (this) {
     is ExecutionContext -> SimpleExecutionContext(this).also { this.statements += it }
+    else -> SimpleContext(this)
+}
+
+fun Context.createChild() = when (this) {
+    is ExecutionContext -> SimpleExecutionContext(this)
     else -> SimpleContext(this)
 }
 
@@ -87,7 +92,7 @@ fun List<StatementNode>.evaluateIn(context: Context): Value =
         .map { it.parseAndApplyTo(context) }
         .lastOrNull() ?: UnitValue
 
-fun List<StatementNode>.evaluateInChildOf(context: Context): Value = evaluateIn(context.createSimpleChild())
+fun List<StatementNode>.evaluateInChildOf(context: Context): Value = evaluateIn(context.createAndAddChild())
 
 fun BlockNode.evaluateIn(context: Context) = value.evaluateIn(context)
-fun BlockNode.evaluateInChildOf(context: Context): Value = evaluateIn(context.createSimpleChild())
+fun BlockNode.evaluateInChildOf(context: Context): Value = evaluateIn(context.createAndAddChild())

@@ -80,6 +80,11 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     }
 
     fun process(): ScriptData {
+        node.body.value.filterIsInstance<DeclarationNode>().forEach {
+            val parsed = it.parse(this)
+            if (parsed.loadEarly) parsed.applyTo(this)
+        }
+
         // make sure lazy properties have fired
         spawnProperties
         dataProperties
@@ -102,7 +107,10 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
                 }
                 is InitBlockNode -> memberNode.body.value.forEach { it.parseAndApplyTo(initializeCallback) }
                 is CallbackDeclarationNode -> callbackDeclarationNodes += memberNode
-                is StatementNode -> memberNode.parseAndApplyTo(this)
+                is StatementNode -> {
+                    val parsed = memberNode.parse(this)
+                    if (parsed !is Declaration || !parsed.loadEarly) parsed.applyTo(this)
+                }
                 else -> error("Unsupported script member.") // should not happen
             }
         }

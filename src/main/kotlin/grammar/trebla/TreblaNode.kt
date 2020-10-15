@@ -326,9 +326,7 @@ data class WhenMatchExpressionNode(
     val expression: ExpressionNode,
     val entries: List<WhenMatchEntryNode>,
 ) : ExpressionNode {
-    override fun parse(context: Context): Expression {
-        TODO("Not yet implemented")
-    }
+    override fun parse(context: Context) = WhenMatchExpression(this)
 }
 
 data class WhenMatchVariantNode(
