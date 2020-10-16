@@ -10,6 +10,9 @@ import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.*
 
+/**
+ * Note that this should not be used as a delegate, or `this` will only include the delegate.
+ */
 open class SimpleDeclaration(
     override val parentContext: Context?,
     override val identifier: String,

@@ -39,8 +39,18 @@ func Any.also(block: Callable): Any {
 operator func Type.deref() = Pointer[this]
 operator func Script.deref() = EntityPointer[this]
 
-func Box.pointer() = resolveBoxPointer(this, entityIndex)
-func Box.localPointer() = resolveLocalBoxPointer(this)
+func Any.localPointer() = pointerTo(this)
+func Any.pointer(): Pointer {
+    let pointer = this.localPointer()
+    typeOf(pointer)(
+        block = const when {
+            pointer.block == ENTITY_DATA -> ENTITY_DATA_ARRAY + 32 * entityIndex
+            pointer.block == ENTITY_SHARED_MEMORY -> ENTITY_SHARED_MEMORY_ARRAY + 32 * entityIndex
+            else -> pointer.block
+        },
+        index = pointer.index,
+    )
+}
 
 // Use of infix (non short-circuiting) "and" helps with readability of IR
 // Optimizer could eventually clean things up otherwise

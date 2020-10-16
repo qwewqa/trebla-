@@ -2,10 +2,13 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.context.Allocator
+import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.PointerValue
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.pointerTo
 
 /**
  * Represents a value that results from an frontend.expression.
@@ -49,6 +52,9 @@ interface Allocatable : Type {
      */
     val allocationSize: Int
 
+    /**
+     * Convert from a flat representation to a normal instance of this type. See [Allocated.flat].
+     */
     fun fromFlat(values: List<RawValue>): Allocated
 }
 
@@ -80,7 +86,27 @@ interface Allocated : Value {
      */
     fun toEntityArrayValue(offset: RawValue): Allocated
 
+    /**
+     * A flat representation of the data in this value. See [Allocatable.fromFlat].
+     */
     fun flat(): List<RawValue>
+
+    /**
+     * Creates a pointer to this value or null if not possible
+     * (contains literals, not contiguous, etc).
+     */
+    fun pointer(context: Context): PointerValue? {
+        val flat = flat()
+        if (!flat.all { it is AllocatedRawValue }) return null
+        var allocations = flat.filterIsInstance<AllocatedRawValue>().map { it.allocation }
+        if (!allocations.all { it is ConcreteAllocation }) return null
+        allocations = allocations.filterIsInstance<ConcreteAllocation>()
+        val blocks = allocations.map { it.block }
+        val indexes = allocations.map { it.index }
+        val block = blocks.toSet().singleOrNull() ?: return null
+        if (!indexes.zipWithNext().all { (a, b) -> b - a == 1 }) return null
+        return type.pointerTo(block, indexes.first(), context)
+    }
 }
 
 /**

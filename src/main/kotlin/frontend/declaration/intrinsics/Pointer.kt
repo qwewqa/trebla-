@@ -29,8 +29,7 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
         },
         {
             PointerValue(
-                context,
-                this@SpecificPointerType, // this not exposed in delegation through the by keyword
+                this@SpecificPointerType,
                 "block".cast(),
                 "index".cast(),
             )
@@ -53,7 +52,6 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
         super.accepts(other) || (other is SpecificPointerType && insideType.accepts(other.insideType))
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated = PointerValue(
-        this.context,
         this,
         RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
         RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
@@ -63,7 +61,6 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
     override fun hashCode() = insideType.hashCode()
 
     override fun fromFlat(values: List<RawValue>): Allocated = PointerValue(
-        this.context,
         this,
         RawStructValue(values[0], context.numberType),
         RawStructValue(values[1], context.numberType),
@@ -71,14 +68,13 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
 }
 
 class PointerValue(
-    val context: Context,
     override val type: SpecificPointerType,
     val block: RawStructValue,
     val index: RawStructValue,
 ) : Allocated,
     Dereferenceable,
     Subscriptable by SubscriptableDelegate(
-        context,
+        type.context,
         {
             "index" type NumberType
         },
@@ -90,8 +86,7 @@ class PointerValue(
                 ?: compileError("Only pointers to lists containing an allocatable type are subscriptable")
             val listIndex = "index".cast<RawStructValue>()
             PointerValue(
-                context,
-                SpecificPointerType(context, listContainedType),
+                SpecificPointerType(type.context, listContainedType),
                 block,
                 SonoFunction.Add.raw(
                     index.raw,
@@ -99,7 +94,7 @@ class PointerValue(
                         listIndex.raw,
                         elementSize.toLiteralRawValue()
                     )
-                ).toNumberStruct(context)
+                ).toNumberStruct(type.context)
             )
         }
     ) {
@@ -121,14 +116,12 @@ class PointerValue(
     // (Entity Memory is different if you access the pointer from another entity)
     // Global pointers (to shared/data) are still meaningful, so this is allowed.
     override fun toEntityArrayValue(offset: RawValue): Allocated = PointerValue(
-        context,
         type,
         this.block.toEntityArrayValue(offset),
         this.index.toEntityArrayValue(offset),
     )
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated = PointerValue(
-        this.context,
         type,
         block.copyTo(allocator, context),
         index.copyTo(allocator, context),
@@ -141,6 +134,31 @@ class PointerValue(
 
     override fun flat() = listOf(block.raw, index.raw)
 }
+
+fun Type.pointerTo(block: Int, index: Int, context: Context) =
+    PointerValue(
+        SpecificPointerType(context, this),
+        block.toLiteralRawValue().toNumberStruct(context),
+        index.toLiteralRawValue().toNumberStruct(context),
+    )
+
+class PointerToCallable(context: Context) :
+    SimpleDeclaration(
+        context,
+        "pointerTo",
+        CallableType
+    ),
+    Callable by CallableDelegate(
+        context,
+        {
+            "value" type AnyType
+        },
+        {
+            val value = "value".cast<Value>()
+            if (value !is Allocated) compileError("Pointers may only be created to allocated values.")
+            value.pointer(context) ?: compileError("Pointers may only be created to allocated and contiguous values.")
+        }
+    )
 
 interface Dereferenceable {
     fun deref(context: Context): Value
