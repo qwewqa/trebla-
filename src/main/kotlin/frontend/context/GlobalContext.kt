@@ -11,7 +11,6 @@ import xyz.qwewqa.trebla.frontend.expression.LambdaType
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
-import java.util.concurrent.atomic.AtomicInteger
 
 class GlobalContext(val configuration: CompilerConfiguration) : GlobalAllocatorContext, Context {
     override val parentContext: Context? = null
@@ -115,5 +114,6 @@ val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::TypeAccepts,
     listOf("std") to ::Range,
     listOf("std") to ::Error,
-    listOf("std") to ::PointerToCallable
+    listOf("std") to ::PointerTo,
+    listOf("std") to ::EnumFromOrdinal
 )

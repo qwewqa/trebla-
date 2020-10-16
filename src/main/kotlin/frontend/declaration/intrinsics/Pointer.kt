@@ -142,7 +142,7 @@ fun Type.pointerTo(block: RawValue, index: RawValue, context: Context) =
         index.toNumberStruct(context),
     )
 
-class PointerToCallable(context: Context) :
+class PointerTo(context: Context) :
     SimpleDeclaration(
         context,
         "pointerTo",

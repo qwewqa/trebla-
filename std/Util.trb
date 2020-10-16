@@ -86,3 +86,5 @@ operator func List.subscript(index: Number): Any {
     let type = typeOf(this).containedType
     *Pointer[type](pointer.block, pointer.index + sizeOf(type) * index)
 }
+
+func Number.toEnum(type: Type) = enumFromOrdinal(type, this)

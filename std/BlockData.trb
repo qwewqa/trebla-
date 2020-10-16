@@ -79,15 +79,28 @@ let entityIndex = numref(ENTITY_INFO, 0)
 let archetype = numref(ENTITY_INFO, 1)
 let state = numref(ENTITY_INFO, 2)
 
+enum EntityState {
+    WAITING = 0,
+    SPAWNED = 1,
+    DESPAWNED = 2,
+}
+
 struct EntityInfo(entityIndex: Number)
 func EntityInfo.index() = numref(ENTITY_INFO_ARRAY, this.entityIndex * 3)
 func EntityInfo.archetype() = numref(ENTITY_INFO_ARRAY, this.entityIndex * 3 + 1)
-func EntityInfo.state() = numref(ENTITY_INFO_ARRAY, this.entityIndex * 3 + 2)
-func EntityInfo.waiting() = this.state() == 0
-func EntityInfo.spawned() = this.state() == 1
-func EntityInfo.despawned() = this.state() == 2
+func EntityInfo.state() = numref(ENTITY_INFO_ARRAY, this.entityIndex * 3 + 2).toEnum(EntityState)
+func EntityInfo.waiting() = this.state() matches EntityState.WAITING
+func EntityInfo.spawned() = this.state() matches EntityState.SPAWNED
+func EntityInfo.despawned() = this.state() matches EntityState.DESPAWNED
 
-let entityJudgment = numref(ENTITY_INPUT, 0)
+enum EntityJudgement {
+    MISS = 0,
+    PERFECT = 1,
+    GREAT = 2,
+    GOOD = 3,
+}
+
+let entityJudgment = numref(ENTITY_INPUT, 0).toEnum(EntityJudgement)
 let entityBucket = numref(ENTITY_INPUT, 1)
 let entityBucketValue = numref(ENTITY_INPUT, 2)
 
