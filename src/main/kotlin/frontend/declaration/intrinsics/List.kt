@@ -117,22 +117,7 @@ data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val co
     }
 }
 
-class ListValue(val parentContext: Context, override val type: SizedListType, val values: List<Value>) : Allocated,
-    Subscriptable {
-    override val subscriptParameters by lazy {
-        listOf(
-            Parameter("index", parentContext.numberType),
-        )
-    }
-
-    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context): Value {
-        val index = (subscriptParameters.pairedWithAndValidated(arguments).values.first() as RawStructValue).raw.toIR()
-            .tryConstexprEvaluate()?.roundToInt()
-            ?: compileError("List index must be a compile time constant.")
-        if (index !in values.indices) compileError("List index out of range.")
-        return values[index]
-    }
-
+class ListValue(val parentContext: Context, override val type: SizedListType, val values: List<Value>) : Allocated {
     override fun toEntityArrayValue(offset: RawValue): Allocated =
         ListValue(
             parentContext,
@@ -164,106 +149,7 @@ class ListValue(val parentContext: Context, override val type: SizedListType, va
         }
     }
 
-    override fun getMember(name: String, accessingContext: Context?) = members[name]
-
-    private val members: Map<String, Value> by lazy {
-        mapOf(
-            "forEach" to ListValueForEach(parentContext, this, false),
-            "forEachIndexed" to ListValueForEach(parentContext, this, true),
-            "get" to ListGet(parentContext, this),
-            "size" to type.size.toStruct(parentContext)
-        )
-    }
-
     override fun flat() = values.flatMap {
         (it as? Allocated)?.flat() ?: compileError("List has non allocated members and cannot be flattened.")
     }
 }
-
-class ListValueForEach(val context: Context, val listValue: ListValue, val indexed: Boolean) : Callable, Value {
-    override val type = CallableType
-    val bindingContext = context
-
-    override val parameters by lazy {
-        listOf(
-            Parameter("start",
-                UnionType(listOf(UnitValue, context.numberType)),
-                DefaultParameter(ValueExpression(UnitValue), context)),
-            Parameter("stop",
-                UnionType(listOf(UnitValue, context.numberType)),
-                DefaultParameter(ValueExpression(UnitValue), context)),
-            Parameter("operation", CallableType),
-        )
-    }
-
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
-        val args = parameters.pairedWithAndValidated(arguments).byParameterName()
-        val operation = args["operation"] as Callable
-        val start = (args["start"] as? RawStructValue)?.raw?.let {
-            it.toIR().tryConstexprEvaluate() ?: compileError("Start index should be a compile time constant.")
-        }?.roundToInt() ?: 0
-        val stop = (args["stop"] as? RawStructValue)?.raw?.let {
-            it.toIR().tryConstexprEvaluate() ?: compileError("Start index should be a compile time constant.")
-        }?.roundToInt() ?: listValue.values.size
-        if (callingContext !is ExecutionContext) compileError("List forEach requires an execution context.")
-        var index = start
-        listValue.values.subList(start, stop).forEach {
-            if (indexed) operation.callWith(
-                listOf(
-                    ValueArgument(null, RawStructValue(LiteralRawValue(index.toDouble()), context.numberType)),
-                    ValueArgument(null, it)
-                ),
-                callingContext,
-            )
-            else operation.callWith(listOf(ValueArgument(null, it)), callingContext)
-            index++
-        }
-        return UnitValue
-    }
-}
-
-class ListGet(val context: Context, val listValue: ListValue) : Callable, Value {
-    override val type = CallableType
-    val bindingContext = context
-
-    override val parameters by lazy {
-        listOf(
-            Parameter(
-                "index",
-                UnionType(listOf(UnitValue, context.numberType)),
-                DefaultParameter(ValueExpression(UnitValue), context)
-            )
-        )
-    }
-
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
-        val index = parameters.pairedWithAndValidated(arguments).byParameterName()["index"] as RawStructValue
-        if (callingContext !is ExecutionContext) compileError("Dynamic list get requires an execution context.")
-        val types = listValue.values.map { it.type }.toSet()
-        if (types.isEmpty()) compileError("List is empty.")
-        if (types.size > 1) compileError("Dynamic list get is only available for homogenous lists.")
-        val type = types.first()
-        if (type !is Allocatable) compileError("Dynamic list get is only available for lists with allocatable types.")
-        val returns = type.allocateOn(callingContext.localAllocator, callingContext)
-        callingContext.statements += Statement {
-            IRFunctionCall(
-                SonoFunction.SwitchIntegerWithDefault,
-                listValue.values.map { value ->
-                    SimpleExecutionContext(callingContext).also {
-                        returns.copyFrom(value, it)
-                    }.toIR()
-                }.let {
-                    /*
-                    Switch is one indexed but lists are zero indexed, so we can put the first value as the final, default value
-                    rather than subtracting one.
-                    Out of range access is undefined regardless.
-                    */
-                    listOf(index.raw.toIR()) + it.drop(1) + it.first()
-                }
-            )
-        }
-        return returns
-    }
-}
-
-fun List<Value>.asTreblaAnyList(context: Context) = ListValue(context, SizedListType(size, UnsizedListType(AnyType, context), context), this)

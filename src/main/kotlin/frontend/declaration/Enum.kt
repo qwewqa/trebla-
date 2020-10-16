@@ -2,9 +2,6 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.CallableDelegate
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.SimpleDeclaration
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.asTreblaAnyList
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.grammar.trebla.*
 

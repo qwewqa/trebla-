@@ -3,6 +3,7 @@ package xyz.qwewqa.trebla.frontend.context
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.expression.LiteralRawValue
 import xyz.qwewqa.trebla.frontend.expression.RawValue
+import xyz.qwewqa.trebla.frontend.expression.toLiteralRawValue
 
 sealed class Allocator {
     abstract fun allocate(): Allocation
@@ -47,7 +48,16 @@ sealed class Allocation
 /**
  * A specific location in memory known at compile time.
  */
-data class ConcreteAllocation(val block: Int, val index: Int) : Allocation()
+data class ConcreteAllocation(val block: Int, val index: Int) : Allocation() {
+    /**
+     * Converts this to a dynamic allocation.
+     * It is important that the index is converted to the offset in order
+     * to properly interact with some behavior from derefing a pointer
+     * (in such cases, the offsets are increases compile time constants and the index comes from the pointer).
+     */
+    fun toDynamicAllocation() =
+        DynamicAllocation(block.toLiteralRawValue(), 0.toLiteralRawValue(), index.toLiteralRawValue())
+}
 
 /**
  * A location in memory which may be determined at runtime.

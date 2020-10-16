@@ -135,11 +135,11 @@ class PointerValue(
     override fun flat() = listOf(block.raw, index.raw)
 }
 
-fun Type.pointerTo(block: Int, index: Int, context: Context) =
+fun Type.pointerTo(block: RawValue, index: RawValue, context: Context) =
     PointerValue(
         SpecificPointerType(context, this),
-        block.toLiteralRawValue().toNumberStruct(context),
-        index.toLiteralRawValue().toNumberStruct(context),
+        block.toNumberStruct(context),
+        index.toNumberStruct(context),
     )
 
 class PointerToCallable(context: Context) :

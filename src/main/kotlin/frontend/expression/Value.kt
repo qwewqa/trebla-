@@ -1,10 +1,9 @@
 package xyz.qwewqa.trebla.frontend.expression
 
+import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.Entity
-import xyz.qwewqa.trebla.frontend.context.Allocator
-import xyz.qwewqa.trebla.frontend.context.ConcreteAllocation
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.ExecutionContext
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.PointerValue
@@ -98,14 +97,21 @@ interface Allocated : Value {
     fun pointer(context: Context): PointerValue? {
         val flat = flat()
         if (!flat.all { it is AllocatedRawValue }) return null
-        var allocations = flat.filterIsInstance<AllocatedRawValue>().map { it.allocation }
-        if (!allocations.all { it is ConcreteAllocation }) return null
-        allocations = allocations.filterIsInstance<ConcreteAllocation>()
+        val allocations = flat
+            .filterIsInstance<AllocatedRawValue>()
+            .map { it.allocation }
+            .map { if (it is ConcreteAllocation) it.toDynamicAllocation() else it }
+            .also { if (it.any { alloc -> alloc !is DynamicAllocation }) return null }
+            .filterIsInstance<DynamicAllocation>()
         val blocks = allocations.map { it.block }
         val indexes = allocations.map { it.index }
+        val offsets = allocations.map { it.offset }
+        val offsetValues = offsets.map { it.toIR().tryConstexprEvaluate() ?: return null }
+        if (!offsetValues.zipWithNext().all { (a, b) -> b - a == 1.0 }) return null
         val block = blocks.toSet().singleOrNull() ?: return null
-        if (!indexes.zipWithNext().all { (a, b) -> b - a == 1 }) return null
-        return type.pointerTo(block, indexes.first(), context)
+        /** see [ConcreteAllocation] for information */
+        val index = indexes.toSet().singleOrNull() ?: return null
+        return type.pointerTo(block, BuiltinCallRawValue(SonoFunction.Add, listOf(index, offsets.first())), context)
     }
 }
 
