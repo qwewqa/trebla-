@@ -93,6 +93,14 @@ private fun IRNode.liveForwards(live: Set<TempLocation> = emptySet()): Set<TempL
             liveForwards += current
             current
         }
+        SonoFunction.While -> {
+            var current = live
+            listOf(arguments[0], arguments[1], arguments[0]).forEach {
+                current = it.liveForwards(current)
+            }
+            liveForwards += current
+            current
+        }
         else -> {
             var current = live
             arguments.forEach {
@@ -186,6 +194,14 @@ private fun IRNode.liveBackwards(live: Set<TempLocation> = emptySet()): Set<Temp
             current = branches.map { it.liveBackwards(current) }.fold(emptySet(), Set<TempLocation>::plus)
             current = arguments[0].liveBackwards(live)
             liveBackwards += current
+            current
+        }
+        SonoFunction.While -> {
+            var current = live
+            listOf(arguments[1], arguments[0], arguments[1]).forEach {
+                current = it.liveBackwards(current)
+            }
+            liveForwards += current
             current
         }
         else -> {
