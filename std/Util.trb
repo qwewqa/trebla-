@@ -81,7 +81,7 @@ operator func List.subscript(index: Number): Any {
     let pointer = try {
         this.localPointer()
     } except {
-        error("List is not contiguous and directly allocated. If using a pointer, the pointer should be subscripted before deref.")
+        error("List is not contiguous and directly allocated.")
     }
     let type = typeOf(this).containedType
     *Pointer[type](pointer.block, pointer.index + sizeOf(type) * index)

@@ -6,6 +6,7 @@ import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.grammar.trebla.*
+import kotlin.properties.Delegates
 
 class ScriptDeclaration(override val node: ScriptDeclarationNode, override val parentContext: Context) :
     Declaration, ScriptContext, Callable {
@@ -20,7 +21,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     override val dataAllocator = StandardAllocator(22, 32)
     override val sharedAllocator = StandardAllocator(24, 32)
 
-    var index = parentContext.globalContext.scriptIndex++
+    var index by Delegates.notNull<Int>()
 
     /*
     There are 3 contexts here:

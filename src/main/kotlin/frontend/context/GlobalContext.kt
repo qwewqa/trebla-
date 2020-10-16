@@ -24,17 +24,35 @@ class GlobalContext(val configuration: CompilerConfiguration) : GlobalAllocatorC
 
     private val packages: MutableMap<List<String>, Package> = mutableMapOf()
 
-    var scriptIndex = 0
-
     fun process(): CompileData {
         with(files) {
             forEach(TreblaFile::loadInitial)
             forEach(TreblaFile::loadNormal)
             forEach(TreblaFile::loadFinal)
         }
+        val scripts = files
+            .flatMap { it.scripts }
+            .also { scripts ->
+                val names = mutableSetOf<String>()
+                scripts.forEach {
+                    if (it.identifier in names) {
+                        compileError("Duplicate script name: ${it.identifier}.", it.node)
+                    }
+                    names += it.identifier
+                }
+            }
+            .sortedBy { it.identifier }
+            .also { scripts ->
+                scripts.forEachIndexed { index, script ->
+                    script.index = index
+                }
+            }
+        val archetypes = files
+            .flatMap { it.archetypes }
+            .sortedBy { it.identifier }
         return CompileData(
-            files.flatMap { it.scripts }.map { it.process() },
-            files.flatMap { it.archetypes }.map { it.process() }
+            scripts.map { it.process() },
+            archetypes.map { it.process() },
         )
     }
 

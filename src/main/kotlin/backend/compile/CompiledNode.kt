@@ -24,7 +24,7 @@ data class CompiledFunctionNode(val name: String, val args: List<CompiledNode>) 
 fun combineCallbackNodes(entryNodes: List<CompiledNode>): CompiledNodeData {
     val indexes = mutableMapOf<CompiledNode, Int>()
     val nodes = mutableListOf<CompiledNode>()
-    val queue = ArrayDeque(entryNodes)
+    val queue = ArrayDeque(entryNodes.sortedBy { it.hashCode() })
     for (node in queue) {
         if (node in indexes) continue
         indexes[node] = nodes.size

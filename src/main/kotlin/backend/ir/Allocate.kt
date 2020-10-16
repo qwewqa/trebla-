@@ -52,7 +52,7 @@ fun IRNode.getAllocationMapping(indexes: List<Int>): Map<TempLocation, List<Int>
     val (seq, single) = graph.nodes.partition { it.locations.singleOrNull() is SeqLocation }
     seq.forEach { it.color(indexes) }
     single.forEach { it.color(indexes) }
-    return graph.nodes.flatMap { node -> node.locations.map { it to node.colors } }.toMap()
+    return graph.nodes.sortedBy { it.locations.hashCode() }.flatMap { node -> node.locations.map { it to node.colors } }.toMap()
 }
 
 private fun IFGraph.IFNode.color(indexes: List<Int>) {
