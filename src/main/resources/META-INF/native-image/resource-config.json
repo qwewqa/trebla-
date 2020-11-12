@@ -2,6 +2,9 @@
   "resources": [
     {
       "pattern": "\\Qstd.zip\\E"
+    },
+    {
+      "pattern": "\\QDefaultProject/DefaultConfiguration.yaml\\E"
     }
   ],
   "bundles": []
