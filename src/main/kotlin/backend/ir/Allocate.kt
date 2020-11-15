@@ -46,7 +46,7 @@ fun IRNode.applyAllocation(mapping: Map<TempLocation, List<Int>>): AIRNode = whe
 }
 
 fun IRNode.getAllocationMapping(indexes: List<Int>): Map<TempLocation, List<Int>> {
-    val graph = constructGraph()
+    val graph = constructIFGraph()
     val copies = getCopyRelations()
     graph.coalesce(copies)
     val (seq, single) = graph.nodes.partition { it.locations.singleOrNull() is SeqLocation }

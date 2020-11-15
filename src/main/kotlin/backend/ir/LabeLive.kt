@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.backend.ir
 
-fun IRNode.constructGraph(): IFGraph {
+fun IRNode.constructIFGraph(): IFGraph {
     liveForwards()
     liveBackwards()
     val graph = IFGraph()

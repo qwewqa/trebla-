@@ -27,7 +27,14 @@ class OptionsAccessor(override val parentContext: Context) : Declaration {
     }.toMap()
 
     override fun getMember(name: String, accessingContext: Context?): Value? {
-        val option = options[name] ?: return null
+        val option = options[name] ?: run {
+            // someOption -> SOME_OPTION
+            val convertedName = name.fold(StringBuilder(name.length)) { acc, c ->
+                if (c in 'A'..'Z') (if (acc.isNotEmpty()) acc.append('_') else acc).append(c + ('a' - 'A'))
+                else acc.append(c)
+            }.toString().toUpperCase()
+            options["#$convertedName"]
+        } ?: return null
         return RawStructValue(
             AllocatedRawValue(ConcreteAllocation(2, option.index)),
             parentContext.getFullyQualified("std", option.type.structName) as StructDeclaration
