@@ -17,6 +17,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     override val type = ScriptType
     override val bindingContext = parentContext
     override val scope = Scope(parentContext.scope)
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
     override val memoryAllocator = StandardAllocator(21, 64)
     override val dataAllocator = StandardAllocator(22, 32)
     override val sharedAllocator = StandardAllocator(24, 32)

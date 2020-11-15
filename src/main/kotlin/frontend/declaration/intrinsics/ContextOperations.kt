@@ -48,12 +48,14 @@ class CombinedContext(outer: Context, inner: Context) : Context {
     override val parentContext = outer
     override val globalContext: GlobalContext = outer.globalContext
     override val scope = CombinedScope(outer.scope, inner.scope)
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
 class CombinedExecutionContext(outer: ExecutionContext, inner: Context) : ExecutionContext {
     override val parentContext = outer
     override val globalContext: GlobalContext = outer.globalContext
     override val scope = CombinedScope(outer.scope, inner.scope)
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 
     override val localAllocator = outer.localAllocator
     override val statements = outer.statements

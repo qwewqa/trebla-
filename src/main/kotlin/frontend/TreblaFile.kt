@@ -11,6 +11,7 @@ val defaultPackage = listOf("engine")
 class TreblaFile(override val node: TreblaFileNode, override val parentContext: GlobalContext) : Context, Entity,
     GlobalAllocatorContext {
     override val globalContext: GlobalContext = parentContext.globalContext
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
     private val pkg = parentContext.getOrCreatePackage(node.packageHeader?.identifier?.value ?: defaultPackage)
     override val levelAllocator = parentContext.levelAllocator
     override val leveldataAllocator = parentContext.leveldataAllocator

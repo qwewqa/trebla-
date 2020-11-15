@@ -15,6 +15,7 @@ import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 class GlobalContext(val configuration: CompilerConfiguration) : GlobalAllocatorContext, Context {
     override val parentContext: Context? = null
     override val scope = Scope(null)
+    override val contextMetadata = ContextMetadata(null)
     override val levelAllocator = StandardAllocator(LEVEL_MEMORY_BLOCK, 256)
     override val leveldataAllocator = StandardAllocator(LEVEL_DATA_BLOCK, 256)
     override val tempAllocator = StandardAllocator(TEMPORARY_MEMORY_BLOCK, 16)

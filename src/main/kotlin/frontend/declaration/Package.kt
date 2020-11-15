@@ -19,6 +19,7 @@ class Package(
     override val levelAllocator = parentContext.levelAllocator
     override val leveldataAllocator = parentContext.leveldataAllocator
     override val tempAllocator = parentContext.tempAllocator
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 
     override fun getMember(name: String, accessingContext: Context?): Value? =
         scope.get(name)

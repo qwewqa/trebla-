@@ -25,11 +25,25 @@ interface Context : Value {
 
     val scope: Scope
 
+    val contextMetadata: ContextMetadata
+
     override val type: Type get() = ContextType
 
     override fun getMember(name: String, accessingContext: Context?) = scope.find(name)
 
     val bindingContext: Context? get() = parentContext
+}
+
+const val CONTEXT_DEPTH_LIMIT = 100
+
+class ContextMetadata(val parent: ContextMetadata?) {
+    val depth: Int = parent?.depth?.plus(1) ?: 0
+
+    init {
+        if (depth >= CONTEXT_DEPTH_LIMIT) {
+            compileError("Maximum depth reached.")
+        }
+    }
 }
 
 fun Context.getFullyQualified(name: List<String>) =
@@ -51,6 +65,7 @@ interface ExecutionContext : Context {
 class SimpleContext(override val parentContext: Context) : Context {
     override val globalContext: GlobalContext = parentContext.globalContext
     override val scope = Scope(parentContext.scope)
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
 class SimpleExecutionContext(override val parentContext: ExecutionContext) : ExecutionContext, Statement {
@@ -58,6 +73,7 @@ class SimpleExecutionContext(override val parentContext: ExecutionContext) : Exe
     override val globalContext: GlobalContext = parentContext.globalContext
     override val localAllocator = parentContext.localAllocator
     override val statements = mutableListOf<Statement>()
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 
     override fun toIR(): IRNode {
         return IRFunctionCall(SonoFunction.Execute, statements.map { it.toIR() })
@@ -79,11 +95,13 @@ class InnerExecutionContext(override val parentContext: ExecutionContext) : Exec
     override val globalContext: GlobalContext = parentContext.globalContext
     override val localAllocator = parentContext.localAllocator
     override val statements = parentContext.statements
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
 class ReadOnlyContext(override val parentContext: Context) : Context {
     override val scope = ReadOnlyScope(parentContext.scope)
     override val globalContext: GlobalContext = parentContext.globalContext
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
 fun List<StatementNode>.evaluateIn(context: Context): Value =
