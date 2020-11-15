@@ -78,32 +78,13 @@ class FunctionDeclaration(
         val statements = node.body.value
         val pairedArguments = parameters.pairedWithAndValidated(arguments)
 
-        if (callingContext !is ExecutionContext) {
-            // we allow single or zero expressions even in non-execution contexts
-            val returnValue = when (statements.size) {
-                0 -> UnitValue
-                1 -> statements.first()
-                    .parseAndApplyTo(FunctionSimpleContext(callingContext, parentContext, pairedArguments))
-                else -> compileError("Invalid location for multi-statement function call.")
-            }
-            if (returnType == UnitValue) compileError("Invalid location for call to this function.")
-            return returnValue.also {
-                if (!returnType.accepts(it))
-                    compileError("Function final statement type incompatible with specified return type.")
-            }
-        }
-        val functionContext = FunctionExecutionContext(
-            callingContext,
-            parentContext,
-            pairedArguments
-        )
+        val functionContext = callingContext.createAndAddChild()
+        pairedArguments.forEach { (param, value) -> functionContext.scope.add(value, param.name) }
 
         statements.dropLast(1).forEach {
             it.parseAndApplyTo(functionContext)
         }
         val returnValue = statements.lastOrNull()?.parseAndApplyTo(functionContext) ?: UnitValue
-
-        if (functionContext.statements.isNotEmpty()) callingContext.statements += functionContext
 
         return if (returnsUnit) UnitValue else returnValue.also {
             if (!returnType.accepts(it))
@@ -141,44 +122,4 @@ class BoundFunction(
                 )
             ) + arguments, callingContext
         )
-}
-
-class FunctionScope(
-    parent: Scope,
-    argumentValues: Map<Parameter, Value>,
-) : EagerScope(parent) {
-    init {
-        argumentValues.forEach { (param, value) -> add(value, param.name) }
-    }
-}
-
-class FunctionExecutionContext(
-    callingContext: ExecutionContext,
-    declarationContext: Context,
-    argumentValues: Map<Parameter, Value>,
-) : ExecutionContext,
-    Statement {
-    override val parentContext = callingContext
-    override val globalContext: GlobalContext = parentContext.globalContext
-
-    // the parent of the scope comes from the context where the function was declared, not where it was called
-    override val scope = FunctionScope(declarationContext.scope, argumentValues)
-
-    override val localAllocator = callingContext.localAllocator
-    override val statements = mutableListOf<Statement>()
-
-    override fun toIR(): IRNode {
-        return IRFunctionCall(SonoFunction.Execute, statements.map { it.toIR() })
-    }
-}
-
-class FunctionSimpleContext(
-    override val parentContext: Context,
-    declarationContext: Context,
-    argumentValues: Map<Parameter, Value>,
-) : Context {
-    override val globalContext: GlobalContext = parentContext.globalContext
-
-    // the parent of the scope comes from the context where the function was declared, not where it was called
-    override val scope = FunctionScope(declarationContext.scope, argumentValues)
 }

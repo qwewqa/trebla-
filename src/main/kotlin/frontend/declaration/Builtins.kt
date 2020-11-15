@@ -31,7 +31,6 @@ object Builtins : Declaration {
  */
 class BuiltinFunction(val function: SonoFunction) : Callable, Value {
     override val type = CallableType
-    val bindingContext: Context? = null
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): RawStructValue {
         val argumentValues = arguments.map {
@@ -51,7 +50,6 @@ class BuiltinFunction(val function: SonoFunction) : Callable, Value {
 
 class ExecutedBuiltinFunction(val builtin: BuiltinFunction) : Callable, Value {
     override val type = CallableType
-    val bindingContext: Context? = null
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         if (callingContext !is ExecutionContext) compileError("Builtin not executable in non-execution context.")
