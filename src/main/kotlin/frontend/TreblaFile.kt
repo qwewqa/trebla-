@@ -83,23 +83,33 @@ class TreblaFile(override val node: TreblaFileNode, override val parentContext: 
         }
     }
 
-    private fun importPackage(identifier: List<String>) {
-        val other = parentContext.getPackage(identifier)
+    private fun importWildcard(identifier: List<String>) {
+        val pkg = parentContext.getPackage(identifier)
             ?: compileError("No package with name ${identifier.joinToString(".")} exists")
         scope.import(
-            other.scope,
-            if (pkg.isInternalTo(other)) Visibility.INTERNAL else Visibility.PUBLIC
+            pkg.scope,
+            if (this.pkg.isInternalTo(pkg)) Visibility.INTERNAL else Visibility.PUBLIC
         )
     }
 
+    private fun importPackage(identifier: List<String>) {
+        val pkg = parentContext.getPackage(identifier)
+            ?: compileError("No package with name ${identifier.joinToString(".")} exists")
+        scope.add(pkg, identifier.last())
+    }
+
     private fun importStd() {
-        importPackage(listOf("std"))
+        importWildcard(listOf("std"))
     }
 
     private fun loadImports() {
         node.imports.imports.forEach { importStatement ->
             importStatement.runWithErrorMessage("Failed to import ${importStatement.identifier.value.joinToString(".")}.") {
-                importPackage(importStatement.identifier.value)
+                if (importStatement.isWildcard) {
+                    importWildcard(importStatement.identifier.value)
+                } else {
+                    importPackage(importStatement.identifier.value)
+                }
             }
         }
     }

@@ -37,7 +37,9 @@ data class ImportListNode(
 
 data class ImportHeaderNode(
     override val context: ParseTree,
-    override val filename: String, val identifier: IdentifierNode,
+    override val filename: String,
+    val identifier: IdentifierNode,
+    val isWildcard: Boolean,
 ) :
     TreblaNode
 
