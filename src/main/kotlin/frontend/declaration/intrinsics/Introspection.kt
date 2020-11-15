@@ -10,7 +10,7 @@ import xyz.qwewqa.trebla.frontend.expression.Allocatable
 import xyz.qwewqa.trebla.frontend.expression.Callable
 import xyz.qwewqa.trebla.frontend.expression.Value
 
-class SizeOf(context: Context) :
+class SizeOfCallable(context: Context) :
         SimpleDeclaration(
             context,
             "sizeOf",
@@ -28,7 +28,7 @@ class SizeOf(context: Context) :
             }
         )
 
-class TypeOf(context: Context) :
+class TypeOfCallable(context: Context) :
     SimpleDeclaration(
         context,
         "typeOf",
@@ -44,7 +44,7 @@ class TypeOf(context: Context) :
         }
     )
 
-class TypeAccepts(context: Context) :
+class TypeAcceptsCallable(context: Context) :
     SimpleDeclaration(
         context,
         "typeAccepts",

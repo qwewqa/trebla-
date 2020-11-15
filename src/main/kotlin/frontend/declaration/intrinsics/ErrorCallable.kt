@@ -5,7 +5,7 @@ import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.expression.Callable
 
-class Error(context: Context) :
+class ErrorCallable(context: Context) :
     SimpleDeclaration(
         context,
         "error",

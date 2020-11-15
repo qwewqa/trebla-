@@ -249,7 +249,7 @@ class EnumStructVariant(
     }
 }
 
-class EnumFromOrdinal(context: Context) :
+class EnumFromOrdinalCallable(context: Context) :
         SimpleDeclaration(
             context,
             "enumFromOrdinal",

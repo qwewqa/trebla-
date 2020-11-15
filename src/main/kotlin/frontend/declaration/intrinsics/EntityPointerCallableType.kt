@@ -6,7 +6,7 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
-class EntityPointer(context: Context) :
+class EntityPointerCallableType(context: Context) :
     BuiltinType("EntityPointer"),
     Subscriptable by SubscriptableDelegate(
         context,

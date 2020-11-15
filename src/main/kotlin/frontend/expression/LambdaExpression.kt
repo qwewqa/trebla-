@@ -21,8 +21,11 @@ class LambdaExpression(override val node: LambdaNode, val declaringContext: Cont
         listOf(Parameter("it", AnyType, node = node))
     }
 
+    val hasDefaultParameters = node.parameters == null
+
+    val statements = node.body
+
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
-        val statements = node.body
         val pairedArguments =
             if (parameters == defaultParameterList && arguments.isEmpty()) emptyMap()
             else parameters.pairedWithAndValidated(arguments)

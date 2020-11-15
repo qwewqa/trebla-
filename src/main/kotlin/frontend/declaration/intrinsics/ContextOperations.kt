@@ -4,7 +4,7 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.expression.*
 
-class LocalContext(context: Context) :
+class LocalContextCallable(context: Context) :
     SimpleDeclaration(
         context,
         "localContext",
@@ -18,7 +18,7 @@ class LocalContext(context: Context) :
         }
     )
 
-class WithContext(context: Context) :
+class WithContextCallable(context: Context) :
     SimpleDeclaration(
         context,
         "withContext",

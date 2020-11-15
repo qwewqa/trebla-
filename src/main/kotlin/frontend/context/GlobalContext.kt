@@ -115,23 +115,25 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to LambdaType,
     listOf("std") to StringType,
     listOf("std") to EnumType,
+    listOf("std") to NamespaceType,
 )
 
 // constructors for intrinsics that require the context
 val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::OptionsAccessor,
-    listOf("std") to ::EntityPointer,
-    listOf("std") to ::TreblaList,
-    listOf("std") to ::LocalContext,
-    listOf("std") to ::WithContext,
-    listOf("std") to ::Deref,
-    listOf("std") to ::Pointer,
-    listOf("std") to ::ListOf,
-    listOf("std") to ::SizeOf,
-    listOf("std") to ::TypeOf,
-    listOf("std") to ::TypeAccepts,
-    listOf("std") to ::Range,
-    listOf("std") to ::Error,
-    listOf("std") to ::PointerTo,
-    listOf("std") to ::EnumFromOrdinal
+    listOf("std") to ::EntityPointerCallableType,
+    listOf("std") to ::ListCallableType,
+    listOf("std") to ::LocalContextCallable,
+    listOf("std") to ::WithContextCallable,
+    listOf("std") to ::DerefCallable,
+    listOf("std") to ::PointerCallableType,
+    listOf("std") to ::ListOfCallable,
+    listOf("std") to ::SizeOfCallable,
+    listOf("std") to ::TypeOfCallable,
+    listOf("std") to ::TypeAcceptsCallable,
+    listOf("std") to ::RangeCallableType,
+    listOf("std") to ::ErrorCallable,
+    listOf("std") to ::PointerToCallable,
+    listOf("std") to ::EnumFromOrdinalCallable,
+    listOf("std") to ::NamespaceCallable
 )

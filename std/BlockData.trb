@@ -24,11 +24,16 @@ func memref(block: Number, index: Number) = *Pointer[Raw](block, index)
 func numref(block: Number, index: Number) = Number(memref(block, index))
 func boolref(block: Number, index: Number) = Boolean(memref(block, index))
 
-let time = numref(LEVEL_DATA_BLOCK, 0)
-let deltaTime = numref(LEVEL_DATA_BLOCK, 1)
-let aspectRatio = numref(LEVEL_DATA_BLOCK, 2)
-let deviceAudioOffset = numref(LEVEL_DATA_BLOCK, 3)
-let deviceInputOffset = numref(LEVEL_DATA_BLOCK, 4)
+let levelData = namespace {
+    let time = numref(LEVEL_DATA_BLOCK, 0)
+    let deltaTime = numref(LEVEL_DATA_BLOCK, 1)
+    let aspectRatio = numref(LEVEL_DATA_BLOCK, 2)
+    let deviceAudioOffset = numref(LEVEL_DATA_BLOCK, 3)
+    let deviceInputOffset = numref(LEVEL_DATA_BLOCK, 4)
+}
+
+let time = levelData.time
+let deltaTime = levelData.deltaTime
 
 let levelTransform = Transform(
     numref(LEVEL_TRANSFORM_BLOCK, 0), numref(LEVEL_TRANSFORM_BLOCK, 1), numref(LEVEL_TRANSFORM_BLOCK, 3),
@@ -36,7 +41,7 @@ let levelTransform = Transform(
     numref(LEVEL_TRANSFORM_BLOCK, 12), numref(LEVEL_TRANSFORM_BLOCK, 13), numref(LEVEL_TRANSFORM_BLOCK, 15),
 )
 
-let background = Quad(
+let levelBackground = Quad(
     Point(numref(LEVEL_BACKGROUND_BLOCK, 0), numref(LEVEL_BACKGROUND_BLOCK, 1)),
     Point(numref(LEVEL_BACKGROUND_BLOCK, 2), numref(LEVEL_BACKGROUND_BLOCK, 3)),
     Point(numref(LEVEL_BACKGROUND_BLOCK, 4), numref(LEVEL_BACKGROUND_BLOCK, 5)),
@@ -66,18 +71,22 @@ private func uiBlock(offset: Number) = UIInfo(
     boolref(LEVEL_UI_BLOCK, offset + 10),
 )
 
-let menuUI = uiBlock(0 * 11)
-let judgmentUI = uiBlock(1 * 11)
-let comboValueUI = uiBlock(2 * 11)
-let comboTextUI = uiBlock(3 * 11)
-let scoreBarUI = uiBlock(4 * 11)
-let scoreValueUI = uiBlock(5 * 11)
-let lifeBarUI = uiBlock(6 * 11)
-let lifeValueUI = uiBlock(7 * 11)
+let levelUI = namespace {
+    let menu = uiBlock(0 * 11)
+    let judgment = uiBlock(1 * 11)
+    let comboValue = uiBlock(2 * 11)
+    let comboText = uiBlock(3 * 11)
+    let scoreBar = uiBlock(4 * 11)
+    let scoreValue = uiBlock(5 * 11)
+    let lifeBar = uiBlock(6 * 11)
+    let lifeValue = uiBlock(7 * 11)
+}
 
-let entityIndex = numref(ENTITY_INFO, 0)
-let archetype = numref(ENTITY_INFO, 1)
-let state = numref(ENTITY_INFO, 2)
+let entityInfo = namespace {
+    let index = numref(ENTITY_INFO, 0)
+    let archetype = numref(ENTITY_INFO, 1)
+    let state = numref(ENTITY_INFO, 2)
+}
 
 enum EntityState {
     WAITING = 0,
@@ -102,28 +111,32 @@ enum EntityJudgement {
 
 func EntityJudgement.clip() = Clip(this.ordinal)
 
-let entityJudgment = numref(ENTITY_INPUT, 0).toEnum(EntityJudgement)
-let entityBucket = numref(ENTITY_INPUT, 1)
-let entityBucketValue = numref(ENTITY_INPUT, 2)
+let entityInput = namespace {
+    let judgment = numref(ENTITY_INPUT, 0).toEnum(EntityJudgement)
+    let bucket = numref(ENTITY_INPUT, 1)
+    let bucketValue = numref(ENTITY_INPUT, 2)
+}
 
-let touchID = numref(TEMPORARY_DATA, 0)
-let touchStarted = boolref(TEMPORARY_DATA, 1)
-let touchEnded = boolref(TEMPORARY_DATA, 2)
-let touchT = numref(TEMPORARY_DATA, 3)
-let touchST = numref(TEMPORARY_DATA, 4)
-let touchX = numref(TEMPORARY_DATA, 5)
-let touchY = numref(TEMPORARY_DATA, 6)
-let touchPosition = Point(touchX, touchY)
-let touchSX = numref(TEMPORARY_DATA, 7)
-let touchSY = numref(TEMPORARY_DATA, 8)
-let touchDX = numref(TEMPORARY_DATA, 9)
-let touchDY = numref(TEMPORARY_DATA, 10)
-let touchVX = numref(TEMPORARY_DATA, 11)
-let touchVY = numref(TEMPORARY_DATA, 12)
-let touchVR = numref(TEMPORARY_DATA, 13)
-let touchVW = numref(TEMPORARY_DATA, 14)
-let touchPos = Point(touchX, touchY)
-let touchStartPos = Point(touchSX, touchSY)
+let touchData = namespace {
+    let id = numref(TEMPORARY_DATA, 0)
+    let started = boolref(TEMPORARY_DATA, 1)
+    let ended = boolref(TEMPORARY_DATA, 2)
+    let t = numref(TEMPORARY_DATA, 3)
+    let st = numref(TEMPORARY_DATA, 4)
+    let x = numref(TEMPORARY_DATA, 5)
+    let y = numref(TEMPORARY_DATA, 6)
+    let position = Point(X, Y)
+    let sx = numref(TEMPORARY_DATA, 7)
+    let sy = numref(TEMPORARY_DATA, 8)
+    let dx = numref(TEMPORARY_DATA, 9)
+    let dy = numref(TEMPORARY_DATA, 10)
+    let vx = numref(TEMPORARY_DATA, 11)
+    let vy = numref(TEMPORARY_DATA, 12)
+    let vr = numref(TEMPORARY_DATA, 13)
+    let vw = numref(TEMPORARY_DATA, 14)
+    let pos = Point(X, Y)
+    let startPos = Point(SX, SY)
+}
 
 private struct LevelBucketAccessor
 operator func LevelBucketAccessor.subscript(index: Number) = LevelBucketData(
@@ -137,25 +150,29 @@ operator func LevelBucketAccessor.subscript(index: Number) = LevelBucketData(
 
 let buckets = LevelBucketAccessor()
 
-let perfectScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 0)
-let greatScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 1)
-let goodScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 2)
-let consecutivePerfectScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 3)
-let consecutivePerfectScoreStep = numref(LEVEL_SCORE_BLOCK, 4)
-let consecutivePerfectScoreCap = numref(LEVEL_SCORE_BLOCK, 5)
-let consecutiveGreatScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 6)
-let consecutiveGreatScoreStep = numref(LEVEL_SCORE_BLOCK, 7)
-let consecutiveGreatScoreCap = numref(LEVEL_SCORE_BLOCK, 8)
-let consecutiveGoodScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 9)
-let consecutiveGoodScoreStep = numref(LEVEL_SCORE_BLOCK, 10)
-let consecutiveGoodScoreCap = numref(LEVEL_SCORE_BLOCK, 11)
+let levelScore = namespace {
+    let perfectScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 0)
+    let greatScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 1)
+    let goodScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 2)
+    let consecutivePerfectScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 3)
+    let consecutivePerfectScoreStep = numref(LEVEL_SCORE_BLOCK, 4)
+    let consecutivePerfectScoreCap = numref(LEVEL_SCORE_BLOCK, 5)
+    let consecutiveGreatScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 6)
+    let consecutiveGreatScoreStep = numref(LEVEL_SCORE_BLOCK, 7)
+    let consecutiveGreatScoreCap = numref(LEVEL_SCORE_BLOCK, 8)
+    let consecutiveGoodScoreMultiplier = numref(LEVEL_SCORE_BLOCK, 9)
+    let consecutiveGoodScoreStep = numref(LEVEL_SCORE_BLOCK, 10)
+    let consecutiveGoodScoreCap = numref(LEVEL_SCORE_BLOCK, 11)
+}
 
-let consecutivePerfectLifeIncrement = numref(LEVEL_LIFE_BLOCK, 0)
-let consecutivePerfectLifeStep = numref(LEVEL_LIFE_BLOCK, 1)
-let consecutiveGreatLifeIncrement = numref(LEVEL_LIFE_BLOCK, 2)
-let consecutiveGreatLifeStep = numref(LEVEL_LIFE_BLOCK, 3)
-let consecutiveGoodLifeIncrement = numref(LEVEL_LIFE_BLOCK, 4)
-let consecutiveGoodLifeStep = numref(LEVEL_LIFE_BLOCK, 5)
+let levelLife = {
+    let consecutivePerfectLifeIncrement = numref(LEVEL_LIFE_BLOCK, 0)
+    let consecutivePerfectLifeStep = numref(LEVEL_LIFE_BLOCK, 1)
+    let consecutiveGreatLifeIncrement = numref(LEVEL_LIFE_BLOCK, 2)
+    let consecutiveGreatLifeStep = numref(LEVEL_LIFE_BLOCK, 3)
+    let consecutiveGoodLifeIncrement = numref(LEVEL_LIFE_BLOCK, 4)
+    let consecutiveGoodLifeStep = numref(LEVEL_LIFE_BLOCK, 5)
+}
 
 struct LevelBucketData(
     minPerfect: Number,

@@ -6,7 +6,7 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 
-class Pointer(context: Context) :
+class PointerCallableType(context: Context) :
     BuiltinType("Pointer"),
     Subscriptable by SubscriptableDelegate(
         context,
@@ -142,7 +142,7 @@ fun Type.pointerTo(block: RawValue, index: RawValue, context: Context) =
         index.toNumberStruct(context),
     )
 
-class PointerTo(context: Context) :
+class PointerToCallable(context: Context) :
     SimpleDeclaration(
         context,
         "pointerTo",
@@ -164,7 +164,7 @@ interface Dereferenceable {
     fun deref(context: Context): Value
 }
 
-class Deref(context: Context) :
+class DerefCallable(context: Context) :
     SimpleDeclaration(
         context,
         "deref",

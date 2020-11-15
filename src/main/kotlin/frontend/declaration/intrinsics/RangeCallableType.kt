@@ -9,7 +9,7 @@ import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.ValueArgument
 
-class Range(context: Context) :
+class RangeCallableType(context: Context) :
     BuiltinType("Range"),
     Callable by CallableDelegate(
         context,

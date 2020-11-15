@@ -9,7 +9,7 @@ import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import kotlin.math.roundToInt
 
-class TreblaList(context: Context) :
+class ListCallableType(context: Context) :
     BuiltinType("List"),
     Subscriptable by SubscriptableDelegate(
         context,
@@ -22,7 +22,7 @@ class TreblaList(context: Context) :
         },
     )
 
-class ListOf(context: Context) :
+class ListOfCallable(context: Context) :
     SimpleDeclaration(
         context,
         "listOf",
