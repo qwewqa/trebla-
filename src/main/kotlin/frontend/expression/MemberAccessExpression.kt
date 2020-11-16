@@ -42,7 +42,7 @@ fun Value.resolveMember(name: String, context: Context?): Value? =
             context?.let { type.resolveBinding(name, typeScope, Visibility.PUBLIC)?.tryBind(this, context) }
         }
         ?: embedded.mapNotNull { it.resolveMember(name, context) }.toSet().let {
-            if (it.size > 1) compileError("Ambigious member due to embeds.") else it.singleOrNull()
+            if (it.size > 1) compileError("Ambiguous member due to embeds.") else it.singleOrNull()
         }
 
 fun Value.resolveDirectBindingMember(name: String, context: Context?) =

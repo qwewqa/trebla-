@@ -17,7 +17,7 @@ class GlobalContext(val configuration: CompilerConfiguration) : GlobalAllocatorC
     override val scope = Scope(null)
     override val contextMetadata = ContextMetadata(null)
     override val levelAllocator = StandardAllocator(LEVEL_MEMORY_BLOCK, 256)
-    override val leveldataAllocator = StandardAllocator(LEVEL_DATA_BLOCK, 256)
+    override val leveldataAllocator = StandardAllocator(LEVEL_DATA_BLOCK, 256, 6)
     override val tempAllocator = StandardAllocator(TEMPORARY_MEMORY_BLOCK, 16)
     override val globalContext: GlobalContext = this
 
