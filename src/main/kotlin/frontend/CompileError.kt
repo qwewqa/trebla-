@@ -103,5 +103,5 @@ class CompileError(message: String, val node: TreblaNode? = null, cause: Compile
 private operator fun <E> List<E>.get(intRange: IntRange) = this.subList(intRange.first, intRange.last + 1)
 
 fun compileError(message: String, node: TreblaNode? = null): Nothing = throw CompileError(message, node)
-fun Declaration.compileError(message: String): Nothing = node?.compileError(message) ?: compileError(message)
+fun Declaration.compileError(message: String): Nothing = node?.compileError(message) ?: compileError(message, null)
 fun TreblaNode.compileError(message: String): Nothing = compileError(message, this)
