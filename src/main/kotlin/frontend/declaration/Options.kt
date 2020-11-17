@@ -14,8 +14,10 @@ class OptionsAccessor(override val parentContext: Context) : Declaration {
     private val options = parentContext.globalContext.configuration.projectConfig.options.mapIndexed { i, option ->
         val name = option["name"]
         val type = option["type"]
+        if (name == null) compileError("Option exists without a name.")
         if (name !is String) compileError("Option $name invalid or does not exist.")
-        if (type !is String) compileError("Invalid option type '$type'.")
+        if (type == null) compileError("Option $name has no type specified.")
+        if (type !is String) compileError("Option $name has invalid type '$type'.")
         name to OptionData(
             i,
             when (type) {
