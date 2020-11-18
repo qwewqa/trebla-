@@ -1,20 +1,17 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.createAndAddChild
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.grammar.trebla.LambdaNode
 
-class LambdaExpression(override val node: LambdaNode, val declaringContext: Context) : Expression, Callable, Value {
+class LambdaExpression(override val node: LambdaNode, val parentContext: Context) : Expression, Callable, Value {
     override val type = LambdaType
-    val bindingContext = declaringContext
     override val parameters by lazy {
         node.parameters?.value?.map {
             Parameter(
                 it,
-                declaringContext
+                parentContext
             )
         } ?: defaultParameterList
     }
@@ -31,7 +28,7 @@ class LambdaExpression(override val node: LambdaNode, val declaringContext: Cont
             if (parameters == defaultParameterList && arguments.isEmpty()) emptyMap()
             else parameters.pairedWithAndValidated(arguments)
 
-        val functionContext = callingContext.createAndAddChild()
+        val functionContext = parentContext.createAndAddChild()
         pairedArguments.forEach { (param, value) -> functionContext.scope.add(value, param.name) }
 
         statements.dropLast(1).forEach {
