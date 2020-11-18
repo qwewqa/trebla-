@@ -30,7 +30,7 @@ class LevelVisitor : LevelBaseVisitor<Any>() {
             ctx.BooleanLiteral().exist -> NumericalArgument(if (ctx.BooleanLiteral().text == "true") 1.0 else 0.0)
             ctx.FloatLiteral().exist -> NumericalArgument(ctx.FloatLiteral().text.toDouble())
             ctx.IntegerLiteral().exist -> NumericalArgument(ctx.IntegerLiteral().text.toDouble())
-            else -> IdentifierArgument(ctx.text.filter { it != '`' })
+            else -> IdentifierArgument(ctx.entityName().Identifier().text.filter { it != '`' })
         }
     }
 
