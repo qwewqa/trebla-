@@ -78,7 +78,7 @@ class FunctionDeclaration(
         val statements = node.body.value
         val pairedArguments = parameters.pairedWithAndValidated(arguments)
 
-        val functionContext = parentContext.createAndAddChild()
+        val functionContext = callingContext.createAndAddChild(parentContext)
         pairedArguments.forEach { (param, value) -> functionContext.scope.add(value, param.name) }
 
         statements.dropLast(1).forEach {

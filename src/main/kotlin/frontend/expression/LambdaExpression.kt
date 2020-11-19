@@ -28,7 +28,7 @@ class LambdaExpression(override val node: LambdaNode, val parentContext: Context
             if (parameters == defaultParameterList && arguments.isEmpty()) emptyMap()
             else parameters.pairedWithAndValidated(arguments)
 
-        val functionContext = parentContext.createAndAddChild()
+        val functionContext = callingContext.createAndAddChild(parentContext)
         pairedArguments.forEach { (param, value) -> functionContext.scope.add(value, param.name) }
 
         statements.dropLast(1).forEach {

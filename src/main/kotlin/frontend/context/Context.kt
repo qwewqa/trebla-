@@ -62,13 +62,13 @@ interface ExecutionContext : Context {
     val statements: MutableList<Statement>
 }
 
-class SimpleContext(override val parentContext: Context) : Context {
+open class SimpleContext(final override val parentContext: Context) : Context {
     override val globalContext: GlobalContext = parentContext.globalContext
     override val scope = Scope(parentContext.scope)
     override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
-class SimpleExecutionContext(override val parentContext: ExecutionContext) : ExecutionContext, Statement {
+open class SimpleExecutionContext(final override val parentContext: ExecutionContext) : ExecutionContext, Statement {
     override val scope = EagerScope(parentContext.scope)
     override val globalContext: GlobalContext = parentContext.globalContext
     override val localAllocator = parentContext.localAllocator
@@ -80,9 +80,24 @@ class SimpleExecutionContext(override val parentContext: ExecutionContext) : Exe
     }
 }
 
+class AlternateScopeContext(parentContext: Context, scopeContext: Context) : SimpleContext(parentContext) {
+    override val scope = Scope(scopeContext.scope)
+    // Note: Metadata also should reflect both parents eventually
+}
+
+class AlternateScopeExecutionContext(parentContext: ExecutionContext, scopeContext: Context) :
+    SimpleExecutionContext(parentContext) {
+    override val scope = EagerScope(scopeContext.scope)
+}
+
 fun Context.createAndAddChild() = when (this) {
     is ExecutionContext -> SimpleExecutionContext(this).also { this.statements += it }
     else -> SimpleContext(this)
+}
+
+fun Context.createAndAddChild(scopeContext: Context) = when (this) {
+    is ExecutionContext -> AlternateScopeExecutionContext(this, scopeContext).also { this.statements += it }
+    else -> AlternateScopeContext(this, scopeContext)
 }
 
 fun Context.createChild() = when (this) {
