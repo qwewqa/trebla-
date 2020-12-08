@@ -5,12 +5,13 @@ import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.expression.BlockStatement
+import xyz.qwewqa.trebla.frontend.expression.Statement
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.BlockNode
 import xyz.qwewqa.trebla.grammar.trebla.StatementNode
+import xyz.qwewqa.trebla.frontend.expression.BlockStatement
 
 /**
  * A context contains declarations, which are stored in its scope.
@@ -34,8 +35,12 @@ interface Context : Value {
 
 const val CONTEXT_DEPTH_LIMIT = 100
 
-class ContextMetadata(val parent: ContextMetadata?) {
+class ContextMetadata(
+    parent: ContextMetadata?,
+    callback: CallbackName? = null,
+) {
     val depth: Int = parent?.depth?.plus(1) ?: 0
+    val callback: CallbackName? = callback ?: parent?.callback
 
     init {
         if (depth >= CONTEXT_DEPTH_LIMIT) {
