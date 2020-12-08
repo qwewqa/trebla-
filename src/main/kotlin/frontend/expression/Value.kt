@@ -1,22 +1,26 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
-import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.PointerValue
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.pointerTo
+import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 
 /**
  * Represents a value that results from an frontend.expression.
  * In short, a value encapsulates data on how to do something, from manipulating memory in the case of struct values,
  * to any declaration like function declarations.
  */
-interface Value : Entity {
+interface Value {
     val type: Type
     val embedded: List<Value> get() = emptyList()
+
+    /**
+     * The original node this value was derived from, if it exists.
+     */
+    val node: TreblaNode? get() = null
 
     val commonName: String? get() = null
 

@@ -14,7 +14,7 @@ class MemberAccessExpression(override val node: UnaryFunctionNode, op: MemberAcc
 
     override fun applyTo(context: Context): Value {
         val lhs = node.value.parseAndApplyTo(context)
-        return runWithErrorMessage("Error in member access expression.") {
+        return node.runWithErrorMessage("Error in member access expression.") {
             lhs.resolveMember(name, context)
                 ?: if (lhs is Dereferenceable) {
                     compileError("No member with name $name found. Dereference may be missing.")

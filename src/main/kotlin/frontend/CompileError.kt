@@ -4,7 +4,11 @@ import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.misc.Interval
 import org.antlr.v4.runtime.tree.TerminalNode
 import xyz.qwewqa.trebla.frontend.declaration.Declaration
+import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * Represents an error during compilation due to some error in the code being compiled.
@@ -35,7 +39,7 @@ class CompileError(message: String, val node: TreblaNode? = null, cause: Compile
     val lookbackLines = 1
     val maxLookaheadLines = 1
 
-    override val message: String?
+    override val message: String
         get() = if (node != null) "CompileError: ${super.message}\n$filenamePrefix$filename: ($startLineIndex, $startCharIndex):\n${
             node.context.let {
                 val startToken = when (it) {
@@ -105,3 +109,22 @@ private operator fun <E> List<E>.get(intRange: IntRange) = this.subList(intRange
 fun compileError(message: String, node: TreblaNode? = null): Nothing = throw CompileError(message, node)
 fun Declaration.compileError(message: String): Nothing = node?.compileError(message) ?: compileError(message, null)
 fun TreblaNode.compileError(message: String): Nothing = compileError(message, this)
+
+/**
+ * Runs the given [block], returning the result.
+ * If a [CompileError] is thrown within the block, rethrows a compile error with the given [message]
+ * with the inner error as the cause and with this node.
+ * Otherwise, is equivalent to [run].
+ */
+@OptIn(ExperimentalContracts::class)
+inline fun <T> TreblaNode?.runWithErrorMessage(message: String, block: () -> T): T {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
+    try {
+        return block()
+    } catch (e: CompileError) {
+        throw CompileError(message, this, e)
+    }
+}

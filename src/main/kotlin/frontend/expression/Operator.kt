@@ -29,7 +29,7 @@ class UnaryFunctionExpression(override val node: UnaryFunctionNode) : Expression
         val func = lhs.resolveMember(functionName, context)
         if (func !is Callable) compileError("Unary function is not implemented.", node)
         if (!func.isOperator) compileError("Unary function is not marked operator.", node)
-        return runWithErrorMessage("Error in unary function call") {
+        return node.runWithErrorMessage("Error in unary function call") {
             func.callWith(emptyList(), context) // no arguments; receiver should already be bound
         }
     }
@@ -39,7 +39,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
     private val functionName = infixOperatorNames[node.op] ?: node.op
     private val isOperator = node.op in infixOperatorNames
 
-    override fun applyTo(context: Context): Value = runWithErrorMessage("Error in infix expression.") {
+    override fun applyTo(context: Context): Value = node.runWithErrorMessage("Error in infix expression.") {
         when (functionName) {
             "||" -> return doShortCircuitingBoolean(ShortCircuitOperation.Or, context)
             "&&" -> return doShortCircuitingBoolean(ShortCircuitOperation.And, context)

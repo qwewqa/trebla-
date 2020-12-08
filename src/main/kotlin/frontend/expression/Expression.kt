@@ -1,7 +1,5 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ReadOnlyContext
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
@@ -9,11 +7,14 @@ import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.StructDeclaration
 import xyz.qwewqa.trebla.grammar.trebla.ExpressionNode
 import xyz.qwewqa.trebla.grammar.trebla.StatementNode
+import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 
 /**
  * Expressions are evaluated to compute their value.
  */
-interface Expression : Entity {
+interface Expression {
+    val node: TreblaNode? get() = null
+
     /**
      * Applies the effects of this frontend.expression to the provided context, such as adding a declaration to the scope
      * or adding a statement.

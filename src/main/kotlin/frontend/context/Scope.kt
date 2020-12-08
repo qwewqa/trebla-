@@ -1,11 +1,9 @@
 package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Value
-import xyz.qwewqa.trebla.frontend.expression.resolveMember
 
 open class Scope(val parent: Scope?) {
     private val values = mutableMapOf<String, MutableMap<Signature, ValueMetadata>>()

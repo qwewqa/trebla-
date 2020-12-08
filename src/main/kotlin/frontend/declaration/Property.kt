@@ -30,7 +30,7 @@ class PropertyDeclaration(
         }
     }
 
-    override fun applyTo(context: Context): UnitValue = runWithErrorMessage("Error in property declaration.") {
+    override fun applyTo(context: Context): UnitValue = node.runWithErrorMessage("Error in property declaration.") {
         if (identifier.all { it == '_' }) {
             compileError("All underscore identifiers are reserved.")
         }

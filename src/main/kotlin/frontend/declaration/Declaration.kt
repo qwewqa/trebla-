@@ -8,6 +8,7 @@ import xyz.qwewqa.trebla.frontend.expression.Expression
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.ModifierListNode
+import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -54,6 +55,8 @@ interface Declaration : Value, Expression {
         context.scope.add(this, identifier, signature, visibility)
         return UnitValue
     }
+
+    override val node: TreblaNode? get() = null
 }
 
 @OptIn(ExperimentalContracts::class)

@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
@@ -37,7 +36,7 @@ class CallExpression(override val node: UnaryFunctionNode, op: FunctionCallNode)
         val arguments = if (lambda != null) valueArguments + lambda else valueArguments
 
         val target = node.value.parseAndApplyTo(context)
-        return runWithErrorMessage("Error in call expression.") {
+        return node.runWithErrorMessage("Error in call expression.") {
             (target as? Callable)?.callWith(arguments, context)
                 ?: (target.resolveMember("call", context) as? Callable)?.run {
                     if (!isOperator) compileError("call function exists, but is not operator.", node)
@@ -55,7 +54,7 @@ class SubscriptExpression(override val node: UnaryFunctionNode, op: SubscriptNod
         val arguments = arguments.applyAllIn(context)
 
         val target = node.value.parseAndApplyTo(context)
-        return runWithErrorMessage("Error in subscript expression.") {
+        return node.runWithErrorMessage("Error in subscript expression.") {
             (target as? Subscriptable)?.subscriptWith(arguments, context)
                 ?: (target.resolveMember("subscript", context) as? Callable)?.run {
                     if (!isOperator) compileError("subscript function exists, but is not operator.", node)
@@ -78,8 +77,8 @@ class Parameter(
     val name: String,
     val type: Type,
     val default: DefaultParameter? = null,
-    override val node: TreblaNode? = null,
-) : Entity {
+    val node: TreblaNode? = null,
+)  {
     constructor(node: ParameterNode, context: Context) : this(
         node.identifier.value,
         node.type?.applyIn(context) ?: AnyType,

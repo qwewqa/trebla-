@@ -1,24 +1,21 @@
 package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
-import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.expression.Statement
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
-import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.BlockNode
 import xyz.qwewqa.trebla.grammar.trebla.StatementNode
 import xyz.qwewqa.trebla.frontend.expression.BlockStatement
+import xyz.qwewqa.trebla.frontend.expression.Value
 
 /**
  * A context contains declarations, which are stored in its scope.
  */
 interface Context : Value {
     val parentContext: Context?
-    val source: Entity? get() = null
 
     val globalContext: GlobalContext
 

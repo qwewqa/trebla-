@@ -20,7 +20,7 @@ class ArchetypeDeclaration(override val node: ArchetypeDeclarationNode, override
 
     val isInput = node.isInput
 
-    fun process() = runWithErrorMessage("Error in archetype declaration.") {
+    fun process() = node.runWithErrorMessage("Error in archetype declaration.") {
         val script = (parentContext.scope.find(node.script.value) as? ScriptDeclaration)
             ?: compileError("Invalid script.")
         val defaults = node.defaults.value.associate {

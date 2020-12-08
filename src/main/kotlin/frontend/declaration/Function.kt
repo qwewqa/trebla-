@@ -1,9 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.backend.ir.SonoFunction
-import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
-import xyz.qwewqa.trebla.backend.ir.IRNode
-import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -107,8 +103,7 @@ class BoundFunction(
     val context: Context?,
     val receiver: Value,
     val function: FunctionDeclaration,
-) : Callable, Entity,
-    Value {
+) : Callable, Value {
     override val type = CallableType
     override val isOperator = function.isOperator
     override val isInfix = function.isInfix
