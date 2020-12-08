@@ -2,7 +2,10 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.ExecutionContext
+import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
+import xyz.qwewqa.trebla.frontend.context.evaluateInChildOf
 import xyz.qwewqa.trebla.grammar.trebla.WhenConditionalEntryNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenElseEntryNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenExpressionNode
@@ -15,23 +18,25 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
         val (conditionals, default) = getEntries()
         val elseContext = SimpleExecutionContext(context)
             .apply { default?.body?.value?.forEach { it.parseAndApplyTo(this) } }
-            .toIR()
-        context.statements += IRRawValue(
+            .statements
+            .asIR()
+        context.statements +=
             conditionals.foldRight(elseContext) { entry, prev ->
                 val conditionContext = SimpleExecutionContext(context)
                 val condition = entry.condition.parseAndApplyTo(conditionContext).asBooleanStruct(context)
                 SonoFunction.If.calledWith(
                     SonoFunction.Execute.calledWith(
-                        conditionContext.toIR(),
+                        conditionContext.statements.asIR(),
                         condition.raw.toIR(),
                     ),
                     SimpleExecutionContext(context)
                         .apply { entry.body.value.forEach { it.parseAndApplyTo(this) } }
-                        .toIR(),
+                        .statements
+                        .asIR(),
                     prev,
                 )
             }
-        )
+
         return UnitValue
     }
 

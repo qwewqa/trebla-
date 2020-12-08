@@ -53,7 +53,7 @@ class ExecutedBuiltinFunction(val builtin: BuiltinFunction) : Callable, Value {
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         if (callingContext !is ExecutionContext) compileError("Builtin not executable in non-execution context.")
-        callingContext.statements += Statement { builtin.callWith(arguments, callingContext).raw.toIR() }
+        callingContext.statements +=  builtin.callWith(arguments, callingContext).raw.toIR()
         return UnitValue
     }
 }

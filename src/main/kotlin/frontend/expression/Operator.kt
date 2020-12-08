@@ -98,7 +98,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         val resultValue = IRFunctionCall(operation.function, listOf(
             lhsValue.raw.toIR(),
             IRFunctionCall(SonoFunction.Execute, listOf(
-                rhsBlock.toIR(),
+                rhsBlock.statements.asIR(),
                 rhsValue.raw.toIR()
             ))
         ))

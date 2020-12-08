@@ -7,10 +7,7 @@ import xyz.qwewqa.trebla.backend.ir.IRNode
 import xyz.qwewqa.trebla.backend.ir.IRValue
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.expression.Statement
-import xyz.qwewqa.trebla.frontend.expression.Value
-import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
-import xyz.qwewqa.trebla.frontend.expression.tryConstexprEval
+import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.grammar.trebla.CallbackDeclarationNode
 import kotlin.math.roundToInt
 
@@ -68,13 +65,13 @@ class ExecutionCallback(
     override val globalContext: GlobalContext = parentContext.globalContext
     override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
     override val localAllocator = TemporaryAllocator()
-    override val statements = mutableListOf<Statement>()
+    override val statements = BlockStatement()
 
     override var returnValue: Value? = null
 
     override fun toIR(): IRFunctionCall {
         val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR() ?: IRValue(0.0)
-        return SonoFunction.Execute.calledWith(statements.map { it.toIR() } + listOf(returnIRValue))
+        return SonoFunction.Execute.calledWith(listOf(statements.asIR()) + listOf(returnIRValue))
     }
 }
 

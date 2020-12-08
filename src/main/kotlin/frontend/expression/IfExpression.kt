@@ -14,14 +14,14 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
     private fun applyNormal(context: Context): UnitValue {
         if (context !is ExecutionContext) compileError("non-const if statement requires an execution context.", node)
         val condition = node.condition.parseAndApplyTo(context).asBooleanStruct(context)
-        context.statements += SonoFunction.If.raw(
-            condition.raw,
+        context.statements += SonoFunction.If.calledWith(
+            condition.raw.toIR(),
             SimpleExecutionContext(context).also { ctx ->
                 node.tbranch.evaluateIn(ctx)
-            }.raw(),
+            }.statements.asIR(),
             SimpleExecutionContext(context).also { ctx ->
                 node.fbranch?.evaluateIn(ctx)
-            }.raw()
+            }.statements.asIR()
         )
         return UnitValue
     }

@@ -26,7 +26,7 @@ class WhenMatchExpression(override val node: WhenMatchExpressionNode) : Expressi
         }.firstOrNull()?.let {
             val bodyContext = SimpleExecutionContext(context)
             it.body.evaluateIn(bodyContext)
-            bodyContext.toIR()
+            bodyContext.statements.asIR()
         }
         val entryIRNodes = entries.flatMap { entryNode ->
             // this should not need an execution context
@@ -45,9 +45,9 @@ class WhenMatchExpression(override val node: WhenMatchExpressionNode) : Expressi
                 }
             }
             entryNode.body.evaluateIn(bodyContext)
-            listOf(variant.ordinal.toIR(), bodyContext.toIR())
+            listOf(variant.ordinal.toIR(), bodyContext.statements.asIR())
         }
-        context.statements += Statement {
+        context.statements +=
             if (defaultIRNode != null) {
                 IRFunctionCall(
                     SonoFunction.SwitchWithDefault,
@@ -59,7 +59,7 @@ class WhenMatchExpression(override val node: WhenMatchExpressionNode) : Expressi
                     listOf(matchValue.ordinal.toIR()) + entryIRNodes
                 )
             }
-        }
+
         return UnitValue
     }
 }

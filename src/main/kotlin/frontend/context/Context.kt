@@ -1,13 +1,11 @@
 package xyz.qwewqa.trebla.frontend.context
 
-import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
-import xyz.qwewqa.trebla.backend.ir.IRNode
-import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.backend.compile.CallbackName
 import xyz.qwewqa.trebla.frontend.Entity
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.expression.Statement
+import xyz.qwewqa.trebla.frontend.expression.BlockStatement
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
@@ -59,7 +57,7 @@ object ContextType : BuiltinType("Context")
  */
 interface ExecutionContext : Context {
     val localAllocator: TemporaryAllocator
-    val statements: MutableList<Statement>
+    val statements: BlockStatement
 }
 
 open class SimpleContext(final override val parentContext: Context) : Context {
@@ -68,16 +66,12 @@ open class SimpleContext(final override val parentContext: Context) : Context {
     override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
-open class SimpleExecutionContext(final override val parentContext: ExecutionContext) : ExecutionContext, Statement {
+open class SimpleExecutionContext(final override val parentContext: ExecutionContext) : ExecutionContext {
     override val scope = EagerScope(parentContext.scope)
     override val globalContext: GlobalContext = parentContext.globalContext
     override val localAllocator = parentContext.localAllocator
-    override val statements = mutableListOf<Statement>()
+    override val statements = BlockStatement()
     override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
-
-    override fun toIR(): IRNode {
-        return IRFunctionCall(SonoFunction.Execute, statements.map { it.toIR() })
-    }
 }
 
 class AlternateScopeContext(parentContext: Context, scopeContext: Context) : SimpleContext(parentContext) {
@@ -91,12 +85,12 @@ class AlternateScopeExecutionContext(parentContext: ExecutionContext, scopeConte
 }
 
 fun Context.createAndAddChild() = when (this) {
-    is ExecutionContext -> SimpleExecutionContext(this).also { this.statements += it }
+    is ExecutionContext -> SimpleExecutionContext(this).also { this.statements += it.statements }
     else -> SimpleContext(this)
 }
 
 fun Context.createAndAddChild(scopeContext: Context) = when (this) {
-    is ExecutionContext -> AlternateScopeExecutionContext(this, scopeContext).also { this.statements += it }
+    is ExecutionContext -> AlternateScopeExecutionContext(this, scopeContext).also { this.statements += it.statements }
     else -> AlternateScopeContext(this, scopeContext)
 }
 

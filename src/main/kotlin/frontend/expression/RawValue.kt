@@ -43,7 +43,7 @@ data class LiteralRawValue(val value: Double) : RawValue() {
 fun Number.toLiteralRawValue() = LiteralRawValue(this.toDouble())
 fun Boolean.toLiteralRawValue() = LiteralRawValue(if (this) 1.0 else 0.0)
 
-class BuiltinCallRawValue(val function: SonoFunction, val arguments: List<RawValue>) : RawValue(), Statement {
+class BuiltinCallRawValue(val function: SonoFunction, val arguments: List<RawValue>) : RawValue() {
     override fun toIR(): IRNode {
         // Doing some simplification here might help with performance but this isn't tested.
         // It's really so initial IR is a bit easier to read when debugging.
@@ -58,29 +58,27 @@ fun SonoFunction.raw(vararg args: RawValue) = BuiltinCallRawValue(this, args.toL
 /**
  * Wraps an IRNode directly as raw value.
  */
-class IRRawValue(val value: IRNode) : RawValue(), Statement {
+class IRRawValue(val value: IRNode) : RawValue() {
     override fun toIR(): IRNode {
         return value
     }
 }
 
-fun Statement.raw() = IRRawValue(toIR())
+fun Statement.raw() = IRRawValue(asIR())
 
-class AllocatedValueAssignment(val lhs: AllocatedRawValue, val rhs: RawValue) : Statement {
-    override fun toIR() = when (val alloc = lhs.allocation) {
-        is ConcreteAllocation -> SonoFunction.Set.calledWith(
-            alloc.block.toIR(),
-            alloc.index.toIR(),
-            rhs.toIR()
-        )
-        is TemporaryAllocation -> IRTempAssign(alloc.id, rhs.toIR())
-        is DynamicAllocation -> SonoFunction.SetShifted.calledWith(
-            alloc.block.toIR(),
-            alloc.index.toIR(),
-            alloc.offset.toIR(),
-            rhs.toIR()
-        )
-    }
+fun allocatedValueAssignment(lhs: AllocatedRawValue, rhs: RawValue) = when (val alloc = lhs.allocation) {
+    is ConcreteAllocation -> SonoFunction.Set.calledWith(
+        alloc.block.toIR(),
+        alloc.index.toIR(),
+        rhs.toIR()
+    )
+    is TemporaryAllocation -> IRTempAssign(alloc.id, rhs.toIR())
+    is DynamicAllocation -> SonoFunction.SetShifted.calledWith(
+        alloc.block.toIR(),
+        alloc.index.toIR(),
+        alloc.offset.toIR(),
+        rhs.toIR()
+    )
 }
 
 fun RawValue.toNumberStruct(context: Context) = RawStructValue(
@@ -95,7 +93,7 @@ fun RawValue.toBooleanStruct(context: Context) = RawStructValue(
 
 fun RawValue.copyFrom(other: RawValue, context: ExecutionContext) {
     when (this) {
-        is AllocatedRawValue -> context.statements += AllocatedValueAssignment(this, other)
+        is AllocatedRawValue -> context.statements += allocatedValueAssignment(this, other)
         else -> {
             val thisValue = this.toIR().tryConstexprEvaluate()
             val otherValue = other.toIR().tryConstexprEvaluate()
@@ -104,9 +102,10 @@ fun RawValue.copyFrom(other: RawValue, context: ExecutionContext) {
     }
 }
 
-fun RawValue.copyTo(allocator: Allocator, context: ExecutionContext): AllocatedRawValue {
+fun RawValue.copyTo(allocator: Allocator, context: ExecutionContext)
+        : AllocatedRawValue {
     val newValue = AllocatedRawValue(allocator.allocate())
-    context.statements += AllocatedValueAssignment(newValue, this)
+    context.statements += allocatedValueAssignment(newValue, this)
     return newValue
 }
 

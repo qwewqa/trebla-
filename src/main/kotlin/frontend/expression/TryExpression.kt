@@ -36,14 +36,14 @@ class TryExpression(override val node: TryExpressionNode) : Expression {
                 .asSequence()
                 .map { it.parseAndApplyTo(tryContext) }
                 .lastOrNull()
-                .also { context.statements += tryContext } ?: UnitValue
+                .also { context.statements += tryContext.statements } ?: UnitValue
         } catch (e: CompileError) {
             val exceptContext = SimpleExecutionContext(context)
             node.exceptBranch.value
                 .asSequence()
                 .map { it.parseAndApplyTo(exceptContext) }
                 .lastOrNull()
-                .also { context.statements += exceptContext } ?: UnitValue
+                .also { context.statements += exceptContext.statements } ?: UnitValue
         }
     }
 }

@@ -24,13 +24,14 @@ class ForExpression(override val node: ForExpressionNode) : Expression {
             node.body.value.forEach { it.parseAndApplyTo(ctx) }
             afterthought?.applyTo(ctx)
         }
-        innerContext.statements += WhileStatement(
+        innerContext.statements += SonoFunction.While.calledWith(
             SonoFunction.Execute.calledWith(
-                conditionContext.toIR(),
-                condition.raw.toIR()
-            ),
-            body,
-        )
+                        conditionContext.statements.asIR(),
+                        condition.raw.toIR()
+                    ),
+                body.statements.asIR(),
+            )
         return UnitValue
     }
 }
+

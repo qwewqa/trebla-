@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.expression
 
-import xyz.qwewqa.trebla.backend.ir.IRNode
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
@@ -19,20 +18,13 @@ class WhileExpression(override val node: WhileExpressionNode) : Expression {
         val body = SimpleExecutionContext(context).also { ctx ->
             node.body.value.forEach { it.parseAndApplyTo(ctx) }
         }
-        context.statements += WhileStatement(
+        context.statements += SonoFunction.While.calledWith(
             SonoFunction.Execute.calledWith(
-                conditionContext.toIR(),
+                conditionContext.statements.asIR(),
                 condition.raw.toIR(),
             ),
-            body,
-        )
+            body.statements.asIR(),
+        ).asStatement()
         return UnitValue
     }
-}
-
-class WhileStatement(val condition: IRNode, val body: SimpleExecutionContext) : Statement {
-    override fun toIR() = SonoFunction.While.calledWith(
-        condition,
-        body.toIR(),
-    )
 }

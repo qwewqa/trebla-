@@ -1,7 +1,10 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
+import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.IRValue
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.backend.ir.toIR
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -143,10 +146,10 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         }
         cells.dropLastWhile { it == null }
         if (callingContext !is ExecutionContext) compileError("Script spawns require an execution context.")
-        callingContext.statements += BuiltinCallRawValue(
+        callingContext.statements += IRFunctionCall(
             SonoFunction.Spawn,
-            listOf(LiteralRawValue(index.toDouble())) + cells.map { it ?: LiteralRawValue(0.0) }
-                .dropLastWhile { it is LiteralRawValue && it.value == 0.0 }
+            listOf(index.toIR()) + cells.map { it?.toIR() ?: 0.0.toIR() }
+                .dropLastWhile { it is IRValue && it.value == 0.0 }
         )
         return UnitValue
     }
