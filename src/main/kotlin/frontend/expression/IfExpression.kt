@@ -15,7 +15,7 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
         if (context !is ExecutionContext) compileError("non-const if statement requires an execution context.", node)
         val condition = node.condition.parseAndApplyTo(context).asBooleanStruct(context)
         context.statements += SonoFunction.If.calledWith(
-            condition.raw.toIR(),
+            condition.raw.toIR(context),
             SimpleExecutionContext(context).also { ctx ->
                 node.tbranch.evaluateIn(ctx)
             }.statements.asIR(),
@@ -52,7 +52,7 @@ fun Value.asNumberStruct(context: Context): RawStructValue {
 
 fun ExpressionNode.parseAndEvaluateConstantBoolean(context: Context): Boolean {
     val parsed = parseAndApplyTo(SimpleContext(context)).asBooleanStruct(context)
-    val result = parsed.raw.toIR().tryConstexprEvaluate()
+    val result = parsed.raw.tryConstexprEvaluate()
         ?: compileError("Boolean must be a compile time constant.", this)
     return when (result) {
         1.0 -> true
@@ -63,6 +63,6 @@ fun ExpressionNode.parseAndEvaluateConstantBoolean(context: Context): Boolean {
 
 fun ExpressionNode.parseAndEvaluateConstantNumber(context: Context): Double {
     val parsed = parseAndApplyTo(SimpleContext(context)).asNumberStruct(context)
-    return parsed.raw.toIR().tryConstexprEvaluate()
+    return parsed.raw.tryConstexprEvaluate()
         ?: compileError("Number must be a compile time constant.", this)
 }

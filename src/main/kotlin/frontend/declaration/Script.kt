@@ -148,7 +148,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
         if (callingContext !is ExecutionContext) compileError("Script spawns require an execution context.")
         callingContext.statements += IRFunctionCall(
             SonoFunction.Spawn,
-            listOf(index.toIR()) + cells.map { it?.toIR() ?: 0.0.toIR() }
+            listOf(index.toIR()) + cells.map { it?.toIR(callingContext) ?: 0.0.toIR() }
                 .dropLastWhile { it is IRValue && it.value == 0.0 }
         )
         return UnitValue
@@ -198,4 +198,5 @@ class ScriptInitializationContext(script: ScriptDeclaration, initializeCallback:
     override val scope = script.scope // Necessary for some reason. Delegate alone won't work.
     override val statements = initializeCallback.statements
     override val localAllocator = initializeCallback.localAllocator
+    override val contextMetadata = ContextMetadata(script.contextMetadata, CallbackName.Initialize)
 }

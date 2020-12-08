@@ -94,3 +94,26 @@ const val TEMPORARY_DATA_BLOCK = 101
 const val SHARED_BLOCK_SIZE = 32
 
 const val LEVEL_DATA_OFFSET = 6
+
+val blockNames = mutableMapOf(
+    0 to "level memory",
+    1 to "level data",
+    2 to "level option",
+    3 to "level transform",
+    4 to "level background",
+    5 to "level ui",
+    6 to "level bucket",
+    7 to "level score",
+    8 to "level life",
+    10 to "entity info array",
+    11 to "entity data array",
+    12 to "entity shared memory array",
+    20 to "entity info",
+    21 to "entity memory",
+    22 to "entity data",
+    23 to "entity input",
+    24 to "entity shared memory",
+    30 to "archetype life",
+    100 to "temporary memory",
+    101 to "temporary data",
+)

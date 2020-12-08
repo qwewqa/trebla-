@@ -106,7 +106,7 @@ interface Allocated : Value {
         val blocks = allocations.map { it.block }
         val indexes = allocations.map { it.index }
         val offsets = allocations.map { it.offset }
-        val offsetValues = offsets.map { it.toIR().tryConstexprEvaluate() ?: return null }
+        val offsetValues = offsets.map { it.tryConstexprEvaluate() ?: return null }
         if (!offsetValues.zipWithNext().all { (a, b) -> b - a == 1.0 }) return null
         val block = blocks.toSet().singleOrNull() ?: return null
         /** see [ConcreteAllocation] for information */

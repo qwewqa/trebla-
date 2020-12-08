@@ -96,10 +96,10 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         if (rhsValue !is RawStructValue || rhsValue.type != context.booleanType)
             compileError("Short circuiting operators can only be applied to booleans. Instead got ${rhsValue.type.commonName}.", rhsValue.node)
         val resultValue = IRFunctionCall(operation.function, listOf(
-            lhsValue.raw.toIR(),
+            lhsValue.raw.toIR(context),
             IRFunctionCall(SonoFunction.Execute, listOf(
                 rhsBlock.statements.asIR(),
-                rhsValue.raw.toIR()
+                rhsValue.raw.toIR(context)
             ))
         ))
 

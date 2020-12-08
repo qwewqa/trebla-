@@ -125,7 +125,7 @@ let touchData = namespace {
     let st = numref(TEMPORARY_DATA, 4)
     let x = numref(TEMPORARY_DATA, 5)
     let y = numref(TEMPORARY_DATA, 6)
-    let position = Point(X, Y)
+    let position = Point(x, y)
     let sx = numref(TEMPORARY_DATA, 7)
     let sy = numref(TEMPORARY_DATA, 8)
     let dx = numref(TEMPORARY_DATA, 9)
@@ -134,8 +134,8 @@ let touchData = namespace {
     let vy = numref(TEMPORARY_DATA, 12)
     let vr = numref(TEMPORARY_DATA, 13)
     let vw = numref(TEMPORARY_DATA, 14)
-    let pos = Point(X, Y)
-    let startPos = Point(SX, SY)
+    let pos = Point(x, y)
+    let startPos = Point(sx, sy)
 }
 
 private struct LevelBucketAccessor

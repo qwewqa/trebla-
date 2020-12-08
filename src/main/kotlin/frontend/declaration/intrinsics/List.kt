@@ -1,8 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
-import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -54,7 +52,7 @@ data class UnsizedListType(val containedType: Type, val context: Context) : Type
         },
         {
 
-            val size = "size".cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()?.roundToInt()
+            val size = "size".cast<RawStructValue>().raw.tryConstexprEvaluate()?.roundToInt()
                 ?: compileError("List size must be a compile time constant.")
             SizedListType(size, this@UnsizedListType, context)
         }

@@ -51,12 +51,12 @@ class WhenMatchExpression(override val node: WhenMatchExpressionNode) : Expressi
             if (defaultIRNode != null) {
                 IRFunctionCall(
                     SonoFunction.SwitchWithDefault,
-                    listOf(matchValue.ordinal.toIR()) + entryIRNodes + defaultIRNode
+                    listOf(matchValue.ordinal.toIR(context)) + entryIRNodes + defaultIRNode
                 )
             } else {
                 IRFunctionCall(
                     SonoFunction.Switch,
-                    listOf(matchValue.ordinal.toIR()) + entryIRNodes
+                    listOf(matchValue.ordinal.toIR(context)) + entryIRNodes
                 )
             }
 

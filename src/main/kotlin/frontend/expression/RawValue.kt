@@ -16,26 +16,37 @@ sealed class RawValue {
     /**
      * Returns the IR representation of this value when read from.
      */
-    abstract fun toIR(): IRNode
+    abstract fun toIR(context: Context?): IRNode
 }
 
+fun RawValue.tryConstexprEvaluate() = toIR(null).tryConstexprEvaluate()
+
 class AllocatedRawValue(val allocation: Allocation) : RawValue() {
-    override fun toIR() = when (allocation) {
+    override fun toIR(context: Context?) = when (allocation) {
         is ConcreteAllocation -> SonoFunction.Get.calledWith(
-            allocation.block.toIR(),
+            allocation.block.toIR().also {
+                if (context?.contextMetadata?.callback?.allowedReadBlocks?.contains(it.value.toInt()) != true) {
+                    compileError("Illegal read from value in block ${it.value.toInt()} (${blockNames[it.value.toInt()] ?: "unknown"}) in this context.")
+                }
+            },
             allocation.index.toIR()
         )
         is TemporaryAllocation -> IRTempRead(allocation.id)
         is DynamicAllocation -> SonoFunction.GetShifted.calledWith(
-            allocation.block.toIR(),
-            allocation.index.toIR(),
-            allocation.offset.toIR(),
+            allocation.block.toIR(context).also {
+                val block = it.tryConstexprEvaluate()?.toInt() ?: return@also
+                if (context != null && context.contextMetadata.callback?.allowedReadBlocks?.contains(block) != true) {
+                    compileError("Illegal read from value in block $block (${blockNames[block] ?: "unknown"}) in this context.")
+                }
+            },
+            allocation.index.toIR(context),
+            allocation.offset.toIR(context),
         )
     }
 }
 
 data class LiteralRawValue(val value: Double) : RawValue() {
-    override fun toIR(): IRNode {
+    override fun toIR(context: Context?): IRNode {
         return value.toIR()
     }
 }
@@ -44,10 +55,10 @@ fun Number.toLiteralRawValue() = LiteralRawValue(this.toDouble())
 fun Boolean.toLiteralRawValue() = LiteralRawValue(if (this) 1.0 else 0.0)
 
 class BuiltinCallRawValue(val function: SonoFunction, val arguments: List<RawValue>) : RawValue() {
-    override fun toIR(): IRNode {
+    override fun toIR(context: Context?): IRNode {
         // Doing some simplification here might help with performance but this isn't tested.
         // It's really so initial IR is a bit easier to read when debugging.
-        return IRFunctionCall(function, arguments.map { it.toIR() }).let { func ->
+        return IRFunctionCall(function, arguments.map { it.toIR(context) }).let { func ->
             func.tryConstexprEvaluate()?.let { IRValue(it) } ?: func
         }
     }
@@ -59,27 +70,37 @@ fun SonoFunction.raw(vararg args: RawValue) = BuiltinCallRawValue(this, args.toL
  * Wraps an IRNode directly as raw value.
  */
 class IRRawValue(val value: IRNode) : RawValue() {
-    override fun toIR(): IRNode {
+    override fun toIR(context: Context?): IRNode {
         return value
     }
 }
 
 fun Statement.raw() = IRRawValue(asIR())
 
-fun allocatedValueAssignment(lhs: AllocatedRawValue, rhs: RawValue) = when (val alloc = lhs.allocation) {
-    is ConcreteAllocation -> SonoFunction.Set.calledWith(
-        alloc.block.toIR(),
-        alloc.index.toIR(),
-        rhs.toIR()
-    )
-    is TemporaryAllocation -> IRTempAssign(alloc.id, rhs.toIR())
-    is DynamicAllocation -> SonoFunction.SetShifted.calledWith(
-        alloc.block.toIR(),
-        alloc.index.toIR(),
-        alloc.offset.toIR(),
-        rhs.toIR()
-    )
-}
+fun allocatedValueAssignment(lhs: AllocatedRawValue, rhs: RawValue, context: Context) =
+    when (val alloc = lhs.allocation) {
+        is ConcreteAllocation -> SonoFunction.Set.calledWith(
+            alloc.block.toIR().also {
+                if (context.contextMetadata.callback?.allowedWriteBlocks?.contains(it.value.toInt()) != true) {
+                    compileError("Illegal assignment to value in block ${it.value.toInt()} (${blockNames[it.value.toInt()] ?: "unknown"}) in this context.")
+                }
+            },
+            alloc.index.toIR(),
+            rhs.toIR(context)
+        )
+        is TemporaryAllocation -> IRTempAssign(alloc.id, rhs.toIR(context))
+        is DynamicAllocation -> SonoFunction.SetShifted.calledWith(
+            alloc.block.toIR(context).also {
+                val block = it.tryConstexprEvaluate()?.toInt() ?: return@also
+                if (context.contextMetadata.callback?.allowedWriteBlocks?.contains(block) != true) {
+                    compileError("Illegal assignment to value in block $block (${blockNames[block] ?: "unknown"}) in this context.")
+                }
+            },
+            alloc.index.toIR(context),
+            alloc.offset.toIR(context),
+            rhs.toIR(context)
+        )
+    }
 
 fun RawValue.toNumberStruct(context: Context) = RawStructValue(
     this,
@@ -93,10 +114,10 @@ fun RawValue.toBooleanStruct(context: Context) = RawStructValue(
 
 fun RawValue.copyFrom(other: RawValue, context: ExecutionContext) {
     when (this) {
-        is AllocatedRawValue -> context.statements += allocatedValueAssignment(this, other)
+        is AllocatedRawValue -> context.statements += allocatedValueAssignment(this, other, context)
         else -> {
-            val thisValue = this.toIR().tryConstexprEvaluate()
-            val otherValue = other.toIR().tryConstexprEvaluate()
+            val thisValue = this.toIR(context).tryConstexprEvaluate()
+            val otherValue = other.toIR(context).tryConstexprEvaluate()
             if (thisValue == null || thisValue != otherValue) compileError("Value is not mutable.")
         }
     }
@@ -105,7 +126,7 @@ fun RawValue.copyFrom(other: RawValue, context: ExecutionContext) {
 fun RawValue.copyTo(allocator: Allocator, context: ExecutionContext)
         : AllocatedRawValue {
     val newValue = AllocatedRawValue(allocator.allocate())
-    context.statements += allocatedValueAssignment(newValue, this)
+    context.statements += allocatedValueAssignment(newValue, this, context)
     return newValue
 }
 
@@ -131,4 +152,4 @@ fun RawValue.toEntityArrayValue(offset: RawValue): RawValue {
     }
 }
 
-fun RawValue.coerceImmutable() = toIR().tryConstexprEvaluate()?.toLiteralRawValue()
+fun RawValue.coerceImmutable() = toIR(null).tryConstexprEvaluate()?.toLiteralRawValue()

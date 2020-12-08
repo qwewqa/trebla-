@@ -14,8 +14,7 @@ import kotlin.math.roundToInt
 class CallbackDeclaration(
     override val node: CallbackDeclarationNode,
     override val parentContext: ScriptDeclaration,
-) :
-    Declaration {
+) : Declaration {
     override val identifier = node.identifier.value
     override val signature = Signature.Default
     override val visibility = Visibility.PUBLIC
@@ -63,14 +62,14 @@ class ExecutionCallback(
 ) : Callback, ExecutionContext {
     override val scope = EagerScope(script.scope)
     override val globalContext: GlobalContext = parentContext.globalContext
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata, name)
     override val localAllocator = TemporaryAllocator()
     override val statements = BlockStatement()
 
     override var returnValue: Value? = null
 
     override fun toIR(): IRFunctionCall {
-        val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR() ?: IRValue(0.0)
+        val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR(this) ?: IRValue(0.0)
         return SonoFunction.Execute.calledWith(listOf(statements.asIR()) + listOf(returnIRValue))
     }
 }
@@ -83,12 +82,12 @@ class NonExecutionCallback(
 ) : Callback {
     override val scope = EagerScope(script.scope)
     override val globalContext: GlobalContext = parentContext.globalContext
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
+    override val contextMetadata = ContextMetadata(parentContext.contextMetadata, name)
 
     override var returnValue: Value? = null
 
     override fun toIR(): IRNode {
-        return (returnValue as? RawStructValue)?.raw?.toIR() ?: IRValue(0.0)
+        return (returnValue as? RawStructValue)?.raw?.toIR(this) ?: IRValue(0.0)
     }
 }
 

@@ -96,11 +96,11 @@ class IntrinsicFunctionDSLContext(
     val callingContext: Context,
 ) {
     val String.number
-        get() = cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()
+        get() = cast<RawStructValue>().raw.tryConstexprEvaluate()
             ?: compileError("Argument must be a compile time constant.", parameters[this]?.second?.node)
 
     val String.boolean
-        get() = (cast<RawStructValue>().raw.toIR().tryConstexprEvaluate()
+        get() = (cast<RawStructValue>().raw.tryConstexprEvaluate()
             ?: compileError("Argument must be a compile time constant.", parameters[this]?.second?.node)) != 0.0
 
     inline fun <reified T : Any> String.cast(): T =

@@ -27,7 +27,7 @@ class ForExpression(override val node: ForExpressionNode) : Expression {
         innerContext.statements += SonoFunction.While.calledWith(
             SonoFunction.Execute.calledWith(
                         conditionContext.statements.asIR(),
-                        condition.raw.toIR()
+                        condition.raw.toIR(conditionContext)
                     ),
                 body.statements.asIR(),
             )

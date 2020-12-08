@@ -27,7 +27,7 @@ class ArchetypeDeclaration(override val node: ArchetypeDeclarationNode, override
             it.identifier.value to it.value.parseAndApplyTo(ReadOnlyContext(parentContext)).let { value ->
                 if (value.type != script.dataProperties[it.identifier.value]?.type)
                     compileError("Mismatched type on ${it.identifier.value}", it)
-                (value as? RawStructValue)?.raw?.toIR()
+                (value as? RawStructValue)?.raw?.toIR(null)
                     ?.tryConstexprEvaluate()
                     ?: compileError("Invalid archetype default. Must have a constant numerical or boolean value.")
             }

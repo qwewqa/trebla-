@@ -33,7 +33,7 @@ class ValueExpression(val value: Value) :
 }
 
 fun ExpressionNode.tryConstexprEval(context: Context) =
-    (parseAndApplyTo(ReadOnlyContext(context)) as? RawStructValue)?.raw?.toIR()?.tryConstexprEvaluate()
+    (parseAndApplyTo(ReadOnlyContext(context)) as? RawStructValue)?.raw?.tryConstexprEvaluate()
 
 fun StatementNode.parseAndApplyTo(context: Context) = parse(context).applyTo(context)
 

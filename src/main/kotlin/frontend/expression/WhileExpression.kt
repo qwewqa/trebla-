@@ -21,7 +21,7 @@ class WhileExpression(override val node: WhileExpressionNode) : Expression {
         context.statements += SonoFunction.While.calledWith(
             SonoFunction.Execute.calledWith(
                 conditionContext.statements.asIR(),
-                condition.raw.toIR(),
+                condition.raw.toIR(context),
             ),
             body.statements.asIR(),
         ).asStatement()

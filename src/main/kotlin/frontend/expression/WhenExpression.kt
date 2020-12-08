@@ -27,7 +27,7 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
                 SonoFunction.If.calledWith(
                     SonoFunction.Execute.calledWith(
                         conditionContext.statements.asIR(),
-                        condition.raw.toIR(),
+                        condition.raw.toIR(context),
                     ),
                     SimpleExecutionContext(context)
                         .apply { entry.body.value.forEach { it.parseAndApplyTo(this) } }
