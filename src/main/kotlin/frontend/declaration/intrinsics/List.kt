@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -41,7 +40,7 @@ class ListOfCallable(context: Context) :
 
 data class UnsizedListType(val containedType: Type, val context: Context) : Type, Subscriptable {
     override val type = TypeType
-    override val bindingHierarchy = listOf(listOf(context.getFullyQualified("std", "List") as Type))
+    override val parentTypes: List<Type> = listOf(context.getFullyQualified("std", "List") as Type)
 
     override val commonName = "List"
 
@@ -69,7 +68,7 @@ data class UnsizedListType(val containedType: Type, val context: Context) : Type
 
 data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val context: Context) : Type, Allocatable {
     override val type = TypeType
-    override val bindingHierarchy = listOf(listOf(unsizedType))
+    override val parentTypes: List<Type> = listOf(unsizedType)
     val containedType = unsizedType.containedType
 
     override val commonName = "List"

@@ -8,7 +8,7 @@ import xyz.qwewqa.trebla.grammar.trebla.TypeNode
 
 interface Type : Value {
     fun accepts(other: Type): Boolean {
-        return this == other || other.bindingHierarchy.flatten().any { accepts(it) }
+        return this == other || other.parentTypes.any { accepts(it) }
     }
 
     override val type: Type get() = TypeType
@@ -24,7 +24,7 @@ interface Type : Value {
      * Receiver functions are resolved from the bottom to top layer.
      * Ambiguity in the same layer will result in an error.
      */
-    val bindingHierarchy: List<Collection<Type>> get() = emptyList()
+    val parentTypes: List<Type> get() = emptyList()
 
     val bindingScope: Scope? get() = null
 }
@@ -52,7 +52,7 @@ object TypeType : BuiltinType("Type")
  */
 class UnionType(val types: List<Type>, override val bindingScope: Scope? = null) : Type {
     override val type = TypeType
-    override val bindingHierarchy = listOf(listOf(AnyType))
+    override val parentTypes: List<Type> = listOf(AnyType)
 
     override val commonName = "UnionType(${types.joinToString { it.commonName }})"
 

@@ -46,7 +46,7 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
 
     override val type = TypeType
     override val allocationSize = 2
-    override val bindingHierarchy = listOf(listOf(context.getFullyQualified("std", "Pointer") as Type))
+    override val parentTypes: List<Type> = listOf(context.getFullyQualified("std", "Pointer") as Type)
 
     override fun accepts(other: Type): Boolean =
         super.accepts(other) || (other is SpecificPointerType && insideType.accepts(other.insideType))

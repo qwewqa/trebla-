@@ -21,7 +21,7 @@ class TypeParamStructDeclaration(
 
     override val commonName get() = identifier
 
-    override val bindingHierarchy = listOf(listOf(StructType))
+    override val parentTypes: List<Type> = listOf(StructType)
 
     override val loadEarly = true
 

@@ -23,7 +23,7 @@ class StructDeclaration(
 
     override val bindingScope = parentContext.scope
 
-    override val bindingHierarchy = if (parentType != null) listOf(listOf(parentType)) else listOf(listOf(StructType))
+    override val parentTypes: List<Type> = if (parentType != null) listOf(parentType) else listOf(StructType)
 
     override val loadEarly = true
 

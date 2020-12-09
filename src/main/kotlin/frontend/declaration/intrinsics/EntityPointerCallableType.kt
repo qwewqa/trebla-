@@ -55,7 +55,7 @@ class SpecificEntityPointerType(val context: Context, val script: ScriptDeclarat
 
     override val type = TypeType
     override val allocationSize = 1
-    override val bindingHierarchy = listOf(listOf(context.getFullyQualified("std", "EntityPointer") as Type))
+    override val parentTypes: List<Type> = listOf(context.getFullyQualified("std", "EntityPointer") as Type)
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated = EntityPointerValue(
         RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),

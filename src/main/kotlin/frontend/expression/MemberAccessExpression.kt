@@ -1,7 +1,10 @@
 package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.Scope
+import xyz.qwewqa.trebla.frontend.context.Signature
+import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
@@ -53,20 +56,15 @@ fun Value.resolveDirectBindingMember(name: String, context: Context?) =
 
 fun Type.resolveBinding(name: String, scope: Scope, minVisibility: Visibility): Value? =
     scope.find(name, Signature.Receiver(this), minVisibility)
-        ?: this.bindingHierarchy.asSequence()
-            .mapNotNull { layer ->
-                layer
-                    .map { type -> type.resolveBinding(name, scope, minVisibility) }
-                    .toSet()
-                    .let {
-                        when (it.size) {
-                            0 -> null
-                            1 -> it.first()
-                            else -> compileError("Ambiguous bind.")
-                        }
-                    }
+        ?: this.parentTypes.map { type -> type.resolveBinding(name, scope, minVisibility) }
+            .toSet()
+            .let {
+                when (it.size) {
+                    0 -> null
+                    1 -> it.first()
+                    else -> compileError("Ambiguous bind.")
+                }
             }
-            .firstOrNull()
         ?: scope.find(name, Signature.Receiver(AnyType), minVisibility)
 
 private fun Value.tryBind(toValue: Value, context: Context) =

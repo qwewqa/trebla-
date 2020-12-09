@@ -22,7 +22,7 @@ class EnumDeclaration(
 
     override val bindingScope = parentContext.scope
 
-    override val bindingHierarchy: List<List<Type>> = listOf(listOf(EnumType))
+    override val parentTypes: List<Type> = listOf(EnumType)
 
     override val loadEarly = true
 
