@@ -17,11 +17,6 @@ interface Value {
     val type: Type
     val embedded: List<Value> get() = emptyList()
 
-    /**
-     * The original node this value was derived from, if it exists.
-     */
-    val node: TreblaNode? get() = null
-
     val commonName: String? get() = null
 
     fun coerceTo(type: Type): Value? = if (type.accepts(this.type)) this else null

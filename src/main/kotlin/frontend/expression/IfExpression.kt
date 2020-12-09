@@ -38,14 +38,14 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
 
 fun Value.asBooleanStruct(context: Context): RawStructValue {
     if (this !is RawStructValue || this.type != context.booleanType) {
-        compileError("Value must be a Boolean. Instead got ${type.commonName}.", this.node)
+        compileError("Value must be a Boolean. Instead got ${type.commonName}.")
     }
     return this
 }
 
 fun Value.asNumberStruct(context: Context): RawStructValue {
     if (this !is RawStructValue || this.type != context.numberType) {
-        compileError("Value must be a Number. Instead got ${type.commonName}.", this.node)
+        compileError("Value must be a Number. Instead got ${type.commonName}.")
     }
     return this
 }

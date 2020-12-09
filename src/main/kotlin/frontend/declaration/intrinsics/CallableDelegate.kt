@@ -97,21 +97,21 @@ class IntrinsicFunctionDSLContext(
 ) {
     val String.number
         get() = cast<RawStructValue>().raw.tryConstexprEvaluate()
-            ?: compileError("Argument must be a compile time constant.", parameters[this]?.second?.node)
+            ?: compileError("Argument must be a compile time constant.")
 
     val String.boolean
         get() = (cast<RawStructValue>().raw.tryConstexprEvaluate()
-            ?: compileError("Argument must be a compile time constant.", parameters[this]?.second?.node)) != 0.0
+            ?: compileError("Argument must be a compile time constant.")) != 0.0
 
     inline fun <reified T : Any> String.cast(): T =
         (parameters[this] ?: error("Unknown parameter $this.")).let { (param, value) ->
-            (value as? T) ?: compileError("Failed to cast parameter with type ${param.type.repr()}", value.node)
+            (value as? T) ?: compileError("Failed to cast parameter with type ${param.type.repr()}")
         }
 
     inline fun <reified T : Any> String.coerceTo(type: Type): T =
         (parameters[this] ?: error("Unknown parameter $this.")).let { (param, value) ->
             ((value as? Value)?.coerceTo(type) as? T)
-                ?: compileError("Failed to cast parameter with type ${param.type.repr()}", value.node)
+                ?: compileError("Failed to cast parameter with type ${param.type.repr()}")
         }
 
     fun String.param() = parameters[this]?.first ?: error("Unknown parameter $this.")

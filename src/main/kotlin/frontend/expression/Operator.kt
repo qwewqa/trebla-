@@ -82,7 +82,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         val booleanType = context.booleanType
         val lhsValue = node.lhs.parseAndApplyTo(context)
         if (lhsValue !is RawStructValue || lhsValue.type != context.booleanType) {
-            compileError("Short circuiting operators can only be applied to booleans. Instead got ${lhsValue.type.commonName}.", lhsValue.node)
+            compileError("Short circuiting operators can only be applied to booleans. Instead got ${lhsValue.type.commonName}.")
         }
         if (context !is ExecutionContext) {
             return doNonExecutionBoolean(operation, context)
@@ -94,7 +94,7 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
 
         val rhsValue = node.rhs.parseAndApplyTo(rhsBlock)
         if (rhsValue !is RawStructValue || rhsValue.type != context.booleanType)
-            compileError("Short circuiting operators can only be applied to booleans. Instead got ${rhsValue.type.commonName}.", rhsValue.node)
+            compileError("Short circuiting operators can only be applied to booleans. Instead got ${rhsValue.type.commonName}.")
         val resultValue = IRFunctionCall(operation.function, listOf(
             lhsValue.raw.toIR(context),
             IRFunctionCall(SonoFunction.Execute, listOf(

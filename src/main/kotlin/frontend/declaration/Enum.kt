@@ -154,7 +154,7 @@ sealed class EnumVariant(val parentEnum: EnumDeclaration) : Value {
      */
     abstract val size: Int
 
-    override val node: TreblaNode? = null
+    abstract val node: TreblaNode?
 }
 
 class EnumUnitVariant(

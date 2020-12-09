@@ -8,7 +8,7 @@ import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 
 val defaultPackage = listOf("engine")
 
-class TreblaFile(override val node: TreblaFileNode, override val parentContext: GlobalContext) : Context,
+class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalContext) : Context,
     GlobalAllocatorContext {
     override val globalContext: GlobalContext = parentContext.globalContext
     override val contextMetadata = ContextMetadata(parentContext.contextMetadata)

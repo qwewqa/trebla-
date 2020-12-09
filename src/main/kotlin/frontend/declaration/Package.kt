@@ -10,7 +10,7 @@ import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 class Package(
     val identifier: List<String>,
     override val parentContext: GlobalContext,
-    override val node: TreblaNode? = null,
+    val node: TreblaNode? = null,
 ) : GlobalAllocatorContext {
     override val globalContext: GlobalContext = parentContext.globalContext
     override val type = PackageType
