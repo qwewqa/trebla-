@@ -5,10 +5,10 @@ import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.declaration.CallableType
 import xyz.qwewqa.trebla.frontend.expression.Callable
 
-class ErrorCallable(context: Context) :
+class CompileErrorCallable(context: Context) :
     SimpleDeclaration(
         context,
-        "error",
+        "compileError",
         CallableType
     ),
     Callable by CallableDelegate(
@@ -18,6 +18,6 @@ class ErrorCallable(context: Context) :
         },
         {
             val message = "message".cast<StringValue>().value
-            compileError(if (message.isBlank()) "Error" else "Error: $message")
+            compileError(if (message.isBlank()) "Compile Error" else message)
         }
     )

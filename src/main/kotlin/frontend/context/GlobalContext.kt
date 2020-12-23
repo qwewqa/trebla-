@@ -133,7 +133,7 @@ val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::TypeOfCallable,
     listOf("std") to ::TypeAcceptsCallable,
     listOf("std") to ::RangeCallableType,
-    listOf("std") to ::ErrorCallable,
+    listOf("std") to ::CompileErrorCallable,
     listOf("std") to ::PointerToCallable,
     listOf("std") to ::EnumFromOrdinalCallable,
     listOf("std") to ::NamespaceCallable
