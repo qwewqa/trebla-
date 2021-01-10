@@ -49,14 +49,14 @@ class IFGraph {
     inner class IFNode(val locations: Set<TempLocation>) {
         constructor(location: TempLocation) : this(setOf(location))
 
-        // pretty arbitrary and un-tuned heuristic for seq allocations
-        val effectiveEdgeCount
-            get() = (((locations.singleOrNull() as? SeqLocation)?.size?.minus(1)) ?: 0) * 2 + edges.size
-
+        /**
+         * A list containing the indexes occupied by this node (a single number if a single location,
+         * or potentially multiple for a sequential location).
+         * The "colors" for graph coloring.
+         */
         var colors: List<Int> = emptyList()
-        var colored = false
 
-        val edges get() = _edges as Set<IFNode>
+        val edges: Set<IFNode> get() = _edges
         private val _edges = mutableSetOf<IFNode>()
 
         var active = true

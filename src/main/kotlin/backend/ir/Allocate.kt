@@ -4,41 +4,41 @@ import xyz.qwewqa.trebla.backend.compile.backendError
 
 fun IRNode.allocate(indexes: List<Int>) = applyAllocation(getAllocationMapping(indexes))
 
-fun IRNode.applyAllocation(mapping: Map<TempLocation, List<Int>>): AIRNode = when (this) {
-    is IRValue -> AIRValue(value)
-    is IRFunctionCall -> AIRFunctionCall(variant, arguments.map { it.applyAllocation(mapping) })
-    is IRTempRead -> AIRFunctionCall(
+fun IRNode.applyAllocation(mapping: Map<TempLocation, List<Int>>): AllocatedIRNode = when (this) {
+    is IRValue -> AllocatedIRValue(value)
+    is IRFunctionCall -> AllocatedIRFunctionCall(variant, arguments.map { it.applyAllocation(mapping) })
+    is IRTempRead -> AllocatedIRFunctionCall(
         SonoFunction.Get,
         listOf(
-            AIRValue(21.0),
-            AIRValue(mapping.getValue(location).single().toDouble()),
+            AllocatedIRValue(21.0),
+            AllocatedIRValue(mapping.getValue(location).single().toDouble()),
         ),
     )
     is IRTempAssign -> if (rhs is IRTempRead && mapping.getValue(rhs.location) == mapping.getValue(location)) {
-        AIRValue(0.0)
+        AllocatedIRValue(0.0)
     } else {
-        AIRFunctionCall(
+        AllocatedIRFunctionCall(
             SonoFunction.Set,
             listOf(
-                AIRValue(21.0),
-                AIRValue(mapping.getValue(location).single().toDouble()),
+                AllocatedIRValue(21.0),
+                AllocatedIRValue(mapping.getValue(location).single().toDouble()),
                 rhs.applyAllocation(mapping),
             ),
         )
     }
-    is IRSeqTempRead -> AIRFunctionCall(
+    is IRSeqTempRead -> AllocatedIRFunctionCall(
         SonoFunction.GetShifted,
         listOf(
-            AIRValue(21.0),
-            AIRValue(mapping.getValue(location).single().toDouble()),
+            AllocatedIRValue(21.0),
+            AllocatedIRValue(mapping.getValue(location).single().toDouble()),
             offset.applyAllocation(mapping),
         ),
     )
-    is IRSeqTempAssign -> AIRFunctionCall(
+    is IRSeqTempAssign -> AllocatedIRFunctionCall(
         SonoFunction.SetShifted,
         listOf(
-            AIRValue(21.0),
-            AIRValue(mapping.getValue(location).single().toDouble()),
+            AllocatedIRValue(21.0),
+            AllocatedIRValue(mapping.getValue(location).single().toDouble()),
             offset.applyAllocation(mapping),
             rhs.applyAllocation(mapping),
         ),
@@ -52,11 +52,19 @@ fun IRNode.getAllocationMapping(indexes: List<Int>): Map<TempLocation, List<Int>
     val (seq, single) = graph.nodes.partition { it.locations.singleOrNull() is SeqLocation }
     seq.forEach { it.color(indexes) }
     single.forEach { it.color(indexes) }
-    return graph.nodes.sortedBy { it.locations.hashCode() }.flatMap { node -> node.locations.map { it to node.colors } }.toMap()
+    return graph.nodes
+        .sortedBy { it.locations.hashCode() } // for determinism between runs
+        .flatMap { node -> node.locations.map { it to node.colors } }
+        .toMap()
 }
 
 private fun IFGraph.IFNode.color(indexes: List<Int>) {
-    (locations.singleOrNull() as? SeqLocation)?.let { loc ->
+    val seqLocation = locations.singleOrNull() as? SeqLocation
+    if (seqLocation == null) {
+        val occupied = edges.flatMap { it.colors }.toSet()
+        val free = indexes.firstOrNull { it !in occupied } ?: backendError("Allocation failed.")
+        this.colors = listOf(free)
+    } else {
         val occupied = edges.flatMap { it.colors }.toSet()
         val free = indexes.filter { it !in occupied }
         if (free.isEmpty()) backendError("Allocation failed.")
@@ -68,11 +76,8 @@ private fun IFGraph.IFNode.color(indexes: List<Int>) {
                 ranges += mutableListOf(it)
             }
         }
-        val range = ranges.filter { it.size >= loc.size }.minByOrNull { it.size } ?: backendError("Allocation failed.")
-        colors = range.take(loc.size)
-    } ?: run {
-        val occupied = edges.flatMap { it.colors }.toSet()
-        val free = indexes.firstOrNull { it !in occupied } ?: backendError("Allocation failed.")
-        colors = listOf(free)
+        val range = ranges.filter { it.size >= seqLocation.size }.minByOrNull { it.size }
+            ?: backendError("Allocation failed.")
+        this.colors = range.take(seqLocation.size)
     }
 }

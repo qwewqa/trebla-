@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.backend.ir
 
-fun AIRNode.pruneSimple(): AIRNode = when (this) {
-    is AIRValue -> this
-    is AIRFunctionCall -> when (variant) {
+fun AllocatedIRNode.pruneSimple(): AllocatedIRNode = when (this) {
+    is AllocatedIRValue -> this
+    is AllocatedIRFunctionCall -> when (variant) {
         SonoFunction.Execute ->
             copy(
                 arguments = arguments
@@ -17,7 +17,7 @@ fun AIRNode.pruneSimple(): AIRNode = when (this) {
                     }
             ).let {
                 when (it.arguments.size) {
-                    0 -> AIRValue(0.0)
+                    0 -> AllocatedIRValue(0.0)
                     1 -> it.arguments[0]
                     else -> it
                 }
@@ -26,8 +26,8 @@ fun AIRNode.pruneSimple(): AIRNode = when (this) {
     }
 }
 
-private fun List<AIRNode>.flattenExecute() = flatMap {
-    if (it is AIRFunctionCall && it.variant == SonoFunction.Execute) {
+private fun List<AllocatedIRNode>.flattenExecute() = flatMap {
+    if (it is AllocatedIRFunctionCall && it.variant == SonoFunction.Execute) {
         it.arguments
     } else {
         listOf(it)

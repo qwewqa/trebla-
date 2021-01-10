@@ -70,7 +70,7 @@ private fun SSAFunctionCall.simplifyTo(node: SSANode) = SSAFunctionCall(
     outPhi,
 )
 
-private fun SSANode.cleanPhi(assigned: Set<SingleLocation> = getAssignedSet()): SSANode = when (this) {
+private fun SSANode.cleanPhi(assigned: Set<SingleLocation> = this.getAssignedSet()): SSANode = when (this) {
     is SSAValue -> this
     is SSAFunctionCall -> copy(
         arguments = arguments.map { it.cleanPhi(assigned) },

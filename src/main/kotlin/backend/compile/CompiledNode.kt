@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.backend.compile
 
-import xyz.qwewqa.trebla.backend.ir.AIRFunctionCall
-import xyz.qwewqa.trebla.backend.ir.AIRNode
-import xyz.qwewqa.trebla.backend.ir.AIRValue
+import xyz.qwewqa.trebla.backend.ir.AllocatedIRFunctionCall
+import xyz.qwewqa.trebla.backend.ir.AllocatedIRNode
+import xyz.qwewqa.trebla.backend.ir.AllocatedIRValue
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 
 sealed class CompiledNode {
@@ -36,9 +36,9 @@ fun combineCallbackNodes(entryNodes: List<CompiledNode>): CompiledNodeData {
 
 data class CompiledNodeData(val orderedNodes: List<Map<String, Any>>, val indexes: Map<CompiledNode, Int>)
 
-fun AIRNode.toCompiledNode(): CompiledNode = when (this) {
-    is AIRValue -> CompiledValueNode(value)
-    is AIRFunctionCall -> when (variant) {
+fun AllocatedIRNode.toCompiledNode(): CompiledNode = when (this) {
+    is AllocatedIRValue -> CompiledValueNode(value)
+    is AllocatedIRFunctionCall -> when (variant) {
         SonoFunction.Execute -> {
             if (arguments.isEmpty()) CompiledValueNode(0.0)
             else CompiledFunctionNode(variant.name, arguments.map { it.toCompiledNode() })

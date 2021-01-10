@@ -58,19 +58,19 @@ val orderedImpureFunctions = setOf(
     GetShifted,
 )
 
-fun AIRNode.isImpure(): Boolean = when (this) {
-    is AIRFunctionCall -> variant in impureFunctions || arguments.any { it.isImpure() }
-    is AIRValue -> false
+fun AllocatedIRNode.isImpure(): Boolean = when (this) {
+    is AllocatedIRFunctionCall -> variant in impureFunctions || arguments.any { it.isImpure() }
+    is AllocatedIRValue -> false
 }
-fun AIRNode.isPure() = !isImpure()
+fun AllocatedIRNode.isPure() = !isImpure()
 
-fun AIRNode.isUndroppable(): Boolean = when (this) {
-    is AIRFunctionCall -> variant in undroppableFunctions || arguments.any { it.isUndroppable() }
-    is AIRValue -> false
+fun AllocatedIRNode.isUndroppable(): Boolean = when (this) {
+    is AllocatedIRFunctionCall -> variant in undroppableFunctions || arguments.any { it.isUndroppable() }
+    is AllocatedIRValue -> false
 }
-fun AIRNode.isDroppable() = !isUndroppable()
+fun AllocatedIRNode.isDroppable() = !isUndroppable()
 
-fun AIRNode.isOrderedImpure(): Boolean = when (this) {
-    is AIRFunctionCall -> variant in orderedImpureFunctions || arguments.any { it.isOrderedImpure() }
-    is AIRValue -> false
+fun AllocatedIRNode.isOrderedImpure(): Boolean = when (this) {
+    is AllocatedIRFunctionCall -> variant in orderedImpureFunctions || arguments.any { it.isOrderedImpure() }
+    is AllocatedIRValue -> false
 }
