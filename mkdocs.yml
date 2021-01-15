@@ -12,6 +12,8 @@ theme:
     - tabs
 nav:
   - Home: index.md
+  - About:
+      - Project Background: about/project-background.md
   - Guides:
       - Server Setup: guides/server-setup.md
   - Reference:
