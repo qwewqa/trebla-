@@ -23,7 +23,7 @@ class TypeParamStructDeclaration(
 
     override val parentTypes: List<Type> = listOf(StructType)
 
-    override val loadEarly = true
+    override val loadFirstPass = true
 
     override val subscriptParameters by lazy {
         node.typeParameters.value.parse(parentContext)

@@ -27,7 +27,7 @@ class Package(
     /**
      * True if the same package or a subpackage
      */
-    fun isInternalTo(other: Package) =
+    fun includedBy(other: Package) =
         identifier.size >= other.identifier.size && identifier.zip(other.identifier).all { (a, b) -> a == b }
 }
 

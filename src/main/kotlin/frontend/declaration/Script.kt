@@ -87,7 +87,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     fun process(): ScriptData {
         node.body.value.filterIsInstance<DeclarationNode>().forEach {
             val parsed = it.parse(this)
-            if (parsed.loadEarly) parsed.applyTo(this)
+            if (parsed.loadFirstPass) parsed.applyTo(this)
         }
 
         // make sure lazy properties have fired
@@ -114,7 +114,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
                 is CallbackDeclarationNode -> callbackDeclarationNodes += memberNode
                 is StatementNode -> {
                     val parsed = memberNode.parse(this)
-                    if (parsed !is Declaration || !parsed.loadEarly) parsed.applyTo(this)
+                    if (parsed !is Declaration || !parsed.loadFirstPass) parsed.applyTo(this)
                 }
                 else -> error("Unsupported script member.") // should not happen
             }

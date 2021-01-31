@@ -24,7 +24,7 @@ class EnumDeclaration(
 
     override val parentTypes: List<Type> = listOf(EnumType)
 
-    override val loadEarly = true
+    override val loadFirstPass = true
 
     val variants by lazy {
         val occupied = mutableSetOf<Int>()

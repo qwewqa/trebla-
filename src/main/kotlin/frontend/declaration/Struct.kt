@@ -25,7 +25,7 @@ class StructDeclaration(
 
     override val parentTypes: List<Type> = if (parentType != null) listOf(parentType) else listOf(StructType)
 
-    override val loadEarly = true
+    override val loadFirstPass = true
 
     val isRaw: Boolean
 

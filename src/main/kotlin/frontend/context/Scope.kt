@@ -6,8 +6,8 @@ import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Value
 
 open class Scope(val parent: Scope?) {
-    private val values = mutableMapOf<String, MutableMap<Signature, ValueMetadata>>()
-    private val imported = mutableMapOf<String, MutableMap<Signature, ValueMetadata>>()
+    private val bindings = mutableMapOf<NamespacedIdentifier, Binding>()
+    private val imported = mutableMapOf<NamespacedIdentifier, Binding>()
 
     /**
      * Adds the given value to this scope.
@@ -25,11 +25,16 @@ open class Scope(val parent: Scope?) {
         signature: Signature = Signature.Default,
         visibility: Visibility = Visibility.PUBLIC,
     ) {
-        val bySignature = values.getOrPut(identifier) { mutableMapOf() }
-        if (bySignature[signature]?.lazyValue != null) {
+        val namespacedIdentifier = NamespacedIdentifier(identifier, signature)
+        if (namespacedIdentifier in bindings) {
             compileError("Symbol with identifier $identifier and signature $signature already exists.")
         }
-        bySignature[signature] = ValueMetadata(value, visibility)
+        bindings[namespacedIdentifier] = Binding(
+            identifier = identifier,
+            signature = signature,
+            visibility = visibility,
+            lazyValue = value,
+        )
     }
 
     /**
@@ -42,12 +47,12 @@ open class Scope(val parent: Scope?) {
         signature: Signature = Signature.Default,
         minVisibility: Visibility = Visibility.PRIVATE,
     ): Value? {
-        return values[identifier]?.get(signature)?.let {
+        return bindings[NamespacedIdentifier(identifier, signature)]?.let {
             if (it.visibility >= minVisibility) it.lazyValue.value
             else null
         }?.also {
-            if (it == AmbiguousImportMarker) {
-                compileError("Multiple imported symbols with the identifier $identifier and same signature exist.")
+            if (it == AmbiguousImportDummy) {
+                compileError("Conflicting imported values with identifier $identifier and signature $signature.")
             }
         }
     }
@@ -63,7 +68,11 @@ open class Scope(val parent: Scope?) {
         minVisibility: Visibility = Visibility.PRIVATE,
     ): Value? {
         return get(identifier, signature, minVisibility)
-            ?: imported.getOrPut(identifier) { mutableMapOf() }[signature]?.lazyValue?.value
+            ?: imported[NamespacedIdentifier(identifier, signature)]?.lazyValue?.value?.also {
+                if (it == AmbiguousImportDummy) {
+                    compileError("Conflicting imported values with identifier $identifier and signature $signature.")
+                }
+            }
             ?: parent?.find(identifier, signature, minVisibility)
     }
 
@@ -73,16 +82,13 @@ open class Scope(val parent: Scope?) {
      * Imported symbols in the other scope are not imported.
      */
     open fun import(other: Scope, minVisibility: Visibility = Visibility.PUBLIC) {
-        other.values.forEach { (identifier, bySignature) ->
-            bySignature.forEach { (signature, valueMetadata) ->
-                if (valueMetadata.visibility >= minVisibility) {
-                    imported.getOrPut(identifier) { mutableMapOf() }.let { bySignature ->
-                        if (bySignature[signature]?.let { it.lazyValue != valueMetadata.lazyValue } == true) {
-                            bySignature[signature] = ValueMetadata(AmbiguousImportMarker, Visibility.PRIVATE)
-                        } else {
-                            bySignature[signature] = valueMetadata
-                        }
-                    }
+        other.bindings.values.forEach { binding ->
+            if (binding.visibility >= minVisibility) {
+                val namespacedIdentifier = binding.namespacedIdentifier
+                imported[namespacedIdentifier] = if (namespacedIdentifier in imported && imported[namespacedIdentifier] != binding) {
+                    binding.copy(lazyValue = AmbiguousImportDummy)
+                } else {
+                    binding
                 }
             }
         }
@@ -92,24 +98,36 @@ open class Scope(val parent: Scope?) {
      * Merges the internal and public members of the [other] scope into this scope.
      */
     open fun mergeIn(other: Scope) {
-        other.values.forEach { (identifier, bySignature) ->
-            bySignature.forEach { (signature, valueMetadata) ->
-                values.getOrPut(identifier) { mutableMapOf() }.let { bySignature ->
-                    if (bySignature[signature]?.lazyValue?.let { it != valueMetadata.lazyValue } == true) {
-                        compileError("Duplicate declaration with identifier $identifier and signature $signature.")
-                    }
-                    if (valueMetadata.visibility >= Visibility.INTERNAL) bySignature[signature] = valueMetadata
+        other.bindings.values.forEach { binding ->
+            if (binding.visibility >= Visibility.INTERNAL) {
+                val namespacedIdentifier = binding.namespacedIdentifier
+                if (namespacedIdentifier in bindings && bindings[namespacedIdentifier] != binding) {
+                    compileError("Duplicate value with identifier ${binding.identifier} and signature ${binding.signature}.")
                 }
+                bindings[namespacedIdentifier] = binding
             }
         }
     }
-
-    data class ValueMetadata(val lazyValue: Lazy<Value>, val visibility: Visibility)
 }
 
-private object AmbiguousImportMarker : Value, Lazy<Value> {
+data class NamespacedIdentifier(val identifier: String, val signature: Signature)
+
+data class Binding(
+    val identifier: String,
+    val signature: Signature,
+    val visibility: Visibility,
+    val lazyValue: Lazy<Value>,
+) {
+    val namespacedIdentifier get() = NamespacedIdentifier(identifier, signature)
+}
+
+/**
+ * When two imported values have the same identifier and signature, the binding will take this object as its value
+ * rather than immediately erroring.
+ * Instead, an error only happens if a binding with this value is accessed.
+ */
+private object AmbiguousImportDummy : Value, Lazy<Value> {
     override val type = AnyType
-    val bindingContext: Nothing? = null
 
     override val value = this
     override fun isInitialized() = true
@@ -135,10 +153,6 @@ class ReadOnlyScope(parent: Scope? = null) : Scope(parent) {
     }
 
     override fun import(other: Scope, minVisibility: Visibility) {
-        compileError("Scope is read only.")
-    }
-
-    override fun mergeIn(other: Scope) {
         compileError("Scope is read only.")
     }
 }

@@ -43,7 +43,7 @@ interface Declaration : Value, Expression {
      * Things like structs should be loaded earlier since they don't depend on other declarations,
      * but other declarations depend on them.
      */
-    val loadEarly: Boolean get() = false
+    val loadFirstPass: Boolean get() = false
 
     /*
     By default, a declaration adds itself, but not all declarations may do so, like property declarations.

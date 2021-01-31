@@ -39,16 +39,16 @@ class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalCon
         node.topLevelObjects
             .asSequence()
             .map {
-                it.parse(this).also { declr ->
-                    when (declr) {
-                        is ScriptDeclaration -> scripts += declr
-                        is ArchetypeDeclaration -> archetypes += declr
+                it.parse(this).also { declaration ->
+                    when (declaration) {
+                        is ScriptDeclaration -> scripts += declaration
+                        is ArchetypeDeclaration -> archetypes += declaration
                     }
                 }
             }
-            .forEach { expr ->
-                if (!expr.loadEarly) deferredDeclarations += expr
-                else expr.applyTo(this)
+            .forEach { expression ->
+                if (!expression.loadFirstPass) deferredDeclarations += expression
+                else expression.applyTo(this)
             }
         updatePackage()
     }
@@ -89,7 +89,7 @@ class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalCon
             ?: compileError("No package with name ${identifier.joinToString(".")} exists")
         scope.import(
             pkg.scope,
-            if (this.pkg.isInternalTo(pkg)) Visibility.INTERNAL else Visibility.PUBLIC
+            if (this.pkg.includedBy(pkg)) Visibility.INTERNAL else Visibility.PUBLIC
         )
     }
 
