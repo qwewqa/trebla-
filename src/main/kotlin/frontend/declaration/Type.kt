@@ -86,7 +86,7 @@ infix fun Type.includes(other: Type): Boolean {
                                                 (thisParameter as TypeParameter.SingleTypeParameter).type
                                             val otherParamValue =
                                                 (otherParameter as TypeParameter.SingleTypeParameter).type
-                                            thisParamValue equivalentTo otherParamValue
+                                            thisParamValue includes otherParamValue
                                         }
                                         TypeVariance.Contravariant -> {
                                             val thisParamValue =
@@ -131,16 +131,19 @@ infix fun Type.includes(other: Type): Boolean {
 
 fun Type.accepts(other: Value) = includes(other.type)
 
-fun Type.matchBest(types: Iterable<Type>) = matchBestIncluded(types.filter { this includes it })
+fun Type.matchBest(types: Iterable<Type>): Type {
+    val candidates = types.filter { this includes it }
+    if (candidates.isEmpty()) compileError("No candidates.")
+    return matchBestIncluded(candidates) ?: compileError("Ambiguous overload.")
+}
 
 /**
  * Used by [Type.matchBest] but assumes all types are included by [this] and that [types] is not empty.
  */
-private fun Type.matchBestIncluded(types: List<Type>): Type = when (this) {
+private fun Type.matchBestIncluded(types: List<Type>): Type? = when (this) {
     is UnionType -> {
         types.singleOrNull()
             ?: types.singleOrNull { it in this.types }
-            ?: compileError("Ambiguous match for type $commonName.")
     }
     is ParameterizedType -> {
         @Suppress("UNCHECKED_CAST")
@@ -189,22 +192,23 @@ private fun Type.matchBestIncluded(types: List<Type>): Type = when (this) {
                 }
             }
         }
-        remaining.singleOrNull() ?: compileError("Ambiguous match for type $commonName.")
+        remaining.singleOrNull()
     }
     else -> {
         // Either there is only one possibility, there's a type exactly equal to this one,
         // or there's ambiguity (there's no way to know which subtype to choose)
         types.singleOrNull()
             ?: types.firstOrNull() { it == this }
-            ?: compileError("Ambiguous match for type $commonName.")
     }
 }
 
-private fun Type.matchBestContravariantIncluding(types: List<Type>): Type = when (this) {
+private fun Type.matchBestContravariantIncluding(types: List<Type>): Type? = when (this) {
     is UnionType -> compileError("Unsupported.")
     is ParameterizedType -> {
+        val parentCandidate = parentTypes.mapNotNull { it.matchBestContravariantIncluding(types) }.toSet().singleOrNull()
         @Suppress("UNCHECKED_CAST")
-        var remaining = types as List<ParameterizedType>
+        val paramTypes = types.filterIsInstance<ParameterizedType>()
+        var remaining = paramTypes
         baseType.variances.forEachIndexed { i, variance ->
             when (variance) {
                 TypeVariance.Equality -> {
@@ -213,14 +217,14 @@ private fun Type.matchBestContravariantIncluding(types: List<Type>): Type = when
                 } // Same as Equality
                 TypeVariance.Contravariant -> {
                     val ownType = (this.typeParameters[i] as TypeParameter.SingleTypeParameter).type
-                    val otherTypes = types.map { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type }
+                    val otherTypes = paramTypes.map { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type }
                     val bestType = ownType.matchBestIncluded(otherTypes)
                     remaining =
                         remaining.filter { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type == bestType }
                 }
                 TypeVariance.Covariant -> {
                     val ownType = (this.typeParameters[i] as TypeParameter.SingleTypeParameter).type
-                    val otherTypes = types.map { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type }
+                    val otherTypes = paramTypes.map { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type }
                     val bestType = ownType.matchBestContravariantIncluding(otherTypes)
                     remaining =
                         remaining.filter { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type == bestType }
@@ -229,7 +233,7 @@ private fun Type.matchBestContravariantIncluding(types: List<Type>): Type = when
                 } // Same as Equality
                 TypeVariance.ContravariantList -> {
                     val ownType = (this.typeParameters[i] as TypeParameter.TypeListParameter).types
-                    val otherTypes = types.map { (it.typeParameters[i] as TypeParameter.TypeListParameter).types }
+                    val otherTypes = paramTypes.map { (it.typeParameters[i] as TypeParameter.TypeListParameter).types }
                     ownType.forEachIndexed { j, ownTypeAtIndex ->
                         val otherTypesAtIndex = otherTypes.map { it[j] }
                         val bestType = ownTypeAtIndex.matchBestIncluded(otherTypesAtIndex)
@@ -239,7 +243,7 @@ private fun Type.matchBestContravariantIncluding(types: List<Type>): Type = when
                 }
                 TypeVariance.CovariantList -> {
                     val ownType = (this.typeParameters[i] as TypeParameter.TypeListParameter).types
-                    val otherTypes = types.map { (it.typeParameters[i] as TypeParameter.TypeListParameter).types }
+                    val otherTypes = paramTypes.map { (it.typeParameters[i] as TypeParameter.TypeListParameter).types }
                     ownType.forEachIndexed { j, ownTypeAtIndex ->
                         val otherTypesAtIndex = otherTypes.map { it[j] }
                         val bestType = ownTypeAtIndex.matchBestContravariantIncluding(otherTypesAtIndex)
@@ -249,7 +253,7 @@ private fun Type.matchBestContravariantIncluding(types: List<Type>): Type = when
                 }
             }
         }
-        remaining.singleOrNull() ?: compileError("Ambiguous match for type $commonName.")
+        remaining.singleOrNull() ?: parentCandidate
     }
     else -> {
         val remaining = types.toMutableSet()
@@ -258,7 +262,7 @@ private fun Type.matchBestContravariantIncluding(types: List<Type>): Type = when
                 remaining.remove(type)
             }
         }
-        remaining.singleOrNull() ?: compileError("Ambiguous match for type $commonName.")
+        remaining.singleOrNull()
     }
 }
 
@@ -276,7 +280,7 @@ abstract class BuiltinParameterizableType(identifier: String, override val varia
     BuiltinType(identifier), ParameterizableType
 
 object ReceiverType :
-    BuiltinParameterizableType("Receiver", listOf(TypeVariance.Contravariant, TypeVariance.Contravariant)) {
+    BuiltinParameterizableType("Receiver", listOf(TypeVariance.Contravariant, TypeVariance.Covariant)) {
     operator fun invoke(receiver: Type, value: Type = AnyType) = ParameterizedReceiverType(receiver, value)
 }
 
@@ -286,7 +290,7 @@ data class ParameterizedReceiverType(val receiver: Type, val value: Type) : Para
         listOf(TypeParameter.SingleTypeParameter(receiver), TypeParameter.SingleTypeParameter(value))
 }
 
-object AnyType : BuiltinType("Any") {
+object AnyType : BuiltinType("Any"), Signature {
     override val parentTypes = emptyList<Type>()
 }
 

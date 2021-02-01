@@ -6,8 +6,25 @@ import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.Value
 
 open class Scope(val parent: Scope?) {
-    private val bindings = mutableMapOf<NamespacedIdentifier, Binding>()
-    private val imported = mutableMapOf<NamespacedIdentifier, Binding>()
+    private val bindings = mutableMapOf<String, MutableMap<Signature, Binding>>()
+    private val imported = mutableMapOf<String, MutableMap<Signature, Binding>>()
+
+    private val bindingValues get() = bindings.values.flatMap { it.values }
+
+    private operator fun MutableMap<String, MutableMap<Signature, Binding>>.get(key: NamespacedIdentifier): Binding? {
+        return this[key.identifier]?.get(key.signature)
+    }
+
+    private operator fun MutableMap<String, MutableMap<Signature, Binding>>.set(
+        key: NamespacedIdentifier,
+        value: Binding,
+    ) {
+        this.getOrPut(key.identifier) { mutableMapOf() }[key.signature] = value
+    }
+
+    private operator fun MutableMap<String, MutableMap<Signature, Binding>>.contains(key: NamespacedIdentifier): Boolean {
+        return key.identifier in this && key.signature in this[key.identifier]!!
+    }
 
     /**
      * Adds the given value to this scope.
@@ -15,14 +32,14 @@ open class Scope(val parent: Scope?) {
     fun add(
         value: Value,
         identifier: String,
-        signature: Signature = Signature.Default,
+        signature: Signature = DefaultSignature,
         visibility: Visibility = Visibility.PUBLIC,
     ) = addLazy(lazyOf(value), identifier, signature, visibility)
 
     open fun addLazy(
         value: Lazy<Value>,
         identifier: String,
-        signature: Signature = Signature.Default,
+        signature: Signature = DefaultSignature,
         visibility: Visibility = Visibility.PUBLIC,
     ) {
         val namespacedIdentifier = NamespacedIdentifier(identifier, signature)
@@ -44,7 +61,7 @@ open class Scope(val parent: Scope?) {
      */
     open fun get(
         identifier: String,
-        signature: Signature = Signature.Default,
+        signature: Signature = DefaultSignature,
         minVisibility: Visibility = Visibility.PRIVATE,
     ): Value? {
         return bindings[NamespacedIdentifier(identifier, signature)]?.let {
@@ -64,7 +81,7 @@ open class Scope(val parent: Scope?) {
      */
     open fun find(
         identifier: String,
-        signature: Signature = Signature.Default,
+        signature: Signature = DefaultSignature,
         minVisibility: Visibility = Visibility.PRIVATE,
     ): Value? {
         return get(identifier, signature, minVisibility)
@@ -77,19 +94,36 @@ open class Scope(val parent: Scope?) {
     }
 
     /**
+     * Returns a map of signatures to values with values nearest to this scope taking precedence.
+     * A value may be an [AmbiguousImportDummy] which should be handled accordingly.
+     */
+    open fun findAll(
+        identifier: String,
+        minVisibility: Visibility,
+    ): Map<Signature, Value> {
+        val ownResults =
+            (imported.getOrPut(identifier) { mutableMapOf() } + bindings.getOrPut(identifier) { mutableMapOf() })
+                .mapValues { (_, binding) ->
+                    binding.lazyValue.value
+                }
+        return if (parent != null) ownResults + parent.findAll(identifier, minVisibility) else ownResults
+    }
+
+    /**
      * Imports symbols from the [other] scope.
      * Imported symbols are shadowed by symbols declared locally.
      * Imported symbols in the other scope are not imported.
      */
     open fun import(other: Scope, minVisibility: Visibility = Visibility.PUBLIC) {
-        other.bindings.values.forEach { binding ->
+        other.bindingValues.forEach { binding ->
             if (binding.visibility >= minVisibility) {
                 val namespacedIdentifier = binding.namespacedIdentifier
-                imported[namespacedIdentifier] = if (namespacedIdentifier in imported && imported[namespacedIdentifier] != binding) {
-                    binding.copy(lazyValue = AmbiguousImportDummy)
-                } else {
-                    binding
-                }
+                imported[namespacedIdentifier] =
+                    if (namespacedIdentifier in imported && imported[namespacedIdentifier] != binding) {
+                        binding.copy(lazyValue = AmbiguousImportDummy)
+                    } else {
+                        binding
+                    }
             }
         }
     }
@@ -98,7 +132,7 @@ open class Scope(val parent: Scope?) {
      * Merges the internal and public members of the [other] scope into this scope.
      */
     open fun mergeIn(other: Scope) {
-        other.bindings.values.forEach { binding ->
+        other.bindingValues.forEach { binding ->
             if (binding.visibility >= Visibility.INTERNAL) {
                 val namespacedIdentifier = binding.namespacedIdentifier
                 if (namespacedIdentifier in bindings && bindings[namespacedIdentifier] != binding) {
@@ -126,25 +160,17 @@ data class Binding(
  * rather than immediately erroring.
  * Instead, an error only happens if a binding with this value is accessed.
  */
-private object AmbiguousImportDummy : Value, Lazy<Value> {
+object AmbiguousImportDummy : Value, Lazy<Value> {
     override val type = AnyType
 
     override val value = this
     override fun isInitialized() = true
 }
 
-sealed class Signature {
-    object Default : Signature() {
-        override fun toString() = "Default"
-    }
+interface Signature : Type
 
-    object Archetype : Signature() {
-        override fun toString() = "Archetype"
-    }
-
-    data class Receiver(val receiverType: Type) : Signature() {
-        override fun toString() = "Receiver ($receiverType)"
-    }
+val DefaultSignature = object : Signature {
+    override val parentTypes = listOf<Type>()
 }
 
 class ReadOnlyScope(parent: Scope? = null) : Scope(parent) {

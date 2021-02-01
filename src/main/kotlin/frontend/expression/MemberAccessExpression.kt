@@ -9,6 +9,7 @@ import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.ReceiverType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
+import xyz.qwewqa.trebla.frontend.declaration.matchBest
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.MemberAccessNode
 import xyz.qwewqa.trebla.grammar.trebla.UnaryFunctionNode
@@ -55,18 +56,10 @@ fun Value.resolveDirectBindingMember(name: String, context: Context?) =
             context?.let { type.resolveBinding(name, scope, Visibility.PUBLIC)?.tryBind(this, it) }
         }
 
-fun Type.resolveBinding(name: String, scope: Scope, minVisibility: Visibility): Value? =
-    scope.find(name, ReceiverType(this), minVisibility)
-        ?: this.parentTypes.map { type -> type.resolveBinding(name, scope, minVisibility) }
-            .toSet()
-            .let {
-                when (it.size) {
-                    0 -> null
-                    1 -> it.first()
-                    else -> compileError("Ambiguous bind.")
-                }
-            }
-        ?: scope.find(name, ReceiverType(AnyType), minVisibility)
+fun Type.resolveBinding(name: String, scope: Scope, minVisibility: Visibility): Value? {
+    val candidates = scope.findAll(name, minVisibility)
+    return candidates[ReceiverType(this).matchBest(candidates.keys)]!!
+}
 
 private fun Value.tryBind(toValue: Value, context: Context) =
     (this as? Bindable)?.boundTo(toValue, context) ?: this
