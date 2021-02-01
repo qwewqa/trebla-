@@ -310,6 +310,16 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitParameter(TreblaParser.ParameterContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TreblaParser#typeParameter}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypeParameter(TreblaParser.TypeParameterContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TreblaParser#typeParameter}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypeParameter(TreblaParser.TypeParameterContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TreblaParser#type}.
 	 * @param ctx the parse tree
 	 */

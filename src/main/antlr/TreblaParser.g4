@@ -76,7 +76,7 @@ structDeclaration
     ;
 
 structTypeParameters
-    :  (LSQUARE (parameter (COMMA parameter)* COMMA?)? RSQUARE)?
+    :  (LSQUARE (typeParameter (COMMA typeParameter)* COMMA?)? RSQUARE)?
     ;
 
 structFields
@@ -167,6 +167,10 @@ initBlock
 
 parameter
     : simpleIdentifier (COLON type)? (ASSIGNMENT expression)?
+    ;
+
+typeParameter
+    : (IN | OUT)? simpleIdentifier (COLON type)? (ASSIGNMENT expression)?
     ;
 
 type

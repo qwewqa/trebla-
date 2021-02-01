@@ -193,6 +193,12 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParameter(TreblaParser.ParameterContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TreblaParser#typeParameter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTypeParameter(TreblaParser.TypeParameterContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TreblaParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

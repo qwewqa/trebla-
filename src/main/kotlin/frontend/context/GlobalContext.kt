@@ -107,6 +107,8 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to Builtins,
     listOf("std") to TypeType,
     listOf("std") to AnyType,
+    listOf("std") to NothingType,
+    listOf("std") to ReceiverType,
     listOf("std") to UnitValue,
     listOf("std") to StructType,
     listOf("std") to ScriptType,

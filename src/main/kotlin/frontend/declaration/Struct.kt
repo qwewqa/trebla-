@@ -8,12 +8,13 @@ import xyz.qwewqa.trebla.grammar.trebla.StructDeclarationNode
 class StructDeclaration(
     override val node: StructDeclarationNode,
     override val parentContext: Context,
-    val typeParameters: Map<String, Value> = emptyMap(),
-    parentType: Type? = null,
+    val typeArgumentsByName: Map<String, Value> = emptyMap(),
+    override val baseType: TypeParamStructDeclaration,
 ) : Declaration,
     Callable,
     Type,
-    Allocatable {
+    Allocatable,
+    ParameterizedType {
     override val identifier = node.identifier.value
     override val signature = DefaultSignature
     override val visibility: Visibility
@@ -23,15 +24,28 @@ class StructDeclaration(
 
     override val bindingScope = parentContext.scope
 
-    override val parentTypes: List<Type> = if (parentType != null) listOf(parentType) else listOf(StructType)
-
     override val loadFirstPass = true
 
     val isRaw: Boolean
 
+    override val typeParameters by lazy {
+        baseType.variances.zip(baseType.typeParameterNames).map { (variance, name) ->
+            val argument = typeArgumentsByName.getValue(name)
+            when (variance) {
+                TypeVariance.Equality -> TypeParameter.ValueParameter(argument)
+                TypeVariance.Invariant -> TypeParameter.SingleTypeParameter(argument as Type)
+                TypeVariance.Covariant -> TypeParameter.SingleTypeParameter(argument as Type)
+                TypeVariance.Contravariant -> TypeParameter.SingleTypeParameter(argument as Type)
+                TypeVariance.InvariantList -> throw NotImplementedError()
+                TypeVariance.CovariantList -> throw NotImplementedError()
+                TypeVariance.ContravariantList -> throw NotImplementedError()
+            }
+        }
+    }
+
     val fields by lazy {
         val paramContext = SimpleContext(parentContext)
-        typeParameters.forEach { (id, v) ->
+        typeArgumentsByName.forEach { (id, v) ->
             paramContext.scope.add(v, id)
         }
         node.fields.map { it.parameter }.parse(parentContext)
@@ -130,7 +144,8 @@ data class NormalStructValue(
         }
     }
 
-    override fun getMember(name: String, accessingContext: Context?): Value? = fields[name] ?: type.typeParameters[name]
+    override fun getMember(name: String, accessingContext: Context?): Value? =
+        fields[name] ?: type.typeArgumentsByName[name]
 
     override fun toEntityArrayValue(offset: RawValue): Allocated {
         return NormalStructValue(

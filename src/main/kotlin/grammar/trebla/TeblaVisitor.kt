@@ -76,7 +76,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
             ctx, filename,
             ctx.modifierList().visit() as ModifierListNode,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
-            ctx.structTypeParameters().visit() as ParametersNode,
+            ctx.structTypeParameters().typeParameter().visit() as List<ParameterNode>,
             ctx.structFields().structField().visit() as List<StructFieldNode>,
         )
     }
@@ -85,8 +85,18 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         return StructFieldNode(ctx, filename, ctx.parameter().visit() as ParameterNode, ctx.EMBED().exist)
     }
 
-    override fun visitStructTypeParameters(ctx: TreblaParser.StructTypeParametersContext): TreblaNode {
-        return ParametersNode(ctx, filename, ctx.parameter().visit() as List<ParameterNode>)
+    override fun visitTypeParameter(ctx: TreblaParser.TypeParameterContext): TreblaNode {
+        return ParameterNode(
+            ctx, filename,
+            when {
+                ctx.IN().exist -> TypeVarianceSpecification.In
+                ctx.OUT().exist -> TypeVarianceSpecification.Out
+                else -> TypeVarianceSpecification.Default
+            },
+            ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
+            ctx.type()?.visit() as TypeNode?,
+            ctx.expression()?.visit() as ExpressionNode?
+        )
     }
 
     override fun visitEnumDeclaration(ctx: TreblaParser.EnumDeclarationContext): TreblaNode {
@@ -226,6 +236,7 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     override fun visitParameter(ctx: TreblaParser.ParameterContext): TreblaNode {
         return ParameterNode(
             ctx, filename,
+            TypeVarianceSpecification.Default,
             ctx.simpleIdentifier().visit() as SimpleIdentifierNode,
             ctx.type()?.visit() as TypeNode?,
             ctx.expression()?.visit() as ExpressionNode?

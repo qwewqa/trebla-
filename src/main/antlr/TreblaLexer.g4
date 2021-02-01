@@ -96,6 +96,8 @@ GETTER: 'get' ;
 SETTER: 'set' ;
 IS: 'is' ;
 AS: 'as' ;
+IN: 'in' ;
+OUT: 'out' ;
 PACKAGE: 'package' ;
 
 //MODIFIERS
@@ -221,6 +223,8 @@ Inside_GETTER: GETTER -> type(GETTER) ;
 Inside_SETTER: SETTER -> type(SETTER) ;
 Inside_IS: IS -> type(IS) ;
 Inside_AS: AS -> type(AS) ;
+Inside_IN: IN -> type(IN) ;
+Inside_OUT: OUT -> type(OUT) ;
 
 Inside_PUBLIC: PUBLIC -> type(PUBLIC) ;
 Inside_PRIVATE: PRIVATE -> type(PRIVATE) ;

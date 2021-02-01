@@ -99,11 +99,11 @@ data class StructDeclarationNode(
     override val filename: String,
     val modifiers: ModifierListNode,
     val identifier: SimpleIdentifierNode,
-    val typeParameters: ParametersNode,
+    val typeParameters: List<ParameterNode>,
     val fields: List<StructFieldNode>,
 ) : TreblaNode, DeclarationNode, ScriptMemberNode, TopLevelObjectNode {
     override fun parse(context: Context): Declaration =
-        if (typeParameters.value.isEmpty()) StructDeclaration(this, context)
+        if (typeParameters.isEmpty()) StructDeclaration(this, context, emptyMap(), TypeParamStructDeclaration(this, context))
         else TypeParamStructDeclaration(this, context)
 }
 
@@ -207,10 +207,17 @@ data class InitBlockNode(
 data class ParameterNode(
     override val context: ParseTree,
     override val filename: String,
+    val variance: TypeVarianceSpecification,
     val identifier: SimpleIdentifierNode,
     val type: TypeNode?,
     val default: ExpressionNode?,
 ) : TreblaNode
+
+enum class TypeVarianceSpecification {
+    Default,
+    In,
+    Out,
+}
 
 data class BlockNode(
     override val context: ParseTree,
