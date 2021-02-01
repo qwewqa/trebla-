@@ -16,7 +16,7 @@ class CallbackDeclaration(
     override val parentContext: ScriptDeclaration,
 ) : Declaration {
     override val identifier = node.identifier.value
-    override val signature = Signature.Default
+    override val signature = DefaultSignature
     override val visibility = Visibility.PUBLIC
     override val type = AnyType
 

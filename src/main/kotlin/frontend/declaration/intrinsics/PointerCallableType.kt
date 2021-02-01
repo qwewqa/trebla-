@@ -16,11 +16,15 @@ class PointerCallableType(context: Context) :
         {
             SpecificPointerType(context, "type".cast())
         }
-    )
+    ),
+    ParameterizableType {
+    override val variances = listOf(TypeVariance.Covariant)
+}
 
 class SpecificPointerType(val context: Context, val insideType: Type) :
     Callable,
-    Allocatable {
+    Allocatable,
+    ParameterizedType {
     private val callableDelegate = CallableDelegate(
         context,
         {
@@ -46,10 +50,9 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
 
     override val type = TypeType
     override val allocationSize = 2
-    override val parentTypes: List<Type> = listOf(context.getFullyQualified("std", "Pointer") as Type)
+    override val baseType = context.getFullyQualified("std", "Pointer") as ParameterizableType
 
-    override fun accepts(other: Type): Boolean =
-        super.accepts(other) || (other is SpecificPointerType && insideType.accepts(other.insideType))
+    override val typeParameters = listOf(TypeParameter.SingleTypeParameter(insideType))
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated = PointerValue(
         this,

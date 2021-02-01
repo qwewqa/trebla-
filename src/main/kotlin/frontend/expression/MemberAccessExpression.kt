@@ -6,6 +6,7 @@ import xyz.qwewqa.trebla.frontend.context.Scope
 import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
+import xyz.qwewqa.trebla.frontend.declaration.ReceiverType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
@@ -55,7 +56,7 @@ fun Value.resolveDirectBindingMember(name: String, context: Context?) =
         }
 
 fun Type.resolveBinding(name: String, scope: Scope, minVisibility: Visibility): Value? =
-    scope.find(name, Signature.Receiver(this), minVisibility)
+    scope.find(name, ReceiverType(this), minVisibility)
         ?: this.parentTypes.map { type -> type.resolveBinding(name, scope, minVisibility) }
             .toSet()
             .let {
@@ -65,7 +66,7 @@ fun Type.resolveBinding(name: String, scope: Scope, minVisibility: Visibility): 
                     else -> compileError("Ambiguous bind.")
                 }
             }
-        ?: scope.find(name, Signature.Receiver(AnyType), minVisibility)
+        ?: scope.find(name, ReceiverType(AnyType), minVisibility)
 
 private fun Value.tryBind(toValue: Value, context: Context) =
     (this as? Bindable)?.boundTo(toValue, context) ?: this

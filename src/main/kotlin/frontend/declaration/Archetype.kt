@@ -14,7 +14,7 @@ import xyz.qwewqa.trebla.grammar.trebla.ArchetypeDeclarationNode
 class ArchetypeDeclaration(override val node: ArchetypeDeclarationNode, override val parentContext: Context) :
     Declaration {
     override val identifier = node.name.value
-    override val signature = Signature.Archetype
+    override val signature = ArchetypeType
     override val visibility = Visibility.PUBLIC
     override val type = AnyType
 
@@ -35,5 +35,7 @@ class ArchetypeDeclaration(override val node: ArchetypeDeclarationNode, override
         Archetype(identifier, script.index, isInput, defaults)
     }
 }
+
+object ArchetypeType : BuiltinType("Archetype"), Signature
 
 data class ArchetypeData(val name: String, val script: ScriptDeclaration, val defaults: Map<String, Double>)

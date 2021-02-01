@@ -14,7 +14,7 @@ class EnumDeclaration(
     Type,
     Allocatable {
     override val identifier = node.identifier.value
-    override val signature = Signature.Default
+    override val signature = DefaultSignature
     override val visibility: Visibility
     override val type = TypeType
 

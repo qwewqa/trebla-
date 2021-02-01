@@ -62,7 +62,7 @@ class FunctionDeclaration(
     override val isInfix: Boolean
 
     override val signature by lazy {
-        receiverParameter?.let { Signature.Receiver(it.type) } ?: Signature.Default
+        receiverParameter?.let { ReceiverType(it.type) } ?: DefaultSignature
     }
 
     override fun boundTo(value: Value, context: Context): Value {

@@ -1,10 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.Signature
-import xyz.qwewqa.trebla.frontend.context.Visibility
-import xyz.qwewqa.trebla.frontend.context.visibilityModifiers
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
@@ -16,7 +13,7 @@ class LetDeclaration(
     override val parentContext: Context,
 ) : Declaration {
     override val identifier = node.identifier.value
-    override val signature = Signature.Default
+    override val signature = DefaultSignature
     override val visibility: Visibility
     override val type = UnitValue
 

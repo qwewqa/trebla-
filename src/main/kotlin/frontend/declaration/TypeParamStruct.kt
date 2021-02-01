@@ -1,10 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.context.Signature
-import xyz.qwewqa.trebla.frontend.context.Visibility
-import xyz.qwewqa.trebla.frontend.context.visibilityModifiers
+import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.grammar.trebla.StructDeclarationNode
 
@@ -15,7 +12,7 @@ class TypeParamStructDeclaration(
     Subscriptable,
     Type {
     override val identifier = node.identifier.value
-    override val signature = Signature.Default
+    override val signature = DefaultSignature
     override val visibility: Visibility
     override val type = TypeType
 

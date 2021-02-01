@@ -4,6 +4,7 @@ import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.declaration.includes
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.PointerValue
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.pointerTo
 import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
@@ -19,7 +20,7 @@ interface Value {
 
     val commonName: String? get() = null
 
-    fun coerceTo(type: Type): Value? = if (type.accepts(this.type)) this else null
+    fun coerceTo(type: Type): Value? = if (type includes this.type) this else null
 
     /**
      * Returns an immutable version of this value (possibly itself) or null if that is not possible.

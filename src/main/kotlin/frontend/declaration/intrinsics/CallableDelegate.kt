@@ -3,6 +3,7 @@ package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
+import xyz.qwewqa.trebla.frontend.context.DefaultSignature
 import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.declaration.Declaration
@@ -17,7 +18,7 @@ open class SimpleDeclaration(
     override val parentContext: Context?,
     override val identifier: String,
     override val type: Type,
-    override val signature: Signature = Signature.Default,
+    override val signature: Signature = DefaultSignature,
     override val visibility: Visibility = Visibility.PUBLIC,
 ) : Declaration
 

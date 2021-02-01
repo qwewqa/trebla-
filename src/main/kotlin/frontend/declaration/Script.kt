@@ -15,7 +15,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
     Declaration, ScriptContext, Callable {
     override val globalContext: GlobalContext = parentContext.globalContext
     override val identifier = node.identifier.value
-    override val signature = Signature.Default
+    override val signature = DefaultSignature
     override val visibility = Visibility.PUBLIC
     override val type = ScriptType
     override val bindingContext = parentContext

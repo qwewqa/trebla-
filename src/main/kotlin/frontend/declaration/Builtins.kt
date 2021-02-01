@@ -15,7 +15,7 @@ object Builtins : Declaration {
     override val type = AnyType
 
     override val identifier = "builtins"
-    override val signature = Signature.Default
+    override val signature = DefaultSignature
     override val visibility = Visibility.PUBLIC
 
     override fun getMember(name: String, accessingContext: Context?): Value? = try {

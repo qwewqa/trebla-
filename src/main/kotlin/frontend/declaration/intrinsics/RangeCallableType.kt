@@ -15,7 +15,7 @@ class RangeCallableType(context: Context) :
         context,
         {
             "arg1" type NumberType
-            "arg2" type UnionType(listOf(UnitValue, NumberType)) default UnitValue
+            "arg2" type UnionType(setOf(UnitValue, NumberType)) default UnitValue
             "step" type NumberType default 1.0.toStruct(context)
         },
         {

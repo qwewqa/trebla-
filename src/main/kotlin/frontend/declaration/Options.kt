@@ -8,7 +8,7 @@ import xyz.qwewqa.trebla.frontend.expression.Value
 class OptionsAccessor(override val parentContext: Context) : Declaration {
     override val identifier = "options"
     override val type = AnyType
-    override val signature = Signature.Default
+    override val signature = DefaultSignature
     override val visibility = Visibility.PUBLIC
 
     private val options = parentContext.globalContext.configuration.projectConfig.options.mapIndexed { i, option ->
