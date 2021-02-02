@@ -11,7 +11,6 @@ class LocalContextCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {},
         {
             callingContext
@@ -25,7 +24,6 @@ class WithContextCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {
             "context" type ContextType
             "block" type LambdaType

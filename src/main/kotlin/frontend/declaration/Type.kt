@@ -2,23 +2,45 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
+import xyz.qwewqa.trebla.frontend.declaration.intrinsics.SubscriptableDelegate
+import xyz.qwewqa.trebla.frontend.expression.Subscriptable
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.TypeNode
 
 interface Type : Value {
-    override val type: Type get() = TypeType
-    override val commonName: String get() = "Unnamed Type"
+    override val type: ParameterizedTypeType get() = TypeType(this)
+    override val commonName: String
     override fun coerceImmutable() = this
     val parentTypes: List<Type>
     val bindingScope: Scope? get() = null
 }
 
+/**
+ * A supertype of a [ParameterizedType] that can take type parameters.
+ */
 interface ParameterizableType : Type {
     val variances: List<TypeVariance>
 }
 
+/**
+ * A subtype of a [ParameterizableType] type that has type parameters.
+ */
 interface ParameterizedType : Type {
+    override val commonName: String
+        get() = "${baseType.commonName}[${
+            typeParameters
+                .zip(baseType.variances)
+                .joinToString(", ") { (param, variance) ->
+                    when (variance) {
+                        TypeVariance.Covariant -> "out "
+                        TypeVariance.Contravariant -> "in "
+                        TypeVariance.CovariantList -> "out "
+                        TypeVariance.ContravariantList -> "in "
+                        else -> ""
+                    } + ((param as? Value)?.commonName ?: param.toString())
+                }
+        }]"
     val baseType: ParameterizableType
 
     /**
@@ -118,10 +140,24 @@ infix fun Type.includes(other: Type): Boolean {
 
 fun Type.accepts(other: Value) = includes(other.type)
 
-fun Type.matchBest(types: Iterable<Type>): Type {
+fun Type.matchBest(types: Iterable<Type>): MatchTypeResult {
     val candidates = types.filter { this includes it }
-    if (candidates.isEmpty()) compileError("No candidates.")
-    return matchBestIncluded(candidates.toSet()) ?: compileError("Ambiguous overload.")
+    if (candidates.isEmpty()) MatchTypeResult.Failure.NoCandidates
+    return matchBestIncluded(candidates.toSet())?.let { MatchTypeResult.Success(it) }
+        ?: MatchTypeResult.Failure.Ambiguous
+}
+
+sealed class MatchTypeResult {
+    class Success(val type: Type) : MatchTypeResult()
+    sealed class Failure : MatchTypeResult() {
+        object NoCandidates : Failure()
+        object Ambiguous : Failure()
+    }
+
+    inline fun getOrElse(onFailure: (Failure) -> Type): Type = when (this) {
+        is Success -> type
+        is Failure -> onFailure(this)
+    }
 }
 
 /**
@@ -138,7 +174,8 @@ private fun Type.matchBestIncluded(types: Set<Type>): Type? = if (types.isEmpty(
         if (strictSubtypes.isNotEmpty()) {
             strictSubtypes.singleOrNull() ?: strictSubtypes.singleOrNull { it != NothingType }
         } else {
-            val candidates = types.filter { it is ParameterizedType && it.baseType == this.baseType } as List<ParameterizedType>
+            val candidates =
+                types.filter { it is ParameterizedType && it.baseType == this.baseType } as List<ParameterizedType>
             var remaining = candidates
             baseType.variances.forEachIndexed { i, variance ->
                 when (variance) {
@@ -300,7 +337,27 @@ object NothingType : BuiltinType("Nothing"), Signature {
     override val parentTypes = emptyList<Type>()
 }
 
-object TypeType : BuiltinType("Type")
+object TypeType :
+    BuiltinType("Type"),
+    Subscriptable by SubscriptableDelegate(
+        {
+            "supertype" type TypeType
+            "subtype" type TypeType
+        },
+        {
+            ParameterizedTypeType("supertype".cast(), "subtype".cast())
+        },
+    ),
+    ParameterizableType {
+    override val variances = listOf(TypeVariance.Covariant, TypeVariance.Contravariant)
+
+    operator fun invoke(type: Type) = ParameterizedTypeType(type, type)
+}
+
+class ParameterizedTypeType(supertype: Type, subtype: Type) : ParameterizedType {
+    override val baseType = TypeType
+    override val typeParameters = listOf(supertype, subtype)
+}
 
 /**
  * A union type, intended as a type constraint for functions where either of

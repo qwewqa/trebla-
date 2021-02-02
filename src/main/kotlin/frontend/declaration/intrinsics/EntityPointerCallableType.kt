@@ -9,7 +9,6 @@ import xyz.qwewqa.trebla.frontend.expression.*
 class EntityPointerCallableType(context: Context) :
     BuiltinType("EntityPointer"),
     Subscriptable by SubscriptableDelegate(
-        context,
         {
             "script" type ScriptType
         },
@@ -25,7 +24,6 @@ class SpecificEntityPointerType(val context: Context, val script: ScriptDeclarat
     override val commonName = "EntityPointer"
 
     private val callableDelegate = CallableDelegate(
-        context,
         {
             "index" type NumberType
         },
@@ -47,13 +45,9 @@ class SpecificEntityPointerType(val context: Context, val script: ScriptDeclarat
         },
     )
 
-    override val parameters: List<Parameter>?
-        get() = callableDelegate.parameters
-
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context) =
         callableDelegate.callWith(arguments, callingContext)
 
-    override val type = TypeType
     override val allocationSize = 1
     override val parentTypes: List<Type> = listOf(context.getFullyQualified("std", "EntityPointer") as Type)
 

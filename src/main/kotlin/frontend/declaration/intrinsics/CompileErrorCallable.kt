@@ -12,7 +12,6 @@ class CompileErrorCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {
             "message" type StringType default StringValue("")
         },

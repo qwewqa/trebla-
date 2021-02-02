@@ -19,7 +19,6 @@ class TypeParamStructDeclaration(
     override val identifier = node.identifier.value
     override val signature = DefaultSignature
     override val visibility: Visibility
-    override val type = TypeType
 
     override val commonName get() = identifier
 
@@ -27,7 +26,7 @@ class TypeParamStructDeclaration(
 
     override val loadFirstPass = true
 
-    override val subscriptParameters by lazy {
+    val subscriptParameters by lazy {
         node.typeParameters.parse(parentContext)
     }
 

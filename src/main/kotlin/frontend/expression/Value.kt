@@ -118,6 +118,4 @@ interface Allocated : Value {
 /**
  * A type with only one value. The default return value for functions that don't return anything else.
  */
-object UnitValue : BuiltinType("Unit"), Value {
-    override val type = this
-}
+object UnitValue : BuiltinType("Unit")

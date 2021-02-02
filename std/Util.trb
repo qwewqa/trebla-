@@ -88,3 +88,12 @@ operator func List.subscript(index: Number): Any {
 }
 
 func Number.toEnum(type: Type) = enumFromOrdinal(type, this)
+
+func SingleArgumentSubscriptable(action): Any {
+    struct Dummy()
+    operator func Dummy.subscript(value) = action(value)
+    Dummy()
+}
+
+let Supertype = SingleArgumentSubscriptable { Type[Any, it] }
+let Subtype = SingleArgumentSubscriptable { Type[it, Nothing] }

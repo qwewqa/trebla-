@@ -12,7 +12,6 @@ import xyz.qwewqa.trebla.frontend.expression.ValueArgument
 class RangeCallableType(context: Context) :
     BuiltinType("Range"),
     Callable by CallableDelegate(
-        context,
         {
             "arg1" type NumberType
             "arg2" type UnionType(setOf(UnitValue, NumberType)) default UnitValue
@@ -41,7 +40,6 @@ class RangeValue(
     val step: Int,
 ) : Value,
     Callable by CallableDelegate(
-        context,
         {
             "operation" type CallableType
         },

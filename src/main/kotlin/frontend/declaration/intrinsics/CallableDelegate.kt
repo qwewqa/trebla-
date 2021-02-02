@@ -23,41 +23,29 @@ open class SimpleDeclaration(
 ) : Declaration
 
 class CallableDelegate(
-    val parentContext: Context,
-    parameters: IntrinsicParameterDSLContext.() -> Unit,
+    private val parameters: IntrinsicParameterDSLContext.() -> Unit,
     private val operation: IntrinsicFunctionDSLContext.() -> Value,
 ) : Callable {
-
-    override val parameters by lazy {
-        IntrinsicParameterDSLContext(parentContext).apply(parameters).get()?.map { p ->
+    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value =
+        IntrinsicParameterDSLContext(callingContext).apply(parameters).get()?.map { p ->
             Parameter(p.name,
                 p.type,
-                p.default?.let { DefaultParameter(ValueExpression(it), parentContext) })
-        }
-    }
-
-    override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value =
-        parameters?.let {
+                p.default?.let { DefaultParameter(ValueExpression(it), callingContext) })
+        }?.let {
             IntrinsicFunctionDSLContext(it.pairedWithAndValidated(arguments), null, callingContext).operation()
         } ?: IntrinsicFunctionDSLContext(null, arguments, callingContext).operation()
 }
 
 class SubscriptableDelegate(
-    val parentContext: Context,
-    parameters: IntrinsicParameterDSLContext.() -> Unit,
+    private val parameters: IntrinsicParameterDSLContext.() -> Unit,
     private val operation: IntrinsicFunctionDSLContext.() -> Value,
 ) : Subscriptable {
-
-    override val subscriptParameters by lazy {
-        IntrinsicParameterDSLContext(parentContext).apply(parameters).get()?.map { p ->
+    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context): Value =
+        IntrinsicParameterDSLContext(callingContext).apply(parameters).get()?.map { p ->
             Parameter(p.name,
                 p.type,
-                p.default?.let { DefaultParameter(ValueExpression(it), parentContext) })
-        }
-    }
-
-    override fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context): Value =
-        subscriptParameters?.let {
+                p.default?.let { DefaultParameter(ValueExpression(it), callingContext) })
+        }?.let {
             IntrinsicFunctionDSLContext(it.pairedWithAndValidated(arguments), null, callingContext).operation()
         } ?: IntrinsicFunctionDSLContext(null, arguments, callingContext).operation()
 }

@@ -170,6 +170,7 @@ object AmbiguousImportDummy : Value, Lazy<Value> {
 interface Signature : Type
 
 val DefaultSignature = object : Signature {
+    override val commonName = "DefaultSignature"
     override val parentTypes = listOf<Type>()
 }
 

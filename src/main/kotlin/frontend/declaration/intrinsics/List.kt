@@ -9,7 +9,6 @@ import kotlin.math.roundToInt
 class ListBaseType(context: Context) :
     BuiltinType("List"),
     Subscriptable by SubscriptableDelegate(
-        context,
         {
             "type" type TypeType
         },
@@ -29,7 +28,6 @@ class ListOfCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {
             unmanaged
         },
@@ -43,17 +41,13 @@ class ListOfCallable(context: Context) :
 
 data class UnsizedListType(val containedType: Type, val context: Context) : ParameterizedType, ParameterizableType,
     Subscriptable {
-    override val type = TypeType
     override val baseType = context.getFullyQualified("std", "List") as ParameterizableType
     override val typeParameters = listOf(containedType)
 
     // The size of the list is compared via an equality check
     override val variances = listOf(TypeVariance.Equality)
 
-    override val commonName = "List"
-
     private val subscriptDelegate = SubscriptableDelegate(
-        context,
         {
             "size" type NumberType
         },
@@ -76,11 +70,9 @@ data class UnsizedListType(val containedType: Type, val context: Context) : Para
 
 data class SizedListType(val size: Int, override val baseType: UnsizedListType, val context: Context) : Type,
     Allocatable, ParameterizedType {
-    override val type = TypeType
     override val typeParameters = listOf(size)
     val containedType = baseType.containedType
 
-    override val commonName = "List"
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated {
         if (containedType !is Allocatable) {

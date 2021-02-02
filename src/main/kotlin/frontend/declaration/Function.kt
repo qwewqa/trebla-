@@ -39,7 +39,7 @@ class FunctionDeclaration(
         }
     }
 
-    override val parameters by lazy {
+    val parameters by lazy {
         receiverParameter?.let { listOf(it) + valueParameters } ?: valueParameters
     }
 

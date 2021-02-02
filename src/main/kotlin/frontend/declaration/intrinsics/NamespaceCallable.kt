@@ -15,7 +15,6 @@ class NamespaceCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {
             "init" type LambdaType
         },

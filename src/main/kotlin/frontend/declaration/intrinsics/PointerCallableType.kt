@@ -9,7 +9,6 @@ import xyz.qwewqa.trebla.frontend.expression.*
 class PointerCallableType(context: Context) :
     BuiltinType("Pointer"),
     Subscriptable by SubscriptableDelegate(
-        context,
         {
             "type" type TypeType
         },
@@ -26,7 +25,6 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
     Allocatable,
     ParameterizedType {
     private val callableDelegate = CallableDelegate(
-        context,
         {
             "block" type NumberType
             "index" type NumberType
@@ -42,13 +40,9 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
 
     override val commonName = "Pointer"
 
-    override val parameters: List<Parameter>?
-        get() = callableDelegate.parameters
-
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context) =
         callableDelegate.callWith(arguments, callingContext)
 
-    override val type = TypeType
     override val allocationSize = 2
     override val baseType = context.getFullyQualified("std", "Pointer") as ParameterizableType
 
@@ -77,7 +71,6 @@ class PointerValue(
 ) : Allocated,
     Dereferenceable,
     Subscriptable by SubscriptableDelegate(
-        type.context,
         {
             "index" type NumberType
         },
@@ -152,7 +145,6 @@ class PointerToCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {
             "value" type AnyType
         },
@@ -174,7 +166,6 @@ class DerefCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {
             "pointer" type AnyType
         },

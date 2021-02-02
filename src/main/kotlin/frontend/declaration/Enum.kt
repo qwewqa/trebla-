@@ -16,7 +16,6 @@ class EnumDeclaration(
     override val identifier = node.identifier.value
     override val signature = DefaultSignature
     override val visibility: Visibility
-    override val type = TypeType
 
     override val commonName get() = identifier
 
@@ -256,7 +255,6 @@ class EnumFromOrdinalCallable(context: Context) :
             CallableType
         ),
         Callable by CallableDelegate(
-            context,
             {
                 "type" type TypeType
                 "ordinal" type NumberType

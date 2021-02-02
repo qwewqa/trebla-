@@ -14,7 +14,6 @@ class SizeOfCallable(context: Context) :
             CallableType
         ),
         Callable by CallableDelegate(
-            context,
             {
                 "type" type TypeType
             },
@@ -32,7 +31,6 @@ class TypeOfCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {
             "value" type AnyType
         },
@@ -48,7 +46,6 @@ class TypeAcceptsCallable(context: Context) :
         CallableType
     ),
     Callable by CallableDelegate(
-        context,
         {
             "constraint" type TypeType
             "type" type TypeType

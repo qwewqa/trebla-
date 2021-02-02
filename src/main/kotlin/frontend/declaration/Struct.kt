@@ -18,10 +18,9 @@ class StructDeclaration(
     override val identifier = node.identifier.value
     override val signature = DefaultSignature
     override val visibility: Visibility
-    override val type = TypeType
 
-    override val commonName get() = identifier
-
+    override val commonName: String
+        get() = if (typeParameters.isNotEmpty()) super<ParameterizedType>.commonName else identifier
     override val bindingScope = parentContext.scope
 
     override val loadFirstPass = true
@@ -51,7 +50,7 @@ class StructDeclaration(
         node.fields.map { it.parameter }.parse(parentContext)
     }
     val fieldNames by lazy { fields.map { it.name }.toSet() }
-    override val parameters by lazy { fields }
+    val parameters by lazy { fields }
 
     val embeddedFieldNames = node.fields.filter { it.isEmbed }.map { it.parameter.identifier.value }
 
@@ -74,7 +73,7 @@ class StructDeclaration(
             ValueArgument(
                 it.name,
                 (it.type as? Allocatable)?.allocateOn(allocator, context)
-                    ?: compileError("${type.identifier} is not allocatable.")
+                    ?: compileError("${type.commonName} is not allocatable.")
             )
         }, context)
     }

@@ -11,12 +11,10 @@ import xyz.qwewqa.trebla.grammar.trebla.*
 interface Callable {
     val isOperator: Boolean get() = false
     val isInfix: Boolean get() = false
-    val parameters: List<Parameter>? get() = null
     fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value
 }
 
 interface Subscriptable {
-    val subscriptParameters: List<Parameter>? get() = null
     fun subscriptWith(arguments: List<ValueArgument>, callingContext: Context): Value
 }
 
@@ -38,7 +36,7 @@ class CallExpression(override val node: UnaryFunctionNode, op: FunctionCallNode)
         val target = node.value.parseAndApplyTo(context)
         return node.runWithErrorMessage("Error in call expression.") {
             (target as? Callable)?.callWith(arguments, context)
-                ?: (target.resolveMember("call", context) as? Callable)?.run {
+                ?: (target.resolveDirectBindingMember("call", context) as? Callable)?.run {
                     if (!isOperator) compileError("call function exists, but is not operator.", node)
                     callWith(arguments, context)
                 }
@@ -56,7 +54,7 @@ class SubscriptExpression(override val node: UnaryFunctionNode, op: SubscriptNod
         val target = node.value.parseAndApplyTo(context)
         return node.runWithErrorMessage("Error in subscript expression.") {
             (target as? Subscriptable)?.subscriptWith(arguments, context)
-                ?: (target.resolveMember("subscript", context) as? Callable)?.run {
+                ?: (target.resolveDirectBindingMember("subscript", context) as? Callable)?.run {
                     if (!isOperator) compileError("subscript function exists, but is not operator.", node)
                     callWith(arguments, context)
                 }

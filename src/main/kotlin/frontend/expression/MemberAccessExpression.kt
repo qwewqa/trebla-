@@ -58,7 +58,7 @@ fun Value.resolveDirectBindingMember(name: String, context: Context?) =
 
 fun Type.resolveBinding(name: String, scope: Scope, minVisibility: Visibility): Value? {
     val candidates = scope.findAll(name, minVisibility)
-    return candidates[ReceiverType(this).matchBest(candidates.keys)]!!
+    return candidates[ReceiverType(this).matchBest(candidates.keys).getOrElse { return null }]!!
 }
 
 private fun Value.tryBind(toValue: Value, context: Context) =
