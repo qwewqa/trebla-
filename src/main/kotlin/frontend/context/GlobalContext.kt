@@ -125,7 +125,7 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
 val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::OptionsAccessor,
     listOf("std") to ::EntityPointerCallableType,
-    listOf("std") to ::ListCallableType,
+    listOf("std") to ::ListBaseType,
     listOf("std") to ::LocalContextCallable,
     listOf("std") to ::WithContextCallable,
     listOf("std") to ::DerefCallable,

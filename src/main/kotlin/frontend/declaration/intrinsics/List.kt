@@ -6,7 +6,7 @@ import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import kotlin.math.roundToInt
 
-class ListCallableType(context: Context) :
+class ListBaseType(context: Context) :
     BuiltinType("List"),
     Subscriptable by SubscriptableDelegate(
         context,
@@ -17,7 +17,10 @@ class ListCallableType(context: Context) :
             val type = "type".cast<Type>()
             UnsizedListType(type, context)
         },
-    )
+    ),
+    ParameterizableType {
+    override val variances = listOf(TypeVariance.Covariant)
+}
 
 class ListOfCallable(context: Context) :
     SimpleDeclaration(
@@ -33,14 +36,19 @@ class ListOfCallable(context: Context) :
         {
             if (arguments.any { it.name != null }) compileError("listOf requires only unnamed arguments.")
             val values = arguments.map { it.value }
-            val type = values.map { it.type }.toSet().singleOrNull() ?: AnyType
+            val type = values.map { it.type }.toSet().singleOrNull() ?: if (values.isEmpty()) NothingType else AnyType
             ListValue(context, SizedListType(arguments.size, UnsizedListType(type, context), context), values)
         },
     )
 
-data class UnsizedListType(val containedType: Type, val context: Context) : Type, Subscriptable {
+data class UnsizedListType(val containedType: Type, val context: Context) : ParameterizedType, ParameterizableType,
+    Subscriptable {
     override val type = TypeType
-    override val parentTypes: List<Type> = listOf(context.getFullyQualified("std", "List") as Type)
+    override val baseType = context.getFullyQualified("std", "List") as ParameterizableType
+    override val typeParameters = listOf(containedType)
+
+    // The size of the list is compared via an equality check
+    override val variances = listOf(TypeVariance.Equality)
 
     override val commonName = "List"
 
@@ -66,10 +74,11 @@ data class UnsizedListType(val containedType: Type, val context: Context) : Type
     }
 }
 
-data class SizedListType(val size: Int, val unsizedType: UnsizedListType, val context: Context) : Type, Allocatable {
+data class SizedListType(val size: Int, override val baseType: UnsizedListType, val context: Context) : Type,
+    Allocatable, ParameterizedType {
     override val type = TypeType
-    override val parentTypes: List<Type> = listOf(unsizedType)
-    val containedType = unsizedType.containedType
+    override val typeParameters = listOf(size)
+    val containedType = baseType.containedType
 
     override val commonName = "List"
 

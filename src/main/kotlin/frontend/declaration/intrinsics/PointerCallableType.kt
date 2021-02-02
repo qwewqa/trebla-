@@ -52,7 +52,7 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
     override val allocationSize = 2
     override val baseType = context.getFullyQualified("std", "Pointer") as ParameterizableType
 
-    override val typeParameters = listOf(TypeParameter.SingleTypeParameter(insideType))
+    override val typeParameters = listOf(insideType)
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated = PointerValue(
         this,

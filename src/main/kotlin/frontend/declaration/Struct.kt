@@ -32,10 +32,10 @@ class StructDeclaration(
         baseType.variances.zip(baseType.typeParameterNames).map { (variance, name) ->
             val argument = typeArgumentsByName.getValue(name)
             when (variance) {
-                TypeVariance.Equality -> TypeParameter.ValueParameter(argument)
-                TypeVariance.Invariant -> TypeParameter.SingleTypeParameter(argument as Type)
-                TypeVariance.Covariant -> TypeParameter.SingleTypeParameter(argument as Type)
-                TypeVariance.Contravariant -> TypeParameter.SingleTypeParameter(argument as Type)
+                TypeVariance.Equality -> argument
+                TypeVariance.Invariant -> argument
+                TypeVariance.Covariant -> argument
+                TypeVariance.Contravariant -> argument
                 TypeVariance.InvariantList -> throw NotImplementedError()
                 TypeVariance.CovariantList -> throw NotImplementedError()
                 TypeVariance.ContravariantList -> throw NotImplementedError()

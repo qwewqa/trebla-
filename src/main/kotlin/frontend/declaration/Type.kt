@@ -26,7 +26,7 @@ interface ParameterizedType : Type {
      * It's expected that these follow the layout specified in the variances list of the [baseType]
      * and that this is enforced at the creation of this instance.
      */
-    val typeParameters: List<TypeParameter>
+    val typeParameters: List<Any>
 
     override val parentTypes: List<Type> get() = listOf(baseType)
 }
@@ -41,28 +41,23 @@ enum class TypeVariance {
     ContravariantList,
 }
 
-sealed class TypeParameter {
-    data class ValueParameter(val value: Value) : TypeParameter()
-    data class SingleTypeParameter(val type: Type) : TypeParameter()
-    data class TypeListParameter(val types: List<Type>) : TypeParameter()
-}
-
 infix fun Type.equivalentTo(other: Type): Boolean =
     if (this is ParameterizedType && other is ParameterizedType) {
         baseType == other.baseType &&
                 typeParameters.size == other.typeParameters.size &&
                 typeParameters.zip(other.typeParameters).all { (a, b) ->
                     when {
-                        a is TypeParameter.SingleTypeParameter && b is TypeParameter.SingleTypeParameter -> a.type equivalentTo b.type
-                        a is TypeParameter.TypeListParameter && b is TypeParameter.TypeListParameter -> a.types.zip(b.types)
-                            .all { (c, d) -> c equivalentTo d }
-                        else -> false
+                        a is Type && b is Type -> a.type equivalentTo b.type
+                        a is List<*> && b is List<*> -> a.zip(b)
+                            .all { (c, d) -> if (c is Type && d is Type) c equivalentTo d else c == d }
+                        else -> a == b
                     }
                 }
     } else {
         this == other
     }
 
+@Suppress("UNCHECKED_CAST")
 infix fun Type.includes(other: Type): Boolean {
     return other == NothingType || when (this) {
         is ParameterizedType -> {
@@ -76,54 +71,40 @@ infix fun Type.includes(other: Type): Boolean {
                                     val (thisParameter, otherParameter) = parameter
                                     when (variance) {
                                         TypeVariance.Equality -> {
-                                            val thisParamValue = (thisParameter as TypeParameter.ValueParameter).value
-                                            val otherParamValue = (otherParameter as TypeParameter.ValueParameter).value
-                                            thisParamValue == otherParamValue
+                                            thisParameter == otherParameter
                                         }
                                         TypeVariance.Invariant -> {
-                                            val thisParamValue =
-                                                (thisParameter as TypeParameter.SingleTypeParameter).type
-                                            val otherParamValue =
-                                                (otherParameter as TypeParameter.SingleTypeParameter).type
-                                            thisParamValue equivalentTo otherParamValue
+                                            thisParameter as Type
+                                            otherParameter as Type
+                                            thisParameter equivalentTo otherParameter
                                         }
                                         TypeVariance.Covariant -> {
-                                            val thisParamValue =
-                                                (thisParameter as TypeParameter.SingleTypeParameter).type
-                                            val otherParamValue =
-                                                (otherParameter as TypeParameter.SingleTypeParameter).type
-                                            thisParamValue includes otherParamValue
+                                            thisParameter as Type
+                                            otherParameter as Type
+                                            thisParameter includes otherParameter
                                         }
                                         TypeVariance.Contravariant -> {
-                                            val thisParamValue =
-                                                (thisParameter as TypeParameter.SingleTypeParameter).type
-                                            val otherParamValue =
-                                                (otherParameter as TypeParameter.SingleTypeParameter).type
-                                            otherParamValue includes thisParamValue
+                                            thisParameter as Type
+                                            otherParameter as Type
+                                            otherParameter includes thisParameter
                                         }
                                         TypeVariance.InvariantList -> {
-                                            val thisParamValues =
-                                                (thisParameter as TypeParameter.TypeListParameter).types
-                                            val otherParamValues =
-                                                (otherParameter as TypeParameter.TypeListParameter).types
-                                            thisParamValues.size == otherParamValues.size && thisParamValues.zip(
-                                                otherParamValues).all { (a, b) -> a equivalentTo b }
+                                            thisParameter as List<Type>
+                                            otherParameter as List<Type>
+                                            thisParameter.size == otherParameter.size && thisParameter.zip(
+                                                otherParameter).all { (a, b) -> a equivalentTo b }
                                         }
                                         TypeVariance.CovariantList -> {
-                                            val thisParamValues =
-                                                (thisParameter as TypeParameter.TypeListParameter).types
-                                            val otherParamValues =
-                                                (otherParameter as TypeParameter.TypeListParameter).types
-                                            thisParamValues.size == otherParamValues.size && thisParamValues.zip(
-                                                otherParamValues).all { (a, b) -> a includes b }
+                                            thisParameter as List<Type>
+                                            otherParameter as List<Type>
+                                            thisParameter.size == otherParameter.size && thisParameter.zip(
+                                                otherParameter).all { (a, b) -> a includes b }
                                         }
                                         TypeVariance.ContravariantList -> {
-                                            val thisParamValues =
-                                                (thisParameter as TypeParameter.TypeListParameter).types
-                                            val otherParamValues =
-                                                (otherParameter as TypeParameter.TypeListParameter).types
-                                            thisParamValues.size == otherParamValues.size && thisParamValues.zip(
-                                                otherParamValues).all { (a, b) -> b includes a }
+                                            thisParameter as List<Type>
+                                            otherParameter as List<Type>
+                                            thisParameter.size == otherParameter.size && thisParameter.zip(
+                                                otherParameter).all { (a, b) -> b includes a }
                                         }
                                     }
                                 }) || other.parentTypes.any { this includes it })
@@ -140,66 +121,71 @@ fun Type.accepts(other: Value) = includes(other.type)
 fun Type.matchBest(types: Iterable<Type>): Type {
     val candidates = types.filter { this includes it }
     if (candidates.isEmpty()) compileError("No candidates.")
-    return matchBestIncluded(candidates) ?: compileError("Ambiguous overload.")
+    return matchBestIncluded(candidates.toSet()) ?: compileError("Ambiguous overload.")
 }
 
 /**
  * Used by [Type.matchBest] but assumes all types are included by [this].
  */
-private fun Type.matchBestIncluded(types: List<Type>): Type? = if (types.isEmpty()) null else when (this) {
+@Suppress("UNCHECKED_CAST")
+private fun Type.matchBestIncluded(types: Set<Type>): Type? = if (types.isEmpty()) null else when (this) {
     is UnionType -> {
         types.singleOrNull()
             ?: types.singleOrNull { type -> this.types.any { it includes type } }
     }
     is ParameterizedType -> {
-        @Suppress("UNCHECKED_CAST")
-        val candidates = types.filter { it != NothingType } as List<ParameterizedType>
-        var remaining = candidates
-        baseType.variances.forEachIndexed { i, variance ->
-            when (variance) {
-                TypeVariance.Equality -> {
-                } // Nothing to do types should have already been checked to all be subtypes
-                TypeVariance.Invariant -> {
-                } // Same as Equality
-                TypeVariance.Covariant -> {
-                    val ownType = (this.typeParameters[i] as TypeParameter.SingleTypeParameter).type
-                    val otherTypes = candidates.map { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type }
-                    val bestType = ownType.matchBestIncluded(otherTypes)
-                    remaining =
-                        remaining.filter { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type == bestType }
-                }
-                TypeVariance.Contravariant -> {
-                    val ownType = (this.typeParameters[i] as TypeParameter.SingleTypeParameter).type
-                    val otherTypes = candidates.map { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type }
-                    val bestType = ownType.matchBestContravariantIncluding(otherTypes)
-                    remaining =
-                        remaining.filter { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type == bestType }
-                }
-                TypeVariance.InvariantList -> {
-                } // Same as Equality
-                TypeVariance.CovariantList -> {
-                    val ownType = (this.typeParameters[i] as TypeParameter.TypeListParameter).types
-                    val otherTypes = candidates.map { (it.typeParameters[i] as TypeParameter.TypeListParameter).types }
-                    ownType.forEachIndexed { j, ownTypeAtIndex ->
-                        val otherTypesAtIndex = otherTypes.map { it[j] }
-                        val bestType = ownTypeAtIndex.matchBestIncluded(otherTypesAtIndex)
+        val strictSubtypes = types.filter { it !is ParameterizedType || it.baseType != this.baseType }
+        if (strictSubtypes.isNotEmpty()) {
+            strictSubtypes.singleOrNull() ?: strictSubtypes.singleOrNull { it != NothingType }
+        } else {
+            val candidates = types.filter { it is ParameterizedType && it.baseType == this.baseType } as List<ParameterizedType>
+            var remaining = candidates
+            baseType.variances.forEachIndexed { i, variance ->
+                when (variance) {
+                    TypeVariance.Equality -> {
+                    } // Nothing to do types should have already been checked to all be subtypes
+                    TypeVariance.Invariant -> {
+                    } // Same as Equality
+                    TypeVariance.Covariant -> {
+                        val ownType = this.typeParameters[i] as Type
+                        val otherTypes = candidates.map { it.typeParameters[i] as Type }.toSet()
+                        val bestType = ownType.matchBestIncluded(otherTypes)
                         remaining =
-                            remaining.filter { (it.typeParameters[i] as TypeParameter.TypeListParameter).types[j] == bestType }
+                            remaining.filter { (it.typeParameters[i] as Type) == bestType }
                     }
-                }
-                TypeVariance.ContravariantList -> {
-                    val ownType = (this.typeParameters[i] as TypeParameter.TypeListParameter).types
-                    val otherTypes = candidates.map { (it.typeParameters[i] as TypeParameter.TypeListParameter).types }
-                    ownType.forEachIndexed { j, ownTypeAtIndex ->
-                        val otherTypesAtIndex = otherTypes.map { it[j] }
-                        val bestType = ownTypeAtIndex.matchBestContravariantIncluding(otherTypesAtIndex)
+                    TypeVariance.Contravariant -> {
+                        val ownType = this.typeParameters[i] as Type
+                        val otherTypes = candidates.map { it.typeParameters[i] as Type }.toSet()
+                        val bestType = ownType.matchBestContravariantIncluding(otherTypes)
                         remaining =
-                            remaining.filter { (it.typeParameters[i] as TypeParameter.TypeListParameter).types[j] == bestType }
+                            remaining.filter { (it.typeParameters[i] as Type) == bestType }
+                    }
+                    TypeVariance.InvariantList -> {
+                    } // Same as Equality
+                    TypeVariance.CovariantList -> {
+                        val ownType = this.typeParameters[i] as List<Type>
+                        val otherTypes = candidates.map { it.typeParameters[i] as List<Type> }
+                        ownType.forEachIndexed { j, ownTypeAtIndex ->
+                            val otherTypesAtIndex = otherTypes.map { it[j] }.toSet()
+                            val bestType = ownTypeAtIndex.matchBestIncluded(otherTypesAtIndex)
+                            remaining =
+                                remaining.filter { (it.typeParameters[i] as List<Type>)[j] == bestType }
+                        }
+                    }
+                    TypeVariance.ContravariantList -> {
+                        val ownType = this.typeParameters[i] as List<Type>
+                        val otherTypes = candidates.map { it.typeParameters[i] as List<Type> }
+                        ownType.forEachIndexed { j, ownTypeAtIndex ->
+                            val otherTypesAtIndex = otherTypes.map { it[j] }.toSet()
+                            val bestType = ownTypeAtIndex.matchBestContravariantIncluding(otherTypesAtIndex)
+                            remaining =
+                                remaining.filter { (it.typeParameters[i] as List<Type>)[j] == bestType }
+                        }
                     }
                 }
             }
+            remaining.singleOrNull() ?: types.firstOrNull { it == NothingType }
         }
-        remaining.singleOrNull() ?: types.firstOrNull { it == NothingType }
     }
     else -> {
         // Either there is only one possibility, there's a type exactly equal to this one,
@@ -207,73 +193,80 @@ private fun Type.matchBestIncluded(types: List<Type>): Type? = if (types.isEmpty
         // except in the case of Nothing being present, in which case anything else takes precedence over Nothing.
         types.singleOrNull()
             ?: types.singleOrNull { it != NothingType }
-            ?: types.firstOrNull { it == this }
+            ?: types.singleOrNull { it == this }
     }
 }
 
-private fun Type.matchBestContravariantIncluding(types: List<Type>): Type? = if (types.isEmpty()) null else when (this) {
-    is UnionType -> compileError("Unsupported.")
-    is ParameterizedType -> {
-        val parentCandidate = parentTypes.mapNotNull { it.matchBestContravariantIncluding(types) }.toSet().singleOrNull()
-        @Suppress("UNCHECKED_CAST")
-        val paramTypes = types.filterIsInstance<ParameterizedType>()
-        var remaining = paramTypes
-        baseType.variances.forEachIndexed { i, variance ->
-            when (variance) {
-                TypeVariance.Equality -> {
-                } // Nothing to do types should have already been checked to all be subtypes
-                TypeVariance.Invariant -> {
-                } // Same as Equality
-                TypeVariance.Contravariant -> {
-                    val ownType = (this.typeParameters[i] as TypeParameter.SingleTypeParameter).type
-                    val otherTypes = paramTypes.map { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type }
-                    val bestType = ownType.matchBestIncluded(otherTypes)
-                    remaining =
-                        remaining.filter { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type == bestType }
-                }
-                TypeVariance.Covariant -> {
-                    val ownType = (this.typeParameters[i] as TypeParameter.SingleTypeParameter).type
-                    val otherTypes = paramTypes.map { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type }
-                    val bestType = ownType.matchBestContravariantIncluding(otherTypes)
-                    remaining =
-                        remaining.filter { (it.typeParameters[i] as TypeParameter.SingleTypeParameter).type == bestType }
-                }
-                TypeVariance.InvariantList -> {
-                } // Same as Equality
-                TypeVariance.ContravariantList -> {
-                    val ownType = (this.typeParameters[i] as TypeParameter.TypeListParameter).types
-                    val otherTypes = paramTypes.map { (it.typeParameters[i] as TypeParameter.TypeListParameter).types }
-                    ownType.forEachIndexed { j, ownTypeAtIndex ->
-                        val otherTypesAtIndex = otherTypes.map { it[j] }
-                        val bestType = ownTypeAtIndex.matchBestIncluded(otherTypesAtIndex)
+@Suppress("UNCHECKED_CAST")
+private fun Type.matchBestContravariantIncluding(types: Set<Type>): Type? =
+    if (types.isEmpty()) null else when (this) {
+        is UnionType -> compileError("Unsupported.")
+        is ParameterizedType -> {
+            val parentCandidate =
+                parentTypes.mapNotNull { it.matchBestContravariantIncluding(types) }.toSet().singleOrNull()
+            val paramTypes = types.filterIsInstance<ParameterizedType>().filter { it.baseType == this.baseType }
+            var remaining = paramTypes
+            baseType.variances.forEachIndexed { i, variance ->
+                when (variance) {
+                    TypeVariance.Equality -> {
+                    } // Nothing to do types should have already been checked to all be subtypes
+                    TypeVariance.Invariant -> {
+                    } // Same as Equality
+                    TypeVariance.Contravariant -> {
+                        val ownType = this.typeParameters[i] as Type
+                        val otherTypes =
+                            paramTypes.map { it.typeParameters[i] as Type }.toSet()
+                        val bestType = ownType.matchBestIncluded(otherTypes)
                         remaining =
-                            remaining.filter { (it.typeParameters[i] as TypeParameter.TypeListParameter).types[j] == bestType }
+                            remaining.filter { (it.typeParameters[i] as Type) == bestType }
                     }
-                }
-                TypeVariance.CovariantList -> {
-                    val ownType = (this.typeParameters[i] as TypeParameter.TypeListParameter).types
-                    val otherTypes = paramTypes.map { (it.typeParameters[i] as TypeParameter.TypeListParameter).types }
-                    ownType.forEachIndexed { j, ownTypeAtIndex ->
-                        val otherTypesAtIndex = otherTypes.map { it[j] }
-                        val bestType = ownTypeAtIndex.matchBestContravariantIncluding(otherTypesAtIndex)
+                    TypeVariance.Covariant -> {
+                        val ownType = this.typeParameters[i] as Type
+                        val otherTypes =
+                            paramTypes.map { it.typeParameters[i] as Type }.toSet()
+                        val bestType = ownType.matchBestContravariantIncluding(otherTypes)
                         remaining =
-                            remaining.filter { (it.typeParameters[i] as TypeParameter.TypeListParameter).types[j] == bestType }
+                            remaining.filter { it.typeParameters[i] as Type == bestType }
+                    }
+                    TypeVariance.InvariantList -> {
+                    } // Same as Equality
+                    TypeVariance.ContravariantList -> {
+                        val ownType = this.typeParameters[i] as List<Type>
+                        val otherTypes =
+                            paramTypes.map { it.typeParameters[i] as List<Type> }
+                        ownType.forEachIndexed { j, ownTypeAtIndex ->
+                            val otherTypesAtIndex = otherTypes.map { it[j] }.toSet()
+                            val bestType = ownTypeAtIndex.matchBestIncluded(otherTypesAtIndex)
+                            remaining =
+                                remaining.filter { (it.typeParameters[i] as List<Type>)[j] == bestType }
+                        }
+                    }
+                    TypeVariance.CovariantList -> {
+                        val ownType = this.typeParameters[i] as List<Type>
+                        val otherTypes =
+                            paramTypes.map { it.typeParameters[i] as List<Type> }
+                        ownType.forEachIndexed { j, ownTypeAtIndex ->
+                            val otherTypesAtIndex = otherTypes.map { it[j] }.toSet()
+                            val bestType = ownTypeAtIndex.matchBestContravariantIncluding(otherTypesAtIndex)
+                            remaining =
+                                remaining.filter { (it.typeParameters[i] as List<Type>)[j] == bestType }
+                        }
                     }
                 }
             }
+            remaining.singleOrNull() ?: parentCandidate
+
         }
-        remaining.singleOrNull() ?: parentCandidate
-    }
-    else -> {
-        val remaining = types.toMutableSet()
-        types.forEach { type ->
-            if (type in remaining && remaining.any { type != it && type includes it }) {
-                remaining.remove(type)
+        else -> {
+            val remaining = types.toMutableSet()
+            types.forEach { type ->
+                if (type in remaining && remaining.any { type != it && type includes it }) {
+                    remaining.remove(type)
+                }
             }
+            remaining.singleOrNull()
         }
-        remaining.singleOrNull()
     }
-}
 
 abstract class BuiltinType(override val identifier: String) : Type, Declaration {
     override val parentContext: Context? = null
@@ -296,7 +289,7 @@ object ReceiverType :
 data class ParameterizedReceiverType(val receiver: Type, val value: Type) : ParameterizedType, Signature {
     override val baseType = ReceiverType
     override val typeParameters =
-        listOf(TypeParameter.SingleTypeParameter(receiver), TypeParameter.SingleTypeParameter(value))
+        listOf(receiver, value)
 }
 
 object AnyType : BuiltinType("Any"), Signature {
