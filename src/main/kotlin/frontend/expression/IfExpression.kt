@@ -1,10 +1,11 @@
 package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
-import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.frontend.BooleanType
+import xyz.qwewqa.trebla.frontend.NumberType
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.grammar.trebla.ExpressionNode
 import xyz.qwewqa.trebla.grammar.trebla.IfExpressionNode
 
@@ -13,9 +14,9 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
 
     private fun applyNormal(context: Context): UnitValue {
         if (context !is ExecutionContext) compileError("non-const if statement requires an execution context.", node)
-        val condition = node.condition.parseAndApplyTo(context).asBooleanStruct(context)
+        val condition = node.condition.parseAndApplyTo(context).asBooleanPrimitiveInstance()
         context.statements += SonoFunction.If.calledWith(
-            condition.raw.toIR(context),
+            condition.value.toIR(context),
             SimpleExecutionContext(context).also { ctx ->
                 node.tbranch.evaluateIn(ctx)
             }.statements.asIR(),
@@ -36,23 +37,23 @@ class IfExpression(override val node: IfExpressionNode) : Expression {
     }
 }
 
-fun Value.asBooleanStruct(context: Context): RawStructValue {
-    if (this !is RawStructValue || this.type != context.booleanType) {
+fun Value.asBooleanPrimitiveInstance(): PrimitiveInstance {
+    if (this !is PrimitiveInstance || this.type != BooleanType) {
         compileError("Value must be a Boolean. Instead got ${type.commonName}.")
     }
     return this
 }
 
-fun Value.asNumberStruct(context: Context): RawStructValue {
-    if (this !is RawStructValue || this.type != context.numberType) {
+fun Value.asNumberPrimitiveInstance(): PrimitiveInstance {
+    if (this !is PrimitiveInstance || this.type != NumberType) {
         compileError("Value must be a Number. Instead got ${type.commonName}.")
     }
     return this
 }
 
 fun ExpressionNode.parseAndEvaluateConstantBoolean(context: Context): Boolean {
-    val parsed = parseAndApplyTo(SimpleContext(context)).asBooleanStruct(context)
-    val result = parsed.raw.tryConstexprEvaluate()
+    val parsed = parseAndApplyTo(SimpleContext(context)).asBooleanPrimitiveInstance()
+    val result = parsed.value.tryConstexprEvaluate()
         ?: compileError("Boolean must be a compile time constant.", this)
     return when (result) {
         1.0 -> true
@@ -62,7 +63,7 @@ fun ExpressionNode.parseAndEvaluateConstantBoolean(context: Context): Boolean {
 }
 
 fun ExpressionNode.parseAndEvaluateConstantNumber(context: Context): Double {
-    val parsed = parseAndApplyTo(SimpleContext(context)).asNumberStruct(context)
-    return parsed.raw.tryConstexprEvaluate()
+    val parsed = parseAndApplyTo(SimpleContext(context)).asNumberPrimitiveInstance()
+    return parsed.value.tryConstexprEvaluate()
         ?: compileError("Number must be a compile time constant.", this)
 }

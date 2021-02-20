@@ -2,13 +2,11 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
-import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
-import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
 import xyz.qwewqa.trebla.grammar.trebla.PostfixUnaryFunctionNode
 import xyz.qwewqa.trebla.grammar.trebla.PrefixUnaryFunctionNode
@@ -52,12 +50,10 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
                 UnitValue
             }
             "===" -> {
-                RawStructValue((rhs === lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(),
-                    context.booleanType)
+                BooleanType.fromRaw((rhs === lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue())
             }
             "!==" -> {
-                RawStructValue((rhs !== lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue(),
-                    context.booleanType)
+                BooleanType.fromRaw((rhs !== lhs).let { if (it) 1.0 else 0.0 }.toLiteralRawValue())
             }
             else -> {
                 val func = lhs.resolveDirectBindingMember(functionName, context)
@@ -79,9 +75,9 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         operation: ShortCircuitOperation,
         context: Context,
     ): Value {
-        val booleanType = context.booleanType
+        val booleanType = BooleanType
         val lhsValue = node.lhs.parseAndApplyTo(context)
-        if (lhsValue !is RawStructValue || lhsValue.type != context.booleanType) {
+        if (lhsValue !is PrimitiveInstance || lhsValue.type != BooleanType) {
             compileError("Short circuiting operators can only be applied to booleans. Instead got ${lhsValue.type.commonName}.")
         }
         if (context !is ExecutionContext) {
@@ -93,13 +89,13 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         val rhsBlock = SimpleExecutionContext(context)
 
         val rhsValue = node.rhs.parseAndApplyTo(rhsBlock)
-        if (rhsValue !is RawStructValue || rhsValue.type != context.booleanType)
+        if (rhsValue !is PrimitiveInstance || rhsValue.type != BooleanType)
             compileError("Short circuiting operators can only be applied to booleans. Instead got ${rhsValue.type.commonName}.")
         val resultValue = IRFunctionCall(operation.function, listOf(
-            lhsValue.raw.toIR(context),
+            lhsValue.value.toIR(context),
             IRFunctionCall(SonoFunction.Execute, listOf(
                 rhsBlock.statements.asIR(),
-                rhsValue.raw.toIR(context)
+                rhsValue.value.toIR(context)
             ))
         ))
 
@@ -107,16 +103,16 @@ class InfixFunctionExpression(override val node: InfixFunctionNode) : Expression
         // must be copied into a temporary variable.
         // Otherwise, the action would be rerun each time the value was accessed (or not at all if never accessed).
         // In simpler cases, it's up to the backend to optimize (at least once implemented).
-        return RawStructValue(IRRawValue(resultValue), booleanType).copyTo(context.localAllocator, context)
+        return booleanType.fromRaw(IRRawValue(resultValue)).copyTo(context.localAllocator, context)
     }
 
     private fun doNonExecutionBoolean(
         operation: ShortCircuitOperation,
         context: Context,
     ): Value {
-        val lhs = node.lhs.parseAndApplyTo(context).asBooleanStruct(context)
-        val rhs = node.rhs.parseAndApplyTo(context).asBooleanStruct(context)
-        return BuiltinCallRawValue(operation.function, listOf(lhs.raw, rhs.raw)).toBooleanStruct(context)
+        val lhs = node.lhs.parseAndApplyTo(context).asBooleanPrimitiveInstance()
+        val rhs = node.rhs.parseAndApplyTo(context).asBooleanPrimitiveInstance()
+        return BooleanType.fromRaw(BuiltinCallRawValue(operation.function, listOf(lhs.value, rhs.value)))
     }
 
     enum class ShortCircuitOperation(val function: SonoFunction) {

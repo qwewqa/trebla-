@@ -1,11 +1,12 @@
 package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.frontend.BooleanType
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.grammar.trebla.WhileExpressionNode
 
 class WhileExpression(override val node: WhileExpressionNode) : Expression {
@@ -13,7 +14,7 @@ class WhileExpression(override val node: WhileExpressionNode) : Expression {
         if (context !is ExecutionContext) compileError("While statement not allowed at location.", node)
         val conditionContext = SimpleExecutionContext(context)
         val condition = node.condition.parseAndApplyTo(conditionContext)
-        if (condition !is RawStructValue || condition.type != context.booleanType)
+        if (condition !is PrimitiveInstance || condition.type != BooleanType)
             compileError("while statement condition must be a boolean.", node.condition)
         val body = SimpleExecutionContext(context).also { ctx ->
             node.body.value.forEach { it.parseAndApplyTo(ctx) }
@@ -21,7 +22,7 @@ class WhileExpression(override val node: WhileExpressionNode) : Expression {
         context.statements += SonoFunction.While.calledWith(
             SonoFunction.Execute.calledWith(
                 conditionContext.statements.asIR(),
-                condition.raw.toIR(context),
+                condition.value.toIR(context),
             ),
             body.statements.asIR(),
         ).asStatement()

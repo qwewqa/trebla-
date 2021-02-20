@@ -1,9 +1,7 @@
 package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.backend.compile.Archetype
-import xyz.qwewqa.trebla.frontend.CompilerConfiguration
-import xyz.qwewqa.trebla.frontend.TreblaFile
-import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.*
 import xyz.qwewqa.trebla.frontend.expression.Expression
@@ -104,6 +102,10 @@ interface GlobalAllocatorContext : Context {
 
 // completely stateless intrinsics
 val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
+    listOf("std") to PrimitiveBaseType,
+    listOf("std") to NumberType,
+    listOf("std") to BooleanType,
+    listOf("std") to UnknownPrimitiveType,
     listOf("std") to Builtins,
     listOf("std") to TypeType,
     listOf("std") to AnyType,

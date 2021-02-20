@@ -20,7 +20,7 @@ class SizeOfCallable(context: Context) :
             {
                 val type = "type".cast<Type>()
                 if (type !is Allocatable) compileError("Type is not allocated")
-                type.allocationSize.toStruct(callingContext)
+                type.allocationSize.toPrimitive()
             }
         )
 
@@ -53,6 +53,6 @@ class TypeAcceptsCallable(context: Context) :
         {
             val constraint = "constraint".cast<Type>()
             val type = "type".cast<Type>()
-            (constraint includes type).toStruct(callingContext)
+            (constraint includes type).toPrimitive()
         }
     )

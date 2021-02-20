@@ -5,6 +5,7 @@ import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.ir.IRNode
 import xyz.qwewqa.trebla.backend.ir.IRValue
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -69,7 +70,7 @@ class ExecutionCallback(
     override var returnValue: Value? = null
 
     override fun toIR(): IRFunctionCall {
-        val returnIRValue = (returnValue as? RawStructValue)?.raw?.toIR(this) ?: IRValue(0.0)
+        val returnIRValue = (returnValue as? PrimitiveInstance)?.value?.toIR(this) ?: IRValue(0.0)
         return SonoFunction.Execute.calledWith(listOf(statements.asIR()) + listOf(returnIRValue))
     }
 }
@@ -87,7 +88,7 @@ class NonExecutionCallback(
     override var returnValue: Value? = null
 
     override fun toIR(): IRNode {
-        return (returnValue as? RawStructValue)?.raw?.toIR(this) ?: IRValue(0.0)
+        return (returnValue as? PrimitiveInstance)?.value?.toIR(this) ?: IRValue(0.0)
     }
 }
 

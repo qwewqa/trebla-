@@ -23,11 +23,11 @@ class WhenExpression(override val node: WhenExpressionNode) : Expression {
         context.statements +=
             conditionals.foldRight(elseContext) { entry, prev ->
                 val conditionContext = SimpleExecutionContext(context)
-                val condition = entry.condition.parseAndApplyTo(conditionContext).asBooleanStruct(context)
+                val condition = entry.condition.parseAndApplyTo(conditionContext).asBooleanPrimitiveInstance()
                 SonoFunction.If.calledWith(
                     SonoFunction.Execute.calledWith(
                         conditionContext.statements.asIR(),
-                        condition.raw.toIR(context),
+                        condition.value.toIR(context),
                     ),
                     SimpleExecutionContext(context)
                         .apply { entry.body.value.forEach { it.parseAndApplyTo(this) } }

@@ -1,5 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
+import xyz.qwewqa.trebla.frontend.NumberType
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
@@ -15,7 +16,7 @@ class RangeCallableType(context: Context) :
         {
             "arg1" type NumberType
             "arg2" type UnionType(setOf(UnitValue, NumberType)) default UnitValue
-            "step" type NumberType default 1.0.toStruct(context)
+            "step" type NumberType default 1.0.toPrimitive()
         },
         {
             val start: Double
@@ -48,7 +49,7 @@ class RangeValue(
             val operation = "operation".cast<Callable>()
             while (if (step > 0) index < stop else index > stop) {
                 operation.callWith(
-                    listOf(ValueArgument(null, index.toStruct(callingContext))),
+                    listOf(ValueArgument(null, index.toPrimitive())),
                     callingContext,
                 )
                 index += step
@@ -59,9 +60,9 @@ class RangeValue(
     override val type = context.getFullyQualified("std", "Range") as Type
     override fun getMember(name: String, accessingContext: Context?): Value? {
         return when (name) {
-            "start" -> start.toStruct(context)
-            "stop" -> stop.toStruct(context)
-            "step" -> step.toStruct(context)
+            "start" -> start.toPrimitive()
+            "stop" -> stop.toPrimitive()
+            "step" -> step.toPrimitive()
             else -> null
         }
     }

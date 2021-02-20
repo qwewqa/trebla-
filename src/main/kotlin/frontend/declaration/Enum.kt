@@ -1,10 +1,13 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
+import xyz.qwewqa.trebla.frontend.NumberType
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.CallableDelegate
 import xyz.qwewqa.trebla.frontend.declaration.intrinsics.SimpleDeclaration
 import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.frontend.fromRaw
 import xyz.qwewqa.trebla.grammar.trebla.*
 
 class EnumDeclaration(
@@ -77,13 +80,13 @@ class EnumDeclaration(
         0 in variantsByOrdinal.keys
     }
 
-    override fun allocateOn(allocator: Allocator, context: Context): Allocated = EnumValue(
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated = EnumInstance(
         this,
         AllocatedRawValue(allocator.allocate()),
         List(dataSize) { AllocatedRawValue(allocator.allocate()) },
     )
 
-    override fun fromFlat(values: List<RawValue>) = EnumValue(
+    override fun fromFlat(values: List<RawValue>) = EnumInstance(
         this,
         values[0],
         values.drop(1)
@@ -100,7 +103,7 @@ class EnumDeclaration(
 
 object EnumType : BuiltinType("Enum")
 
-data class EnumValue(override val type: EnumDeclaration, val ordinal: RawValue, val data: List<RawValue>) : Value,
+data class EnumInstance(override val type: EnumDeclaration, val ordinal: RawValue, val data: List<RawValue>) : Value,
     Allocated {
     override fun coerceImmutable(): Value? {
         val ordinal = ordinal.coerceImmutable() ?: return null
@@ -109,7 +112,7 @@ data class EnumValue(override val type: EnumDeclaration, val ordinal: RawValue, 
         val dataSize = variant.size
         val data = data.take(dataSize).map { it.coerceImmutable() ?: return null } +
                 List(data.size - dataSize) { LiteralRawValue(0.0) }
-        return EnumValue(type, ordinal, data)
+        return EnumInstance(type, ordinal, data)
     }
 
     /*
@@ -121,7 +124,7 @@ data class EnumValue(override val type: EnumDeclaration, val ordinal: RawValue, 
             copyFrom(other.value, context)
             return
         }
-        if (other !is EnumValue || other.type != this.type) {
+        if (other !is EnumInstance || other.type != this.type) {
             compileError("Incompatible assignment to ${type.commonName} from ${other.type.commonName}.")
         }
         ordinal.copyFrom(other.ordinal, context)
@@ -129,15 +132,15 @@ data class EnumValue(override val type: EnumDeclaration, val ordinal: RawValue, 
     }
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated {
-        return EnumValue(type, ordinal.copyTo(allocator, context), data.map { it.copyTo(allocator, context) })
+        return EnumInstance(type, ordinal.copyTo(allocator, context), data.map { it.copyTo(allocator, context) })
     }
 
     override fun toEntityArrayValue(offset: RawValue): Allocated {
-        return EnumValue(type, ordinal.toEntityArrayValue(offset), data.map { it.toEntityArrayValue(offset) })
+        return EnumInstance(type, ordinal.toEntityArrayValue(offset), data.map { it.toEntityArrayValue(offset) })
     }
 
     override fun getMember(name: String, accessingContext: Context?) = when (name) {
-        "ordinal" -> ordinal.toNumberStruct(type.parentContext)
+        "ordinal" -> NumberType.fromRaw(ordinal)
         else -> null
     }
 
@@ -167,7 +170,7 @@ class EnumUnitVariant(
     override val type = parentEnum
 
     val value by lazy {
-        EnumValue(
+        EnumInstance(
             parentEnum,
             ordinal.toLiteralRawValue(),
             List(parentEnum.dataSize) { 0.toLiteralRawValue() },
@@ -185,7 +188,7 @@ class EnumUnitVariant(
     override fun flat(): List<RawValue> = value.flat()
 
     override fun getMember(name: String, accessingContext: Context?) = when (name) {
-        "ordinal" -> ordinal.toLiteralRawValue().toNumberStruct(type.parentContext)
+        "ordinal" -> NumberType.fromRaw(ordinal.toLiteralRawValue())
         "parent" -> parentEnum
         "value" -> value
         else -> null
@@ -224,7 +227,7 @@ class EnumStructVariant(
         }
     }
 
-    fun destructure(value: EnumValue): List<Allocated> {
+    fun destructure(value: EnumInstance): List<Allocated> {
         val types = fields.map { (it.type as Allocatable) }
         val remaining = ArrayDeque(value.data)
         return types.map { type ->
@@ -236,13 +239,13 @@ class EnumStructVariant(
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Value {
         val args = fields.pairedWithAndValidated(arguments).byParameterName()
-        return EnumValue(parentEnum,
+        return EnumInstance(parentEnum,
             ordinal.toLiteralRawValue(),
             fields.flatMap { (args.getValue(it.name) as Allocated).flat() })
     }
 
     override fun getMember(name: String, accessingContext: Context?) = when (name) {
-        "ordinal" -> ordinal.toLiteralRawValue().toNumberStruct(parentEnum.parentContext)
+        "ordinal" -> NumberType.fromRaw(ordinal.toLiteralRawValue())
         "parent" -> parentEnum
         else -> null
     }
@@ -261,7 +264,7 @@ class EnumFromOrdinalCallable(context: Context) :
             },
             {
                 val enum = ("type".cast<Type>() as? EnumDeclaration) ?: compileError("Expected an enum type.")
-                val ordinal = "ordinal".cast<RawStructValue>()
-                enum.fromFlat(listOf(ordinal.raw) + List(enum.dataSize) { 0.toLiteralRawValue() })
+                val ordinal = "ordinal".cast<PrimitiveInstance>()
+                enum.fromFlat(listOf(ordinal.value) + List(enum.dataSize) { 0.toLiteralRawValue() })
             }
         )

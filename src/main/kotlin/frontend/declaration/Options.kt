@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.AllocatedRawValue
 import xyz.qwewqa.trebla.frontend.expression.Value
@@ -37,15 +37,14 @@ class OptionsAccessor(override val parentContext: Context) : Declaration {
             }.toString().toUpperCase()
             options["#$convertedName"]
         } ?: return null
-        return RawStructValue(
-            AllocatedRawValue(ConcreteAllocation(2, option.index)),
-            parentContext.getFullyQualified("std", option.type.structName) as StructDeclaration
+        return option.optionType.type.fromRaw(
+            AllocatedRawValue(ConcreteAllocation(2, option.index))
         )
     }
 }
 
-private data class OptionData(val index: Int, val type: OptionType)
-private enum class OptionType(val structName: String) {
-    SLIDER("Number"),
-    TOGGLE("Boolean")
+private data class OptionData(val index: Int, val optionType: OptionType)
+private enum class OptionType(val type: PrimitiveType) {
+    SLIDER(NumberType),
+    TOGGLE(BooleanType)
 }

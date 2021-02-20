@@ -6,7 +6,7 @@ import xyz.qwewqa.trebla.backend.ir.toIR
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.EnumStructVariant
-import xyz.qwewqa.trebla.frontend.declaration.EnumValue
+import xyz.qwewqa.trebla.frontend.declaration.EnumInstance
 import xyz.qwewqa.trebla.frontend.declaration.EnumVariant
 import xyz.qwewqa.trebla.grammar.trebla.WhenElseEntryNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenMatchExpressionNode
@@ -16,7 +16,7 @@ class WhenMatchExpression(override val node: WhenMatchExpressionNode) : Expressi
     override fun applyTo(context: Context): Value {
         if (context !is ExecutionContext) compileError("When match statement requires an execution context.", node)
         val matchValue = node.expression.parseAndApplyTo(context)
-        if (matchValue !is EnumValue) {
+        if (matchValue !is EnumInstance) {
             compileError("When match expressions require an enum value.")
         }
         val enumType = matchValue.type

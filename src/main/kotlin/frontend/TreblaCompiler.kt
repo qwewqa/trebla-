@@ -113,7 +113,7 @@ class TreblaCompiler(val configuration: CompilerConfiguration) : CoroutineScope 
                     it.closeEntry()
                     continue
                 }
-                loadFile(it.readAllBytes().inputStream(), entry.name)
+                loadFile(it.readAllBytes().inputStream(), "[Builtin] ${entry.name}")
                 it.closeEntry()
             }
         }

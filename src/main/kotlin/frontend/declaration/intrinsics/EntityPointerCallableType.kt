@@ -1,10 +1,13 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.frontend.NumberType
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.frontend.fromRaw
 
 class EntityPointerCallableType(context: Context) :
     BuiltinType("EntityPointer"),
@@ -29,16 +32,14 @@ class SpecificEntityPointerType(val context: Context, val script: ScriptDeclarat
         },
         {
             EntityPointerValue(
-                RawStructValue(
-                    BuiltinCallRawValue(
+                NumberType
+                    .fromRaw(BuiltinCallRawValue(
                         SonoFunction.Multiply,
                         listOf(
-                            "index".cast<RawStructValue>().raw,
+                            "index".cast<PrimitiveInstance>().value,
                             SHARED_BLOCK_SIZE.toLiteralRawValue()
                         )
-                    ),
-                    context.numberType
-                ),
+                    )),
                 this@SpecificEntityPointerType,
                 callingContext
             )
@@ -52,13 +53,13 @@ class SpecificEntityPointerType(val context: Context, val script: ScriptDeclarat
     override val parentTypes: List<Type> = listOf(context.getFullyQualified("std", "EntityPointer") as Type)
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated = EntityPointerValue(
-        RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
+        NumberType.fromRaw(AllocatedRawValue(allocator.allocate())),
         this,
         context
     )
 
     override fun fromFlat(values: List<RawValue>): Allocated = EntityPointerValue(
-        RawStructValue(values[0], context.numberType),
+        NumberType.fromRaw(values[0]),
         this,
         context
     )
@@ -69,7 +70,7 @@ class SpecificEntityPointerType(val context: Context, val script: ScriptDeclarat
 
 
 class EntityPointerValue(
-    val offset: RawStructValue, // this is the offset, not index (offset = index * 32 currently)
+    val offset: PrimitiveInstance, // this is the offset, not index (offset = index * 32 currently)
     override val type: SpecificEntityPointerType,
     val context: Context?,
 ) : Allocated {
@@ -80,7 +81,7 @@ class EntityPointerValue(
         return (script.dataProperties[name] ?: script.sharedProperties[name] ?: script.sharedLetDeclarations[name])?.let {
             // This could indeed leak some values in an entity like functions (via a let declaration or within a struct)
             // Trying to use such a value would lead to undefined behavior
-            if (it is Allocated) it.toEntityArrayValue(offset.raw)
+            if (it is Allocated) it.toEntityArrayValue(offset.value)
             else it
         }
     }
@@ -104,5 +105,5 @@ class EntityPointerValue(
         context
     )
 
-    override fun flat(): List<RawValue> = listOf(offset.raw)
+    override fun flat(): List<RawValue> = listOf(offset.value)
 }

@@ -1,5 +1,7 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
+import xyz.qwewqa.trebla.frontend.NumberType
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -53,7 +55,7 @@ data class UnsizedListType(val containedType: Type, val context: Context) : Para
         },
         {
 
-            val size = "size".cast<RawStructValue>().raw.tryConstexprEvaluate()?.roundToInt()
+            val size = "size".cast<PrimitiveInstance>().value.tryConstexprEvaluate()?.roundToInt()
                 ?: compileError("List size must be a compile time constant.")
             SizedListType(size, this@UnsizedListType, context)
         }
@@ -100,7 +102,7 @@ data class SizedListType(val size: Int, override val baseType: UnsizedListType, 
     override fun getMember(name: String, accessingContext: Context?): Value? {
         return when (name) {
             "containedType" -> containedType
-            "size" -> size.toStruct(context)
+            "size" -> size.toPrimitive()
             else -> null
         }
     }

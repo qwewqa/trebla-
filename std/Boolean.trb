@@ -1,11 +1,7 @@
 package std
 
-// The standard boolean type. False if the underlying value is zero, true otherwise.
-// Literals default to 1/0 for True/False respectively.
-raw struct Boolean
-
 // Does assume booleans will be 1.0 or 0.0
-operator func Boolean.equals(other: Any) = (typeOf(other) == Boolean) and (Number(this) == Number(other))
+operator func Boolean.equals(other: Any) = Number(this) == Number(other)
 operator func Boolean.notEquals(other: Boolean) = Number(this) != Number(other)
 
 operator func Boolean.not() = Boolean(builtins.Not(this))

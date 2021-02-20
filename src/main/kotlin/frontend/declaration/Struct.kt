@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.frontend.declaration
 
-import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.grammar.trebla.StructDeclarationNode
@@ -24,8 +24,6 @@ class StructDeclaration(
     override val bindingScope = parentContext.scope
 
     override val loadFirstPass = true
-
-    val isRaw: Boolean
 
     override val typeParameters by lazy {
         baseType.variances.zip(baseType.typeParameterNames).map { (variance, name) ->
@@ -55,43 +53,26 @@ class StructDeclaration(
     val embeddedFieldNames = node.fields.filter { it.isEmbed }.map { it.parameter.identifier.value }
 
     override fun callWith(arguments: List<ValueArgument>, callingContext: Context): Allocated {
-        return if (!isRaw) {
-            NormalStructValue(fields.pairedWithAndValidated(arguments).byParameterName(), this)
-        } else {
-            if (arguments.size != 1) compileError("A raw struct constructor should get exactly one argument.")
-            val arg = arguments.first()
-            if (arg.name != null) compileError("A raw struct constructor does not take a named argument.")
-            val value = arg.value
-            if (value !is RawStructValue) compileError("A raw struct constructor only takes another raw struct.")
-            RawStructValue(value.raw, this)
+        return StructInstance(fields.pairedWithAndValidated(arguments).byParameterName(), this)
+    }
+
+    override fun allocateOn(allocator: Allocator, context: Context): Allocated = callWith(parameters.map {
+        ValueArgument(
+            it.name,
+            (it.type as? Allocatable)?.allocateOn(allocator, context)
+                ?: compileError("${type.commonName} is not allocatable.")
+        )
+    }, context)
+
+    override val allocationSize by lazy {
+        fields.sumBy {
+            (it.type as? Allocatable)?.allocationSize ?: compileError("Struct has unsized members.")
         }
     }
 
-    override fun allocateOn(allocator: Allocator, context: Context): Allocated {
-        return if (isRaw) RawStructValue(AllocatedRawValue(allocator.allocate()), this)
-        else callWith(parameters.map {
-            ValueArgument(
-                it.name,
-                (it.type as? Allocatable)?.allocateOn(allocator, context)
-                    ?: compileError("${type.commonName} is not allocatable.")
-            )
-        }, context)
-    }
-
-    override val allocationSize by lazy {
-        getSize()
-    }
-
-    // lazy delegate won't allow directly using isRaw
-    private fun getSize() = if (this.isRaw) 1 else fields.sumBy {
-        (it.type as? Allocatable)?.allocationSize ?: compileError("Struct has unsized members.")
-    }
-
-    override fun fromFlat(values: List<RawValue>) = if (isRaw) {
-        RawStructValue(values[0], this)
-    } else {
+    override fun fromFlat(values: List<RawValue>): StructInstance {
         var remaining = values
-        NormalStructValue(fields.associate {
+        return StructInstance(fields.associate {
             val type = (it.type as? Allocatable) ?: compileError("Struct has unsized members.")
             it.name to type
                 .fromFlat(remaining.take(type.allocationSize))
@@ -102,41 +83,32 @@ class StructDeclaration(
     init {
         node.modifiers.parse {
             visibility = selectFromMap(visibilityModifiers) ?: Visibility.PUBLIC
-            isRaw = selectSingle("raw")
         }
     }
 }
 
 object StructType : BuiltinType("Struct")
 
-/**
- * The value resulting from a struct construction.
- */
-sealed class StructValue(
-    override val type: StructDeclaration,
-) : Value, Allocated
-
-data class NormalStructValue(
+data class StructInstance(
     val fields: Map<String, Value>,
     override val type: StructDeclaration,
-) : StructValue(type) {
-    override fun coerceImmutable(): NormalStructValue? =
-        NormalStructValue(fields.mapValues { (_, v) -> v.coerceImmutable() ?: return null }, type)
+) : Value, Allocated {
+    override fun coerceImmutable(): StructInstance? =
+        StructInstance(fields.mapValues { (_, v) -> v.coerceImmutable() ?: return null }, type)
 
     override val embedded = type.embeddedFieldNames.map { fields.getValue(it) }
 
-    override fun copyTo(allocator: Allocator, context: ExecutionContext): StructValue {
-        return NormalStructValue(fields.mapValues { (_, value) ->
+    override fun copyTo(allocator: Allocator, context: ExecutionContext): StructInstance =
+        StructInstance(fields.mapValues { (_, value) ->
             when (value) {
                 is Allocated -> value.copyTo(allocator, context)
                 !is Allocated -> value
                 else -> compileError("Invalid copy.")
             }
         }, type)
-    }
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
-        if (other !is NormalStructValue || type != other.type) compileError("Incompatible assigment.")
+        if (other !is StructInstance || type != other.type) compileError("Incompatible assigment.")
         fields.forEach { (name, value) ->
             if (value is Allocated) value.copyFrom(other.fields.getValue(name), context)
             else if (value != other.fields.getValue(name)) compileError("Invalid assigment.")
@@ -147,7 +119,7 @@ data class NormalStructValue(
         fields[name] ?: type.typeArgumentsByName[name]
 
     override fun toEntityArrayValue(offset: RawValue): Allocated {
-        return NormalStructValue(
+        return StructInstance(
             fields.mapValues { (_, v) ->
                 (v as? Allocated)?.toEntityArrayValue(offset) ?: v
             },
@@ -158,31 +130,4 @@ data class NormalStructValue(
     override fun flat() = fields.flatMap { (_, v) ->
         (v as? Allocated)?.flat() ?: compileError("Struct contains non allocated members and cannot be flattened.")
     }
-}
-
-data class RawStructValue(
-    val raw: RawValue,
-    override val type: StructDeclaration,
-) : StructValue(type) {
-    override fun coerceImmutable(): RawStructValue? {
-        return RawStructValue(raw.coerceImmutable() ?: return null, type)
-    }
-
-    override fun copyTo(allocator: Allocator, context: ExecutionContext): RawStructValue {
-        return RawStructValue(raw.copyTo(allocator, context), type)
-    }
-
-    override fun copyFrom(other: Value, context: ExecutionContext) {
-        if (other !is RawStructValue || type != other.type) compileError("Incompatible assigment.")
-        raw.copyFrom(other.raw, context)
-    }
-
-    override fun toEntityArrayValue(offset: RawValue): RawStructValue {
-        return RawStructValue(
-            raw.toEntityArrayValue(offset),
-            type
-        )
-    }
-
-    override fun flat() = listOf(raw)
 }

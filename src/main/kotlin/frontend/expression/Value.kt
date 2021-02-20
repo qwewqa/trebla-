@@ -41,15 +41,15 @@ interface Value {
  */
 interface Allocatable : Type {
     /**
+     * The size this allocatable takes.
+     */
+    val allocationSize: Int
+
+    /**
      * Creates a new instance of the allocatable type
      * on the given allocator in the given context.
      */
     fun allocateOn(allocator: Allocator, context: Context): Allocated
-
-    /**
-     * The size this allocatable takes.
-     */
-    val allocationSize: Int
 
     /**
      * Convert from a flat representation to a normal instance of this type. See [Allocated.flat].

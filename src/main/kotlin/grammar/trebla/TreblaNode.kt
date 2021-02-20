@@ -1,7 +1,7 @@
 package xyz.qwewqa.trebla.grammar.trebla
 
 import org.antlr.v4.runtime.tree.ParseTree
-import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
 import xyz.qwewqa.trebla.frontend.declaration.*
@@ -408,9 +408,8 @@ data class NumberLiteralNode(
     override val filename: String, val value: Double,
 ) : LiteralConstantNode {
     override fun parse(context: Context) = ValueExpression(
-        RawStructValue(
+        NumberType.fromRaw(
             LiteralRawValue(this.value),
-            (context.getFullyQualified("std", "Number") as StructDeclaration),
         )
     )
 }
@@ -420,9 +419,8 @@ data class BooleanLiteralNode(
     override val filename: String, val value: Boolean,
 ) : LiteralConstantNode {
     override fun parse(context: Context) = ValueExpression(
-        RawStructValue(
+        BooleanType.fromRaw(
             LiteralRawValue(if (this.value) 1.0 else 0.0),
-            (context.getFullyQualified("std", "Boolean") as StructDeclaration),
         )
     )
 }

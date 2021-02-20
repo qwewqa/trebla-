@@ -2,6 +2,7 @@ package xyz.qwewqa.trebla.frontend.declaration
 
 import xyz.qwewqa.trebla.backend.compile.Archetype
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ReadOnlyContext
@@ -27,7 +28,7 @@ class ArchetypeDeclaration(override val node: ArchetypeDeclarationNode, override
             it.identifier.value to it.value.parseAndApplyTo(ReadOnlyContext(parentContext)).let { value ->
                 if (value.type != script.dataProperties[it.identifier.value]?.type)
                     compileError("Mismatched type on ${it.identifier.value}", it)
-                (value as? RawStructValue)?.raw?.toIR(null)
+                (value as? PrimitiveInstance)?.value?.toIR(null)
                     ?.tryConstexprEvaluate()
                     ?: compileError("Invalid archetype default. Must have a constant numerical or boolean value.")
             }

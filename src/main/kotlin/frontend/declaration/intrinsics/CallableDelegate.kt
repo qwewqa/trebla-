@@ -1,13 +1,11 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
-import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
-import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.DefaultSignature
 import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.declaration.Declaration
-import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.expression.*
 
@@ -70,9 +68,6 @@ class IntrinsicParameterDSLContext(val context: Context) {
             params += new
         }
 
-    val NumberType by lazy { context.numberType }
-    val BooleanType by lazy { context.booleanType }
-
     fun get() = if (managed) params else {
         if (params.isNotEmpty()) compileError("Unmanaged parameters requires none to be specified in DSL.")
         null
@@ -85,11 +80,11 @@ class IntrinsicFunctionDSLContext(
     val callingContext: Context,
 ) {
     val String.number
-        get() = cast<RawStructValue>().raw.tryConstexprEvaluate()
+        get() = cast<PrimitiveInstance>().value.tryConstexprEvaluate()
             ?: compileError("Argument must be a compile time constant.")
 
     val String.boolean
-        get() = (cast<RawStructValue>().raw.tryConstexprEvaluate()
+        get() = (cast<PrimitiveInstance>().value.tryConstexprEvaluate()
             ?: compileError("Argument must be a compile time constant.")) != 0.0
 
     inline fun <reified T : Any> String.cast(): T =
@@ -112,8 +107,8 @@ class IntrinsicFunctionDSLContext(
     }
 }
 
-fun Number.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context.numberType)
-fun Boolean.toStruct(context: Context) = RawStructValue(this.toLiteralRawValue(), context.booleanType)
+fun Number.toPrimitive() = NumberType.fromRaw(this.toLiteralRawValue())
+fun Boolean.toPrimitive() = BooleanType.fromRaw(this.toLiteralRawValue())
 
 fun Double.isIntOrCompileError() = toInt().also {
     if (it.toDouble() != this) compileError("Value $this is not an integer.")

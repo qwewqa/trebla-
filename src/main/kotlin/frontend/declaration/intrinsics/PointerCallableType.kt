@@ -1,10 +1,13 @@
 package xyz.qwewqa.trebla.frontend.declaration.intrinsics
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
+import xyz.qwewqa.trebla.frontend.NumberType
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.*
 import xyz.qwewqa.trebla.frontend.expression.*
+import xyz.qwewqa.trebla.frontend.fromRaw
 
 class PointerCallableType(context: Context) :
     BuiltinType("Pointer"),
@@ -50,8 +53,8 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
 
     override fun allocateOn(allocator: Allocator, context: Context): Allocated = PointerValue(
         this,
-        RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
-        RawStructValue(AllocatedRawValue(allocator.allocate()), context.numberType),
+        NumberType.fromRaw(AllocatedRawValue(allocator.allocate())),
+        NumberType.fromRaw(AllocatedRawValue(allocator.allocate())),
     )
 
     override fun equals(other: Any?) = other is SpecificPointerType && other.insideType == insideType
@@ -59,15 +62,15 @@ class SpecificPointerType(val context: Context, val insideType: Type) :
 
     override fun fromFlat(values: List<RawValue>): Allocated = PointerValue(
         this,
-        RawStructValue(values[0], context.numberType),
-        RawStructValue(values[1], context.numberType),
+        NumberType.fromRaw(values[0]),
+        NumberType.fromRaw(values[1]),
     )
 }
 
 class PointerValue(
     override val type: SpecificPointerType,
-    val block: RawStructValue,
-    val index: RawStructValue,
+    val block: PrimitiveInstance,
+    val index: PrimitiveInstance,
 ) : Allocated,
     Dereferenceable,
     Subscriptable by SubscriptableDelegate(
@@ -80,17 +83,17 @@ class PointerValue(
             val listContainedType = insideType.containedType
             val elementSize = (listContainedType as? Allocatable)?.allocationSize
                 ?: compileError("Only pointers to lists containing an allocatable type are subscriptable")
-            val listIndex = "index".cast<RawStructValue>()
+            val listIndex = "index".cast<PrimitiveInstance>()
             PointerValue(
                 SpecificPointerType(type.context, listContainedType),
                 block,
-                SonoFunction.Add.raw(
-                    index.raw,
+                NumberType.fromRaw(SonoFunction.Add.raw(
+                    index.value,
                     SonoFunction.Multiply.raw(
-                        listIndex.raw,
+                        listIndex.value,
                         elementSize.toLiteralRawValue()
                     )
-                ).toNumberStruct(type.context)
+                ))
             )
         }
     ) {
@@ -125,17 +128,17 @@ class PointerValue(
 
     override fun deref(context: Context): Value {
         if (type.insideType !is Allocatable) compileError("Cannot dereference pointer to non-allocatable type")
-        return type.insideType.allocateOn(DynamicAllocator(block.raw, index.raw), context)
+        return type.insideType.allocateOn(DynamicAllocator(block.value, index.value), context)
     }
 
-    override fun flat() = listOf(block.raw, index.raw)
+    override fun flat() = listOf(block.value, index.value)
 }
 
 fun Type.pointerTo(block: RawValue, index: RawValue, context: Context) =
     PointerValue(
         SpecificPointerType(context, this),
-        block.toNumberStruct(context),
-        index.toNumberStruct(context),
+        NumberType.fromRaw(block),
+        NumberType.fromRaw(index),
     )
 
 class PointerToCallable(context: Context) :

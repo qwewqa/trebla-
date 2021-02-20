@@ -5,6 +5,7 @@ import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.ir.IRValue
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.backend.ir.toIR
+import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.*
@@ -132,7 +133,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
             index,
             processedCallbacks,
             dataProperties.mapValues
-            { (_, v) -> ((((v as RawStructValue).raw as AllocatedRawValue).allocation) as ConcreteAllocation).index },
+            { (_, v) -> ((((v as PrimitiveInstance).value as AllocatedRawValue).allocation) as ConcreteAllocation).index },
             (memoryAllocator.index until memoryAllocator.size).toList()
         )
     }
@@ -156,17 +157,17 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
 
     fun set(prop: Value?, value: Value?, cells: MutableList<RawValue?>) {
         when {
-            value is RawStructValue && prop is RawStructValue -> setRaw(prop, value, cells)
-            value is NormalStructValue && prop is NormalStructValue -> setNormal(prop, value, cells)
+            value is PrimitiveInstance && prop is PrimitiveInstance -> setPrimitive(prop, value, cells)
+            value is StructInstance && prop is StructInstance -> setStruct(prop, value, cells)
             else -> compileError("Incompatible types")
         }
     }
 
-    private fun setRaw(prop: RawStructValue, value: RawStructValue, cells: MutableList<RawValue?>) {
-        cells[((prop.raw as AllocatedRawValue).allocation as ConcreteAllocation).index] = value.raw
+    private fun setPrimitive(prop: PrimitiveInstance, value: PrimitiveInstance, cells: MutableList<RawValue?>) {
+        cells[((prop.value as AllocatedRawValue).allocation as ConcreteAllocation).index] = value.value
     }
 
-    private fun setNormal(prop: NormalStructValue, value: NormalStructValue, cells: MutableList<RawValue?>) {
+    private fun setStruct(prop: StructInstance, value: StructInstance, cells: MutableList<RawValue?>) {
         prop.fields.forEach { (name, field) ->
             set(field, value.fields[name], cells)
         }

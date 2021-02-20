@@ -2,9 +2,11 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.backend.ir.*
+import xyz.qwewqa.trebla.frontend.BooleanType
+import xyz.qwewqa.trebla.frontend.NumberType
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.RawStructValue
+import xyz.qwewqa.trebla.frontend.fromRaw
 
 /**
  * Either a location in memory, or a literal. Should generally appear within a raw struct except
@@ -44,6 +46,8 @@ class AllocatedRawValue(val allocation: Allocation) : RawValue() {
         )
     }
 }
+
+fun Allocator.allocateValue() = AllocatedRawValue(allocate())
 
 data class LiteralRawValue(val value: Double) : RawValue() {
     override fun toIR(context: Context?): IRNode {
@@ -101,16 +105,6 @@ fun allocatedValueAssignment(lhs: AllocatedRawValue, rhs: RawValue, context: Con
             rhs.toIR(context)
         )
     }
-
-fun RawValue.toNumberStruct(context: Context) = RawStructValue(
-    this,
-    context.numberType
-)
-
-fun RawValue.toBooleanStruct(context: Context) = RawStructValue(
-    this,
-    context.booleanType
-)
 
 fun RawValue.copyFrom(other: RawValue, context: ExecutionContext) {
     when (this) {

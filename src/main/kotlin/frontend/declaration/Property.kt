@@ -43,7 +43,6 @@ class PropertyDeclaration(
             }
             PropertyVariant.DATA -> {
                 if (context !is ScriptContext) compileError("The data modifier is only allowed directly within a script.")
-                if (typeConstraint !is StructDeclaration || !typeConstraint.isRaw) compileError("The data modifier requires an explicit raw type.")
                 context.dataAllocator
             }
             PropertyVariant.SHARED -> {

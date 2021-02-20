@@ -58,7 +58,7 @@ func Any.pointer(): Pointer {
 
 // Use of infix (non short-circuiting) "and" helps with readability of IR
 // Optimizer will clean things up anyways
-operator func Type.equals(other: Any) = (typeOf(other) === Type) and typeAccepts(this, other) and typeAccepts(other, this)
+operator func Type.equals(other: Type) = typeAccepts(this, other) and typeAccepts(other, this)
 operator func Type.notEquals(other: Any) = !(this == other)
 operator func Type.greaterOr(other: Any) = typeAccepts(this, other)
 operator func Type.lessOr(other: Any) = typeAccepts(other, this)
