@@ -3,7 +3,7 @@ package xyz.qwewqa.trebla.frontend
 import xyz.qwewqa.trebla.frontend.context.Allocator
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
-import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
+import xyz.qwewqa.trebla.frontend.value.BuiltinType
 import xyz.qwewqa.trebla.frontend.expression.*
 
 object PrimitiveBaseType : BuiltinType("Primitive")

@@ -2,8 +2,8 @@ package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.backend.compile.Archetype
 import xyz.qwewqa.trebla.frontend.*
-import xyz.qwewqa.trebla.frontend.declaration.*
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.*
+import xyz.qwewqa.trebla.frontend.value.*
+import xyz.qwewqa.trebla.frontend.value.intrinsics.*
 import xyz.qwewqa.trebla.frontend.expression.Expression
 import xyz.qwewqa.trebla.frontend.expression.LambdaType
 import xyz.qwewqa.trebla.frontend.expression.UnitValue

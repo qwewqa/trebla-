@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.frontend.declaration
+package xyz.qwewqa.trebla.frontend.value
 
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.Value

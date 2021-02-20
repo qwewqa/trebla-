@@ -1,8 +1,8 @@
-package xyz.qwewqa.trebla.frontend.declaration
+package xyz.qwewqa.trebla.frontend.value
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.SubscriptableDelegate
+import xyz.qwewqa.trebla.frontend.value.intrinsics.SubscriptableDelegate
 import xyz.qwewqa.trebla.frontend.expression.Subscriptable
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo

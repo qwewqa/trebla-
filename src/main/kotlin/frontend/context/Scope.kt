@@ -1,8 +1,8 @@
 package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.declaration.AnyType
-import xyz.qwewqa.trebla.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.value.AnyType
+import xyz.qwewqa.trebla.frontend.value.Type
 import xyz.qwewqa.trebla.frontend.expression.Value
 
 open class Scope(val parent: Scope?) {

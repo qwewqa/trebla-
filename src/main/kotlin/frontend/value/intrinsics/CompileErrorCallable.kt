@@ -1,8 +1,8 @@
-package xyz.qwewqa.trebla.frontend.declaration.intrinsics
+package xyz.qwewqa.trebla.frontend.value.intrinsics
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.declaration.CallableType
+import xyz.qwewqa.trebla.frontend.value.CallableType
 import xyz.qwewqa.trebla.frontend.expression.Callable
 
 class CompileErrorCallable(context: Context) :

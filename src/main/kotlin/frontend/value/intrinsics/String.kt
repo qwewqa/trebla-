@@ -1,6 +1,6 @@
-package xyz.qwewqa.trebla.frontend.declaration.intrinsics
+package xyz.qwewqa.trebla.frontend.value.intrinsics
 
-import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
+import xyz.qwewqa.trebla.frontend.value.BuiltinType
 import xyz.qwewqa.trebla.frontend.expression.Value
 
 object StringType : BuiltinType("String")

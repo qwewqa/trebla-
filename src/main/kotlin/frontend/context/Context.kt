@@ -2,8 +2,8 @@ package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
 import xyz.qwewqa.trebla.frontend.compileError
-import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
-import xyz.qwewqa.trebla.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.value.BuiltinType
+import xyz.qwewqa.trebla.frontend.value.Type
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.BlockNode

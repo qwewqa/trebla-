@@ -1,14 +1,14 @@
-package xyz.qwewqa.trebla.frontend.declaration.intrinsics
+package xyz.qwewqa.trebla.frontend.value.intrinsics
 
 import xyz.qwewqa.trebla.frontend.NumberType
 import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.DynamicAllocator
-import xyz.qwewqa.trebla.frontend.declaration.AnyType
-import xyz.qwewqa.trebla.frontend.declaration.CallableType
-import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.declaration.TypeType
+import xyz.qwewqa.trebla.frontend.value.AnyType
+import xyz.qwewqa.trebla.frontend.value.CallableType
+import xyz.qwewqa.trebla.frontend.value.Type
+import xyz.qwewqa.trebla.frontend.value.TypeType
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.frontend.fromRaw
 import xyz.qwewqa.trebla.frontend.value.MapProxyInstance

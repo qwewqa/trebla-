@@ -1,7 +1,7 @@
-package xyz.qwewqa.trebla.frontend.declaration.intrinsics
+package xyz.qwewqa.trebla.frontend.value.intrinsics
 
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.CallableType
+import xyz.qwewqa.trebla.frontend.value.CallableType
 import xyz.qwewqa.trebla.frontend.expression.*
 
 class LocalContextCallable(context: Context) :

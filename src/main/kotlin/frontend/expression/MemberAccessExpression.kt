@@ -5,10 +5,10 @@ import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.Scope
 import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
-import xyz.qwewqa.trebla.frontend.declaration.AnyType
-import xyz.qwewqa.trebla.frontend.declaration.ReceiverType
-import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.declaration.matchBest
+import xyz.qwewqa.trebla.frontend.value.AnyType
+import xyz.qwewqa.trebla.frontend.value.ReceiverType
+import xyz.qwewqa.trebla.frontend.value.Type
+import xyz.qwewqa.trebla.frontend.value.matchBest
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.MemberAccessNode
 import xyz.qwewqa.trebla.grammar.trebla.UnaryFunctionNode

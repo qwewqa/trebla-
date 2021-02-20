@@ -2,9 +2,9 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.declaration.AnyType
-import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.declaration.applyIn
+import xyz.qwewqa.trebla.frontend.value.AnyType
+import xyz.qwewqa.trebla.frontend.value.Type
+import xyz.qwewqa.trebla.frontend.value.applyIn
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.*
 

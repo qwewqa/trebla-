@@ -7,7 +7,7 @@ import org.antlr.v4.runtime.*
 import xyz.qwewqa.trebla.backend.BackendConfig
 import xyz.qwewqa.trebla.backend.compile.*
 import xyz.qwewqa.trebla.frontend.context.GlobalContext
-import xyz.qwewqa.trebla.frontend.declaration.ScriptData
+import xyz.qwewqa.trebla.frontend.value.ScriptData
 import xyz.qwewqa.trebla.grammar.generated.TreblaLexer
 import xyz.qwewqa.trebla.grammar.generated.TreblaParser
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode

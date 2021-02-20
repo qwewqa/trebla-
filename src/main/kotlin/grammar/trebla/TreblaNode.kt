@@ -4,8 +4,8 @@ import org.antlr.v4.runtime.tree.ParseTree
 import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.getFullyQualified
-import xyz.qwewqa.trebla.frontend.declaration.*
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.StringValue
+import xyz.qwewqa.trebla.frontend.value.*
+import xyz.qwewqa.trebla.frontend.value.intrinsics.StringValue
 import xyz.qwewqa.trebla.frontend.expression.*
 
 /**

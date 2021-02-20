@@ -2,7 +2,7 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.createAndAddChild
-import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.value.*
 import xyz.qwewqa.trebla.grammar.trebla.LambdaNode
 
 class LambdaExpression(override val node: LambdaNode, val parentContext: Context) : Expression, Callable, Value {

@@ -1,12 +1,12 @@
-package xyz.qwewqa.trebla.frontend.declaration.intrinsics
+package xyz.qwewqa.trebla.frontend.value.intrinsics
 
 import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.DefaultSignature
 import xyz.qwewqa.trebla.frontend.context.Signature
 import xyz.qwewqa.trebla.frontend.context.Visibility
-import xyz.qwewqa.trebla.frontend.declaration.Declaration
-import xyz.qwewqa.trebla.frontend.declaration.Type
+import xyz.qwewqa.trebla.frontend.value.Declaration
+import xyz.qwewqa.trebla.frontend.value.Type
 import xyz.qwewqa.trebla.frontend.expression.*
 
 /**

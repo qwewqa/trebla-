@@ -1,11 +1,11 @@
-package xyz.qwewqa.trebla.frontend.declaration.intrinsics
+package xyz.qwewqa.trebla.frontend.value.intrinsics
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.NumberType
 import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.value.*
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.frontend.fromRaw
 

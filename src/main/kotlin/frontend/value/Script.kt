@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.frontend.declaration
+package xyz.qwewqa.trebla.frontend.value
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall

@@ -2,9 +2,9 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
-import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.declaration.includes
+import xyz.qwewqa.trebla.frontend.value.BuiltinType
+import xyz.qwewqa.trebla.frontend.value.Type
+import xyz.qwewqa.trebla.frontend.value.includes
 
 /**
  * Represents a value that results from an frontend.expression.

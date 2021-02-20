@@ -1,8 +1,8 @@
-package xyz.qwewqa.trebla.frontend.declaration.intrinsics
+package xyz.qwewqa.trebla.frontend.value.intrinsics
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
-import xyz.qwewqa.trebla.frontend.declaration.*
+import xyz.qwewqa.trebla.frontend.value.*
 import xyz.qwewqa.trebla.frontend.expression.Allocatable
 import xyz.qwewqa.trebla.frontend.expression.Callable
 import xyz.qwewqa.trebla.frontend.expression.Value

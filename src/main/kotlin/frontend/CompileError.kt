@@ -3,7 +3,7 @@ package xyz.qwewqa.trebla.frontend
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.misc.Interval
 import org.antlr.v4.runtime.tree.TerminalNode
-import xyz.qwewqa.trebla.frontend.declaration.Declaration
+import xyz.qwewqa.trebla.frontend.value.Declaration
 import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 import kotlin.contracts.ExperimentalContracts

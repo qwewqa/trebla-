@@ -5,9 +5,9 @@ import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.backend.ir.toIR
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.EnumStructVariant
-import xyz.qwewqa.trebla.frontend.declaration.EnumInstance
-import xyz.qwewqa.trebla.frontend.declaration.EnumVariant
+import xyz.qwewqa.trebla.frontend.value.EnumStructVariant
+import xyz.qwewqa.trebla.frontend.value.EnumInstance
+import xyz.qwewqa.trebla.frontend.value.EnumVariant
 import xyz.qwewqa.trebla.grammar.trebla.WhenElseEntryNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenMatchExpressionNode
 import xyz.qwewqa.trebla.grammar.trebla.WhenMatchVariantNode

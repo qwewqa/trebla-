@@ -1,4 +1,4 @@
-package xyz.qwewqa.trebla.frontend.declaration
+package xyz.qwewqa.trebla.frontend.value
 
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.PrimitiveInstance

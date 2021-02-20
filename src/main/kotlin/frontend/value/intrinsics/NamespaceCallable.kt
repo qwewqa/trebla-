@@ -1,11 +1,11 @@
-package xyz.qwewqa.trebla.frontend.declaration.intrinsics
+package xyz.qwewqa.trebla.frontend.value.intrinsics
 
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.SimpleContext
 import xyz.qwewqa.trebla.frontend.context.Visibility
-import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
-import xyz.qwewqa.trebla.frontend.declaration.CallableType
+import xyz.qwewqa.trebla.frontend.value.BuiltinType
+import xyz.qwewqa.trebla.frontend.value.CallableType
 import xyz.qwewqa.trebla.frontend.expression.*
 
 class NamespaceCallable(context: Context) :

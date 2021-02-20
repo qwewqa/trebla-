@@ -1,11 +1,11 @@
-package xyz.qwewqa.trebla.frontend.declaration
+package xyz.qwewqa.trebla.frontend.value
 
 import xyz.qwewqa.trebla.frontend.NumberType
 import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.CallableDelegate
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.SimpleDeclaration
+import xyz.qwewqa.trebla.frontend.value.intrinsics.CallableDelegate
+import xyz.qwewqa.trebla.frontend.value.intrinsics.SimpleDeclaration
 import xyz.qwewqa.trebla.frontend.expression.*
 import xyz.qwewqa.trebla.frontend.fromRaw
 import xyz.qwewqa.trebla.grammar.trebla.*
