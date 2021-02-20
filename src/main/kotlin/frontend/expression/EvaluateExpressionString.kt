@@ -39,6 +39,8 @@ class ExpressionEvaluatorContext(val context: Context) {
         context.scope.add(this, name)
     }
 
+    infix fun String.let(value: Value) = value.addAs(this)
+
     operator fun String.unaryPlus(): Value {
         val lexer = TreblaLexer(CharStreams.fromString("{$this}"))
         val tokenStream = CommonTokenStream(lexer)

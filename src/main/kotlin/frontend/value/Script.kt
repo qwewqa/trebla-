@@ -132,8 +132,11 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
             identifier,
             index,
             processedCallbacks,
-            dataProperties.mapValues
-            { (_, v) -> ((((v as PrimitiveInstance).value as AllocatedRawValue).allocation) as ConcreteAllocation).index },
+            dataProperties
+                .filterValues { v -> v is PrimitiveInstance }
+                .mapValues { (_, v) ->
+                    ((((v as PrimitiveInstance).value as AllocatedRawValue).allocation) as ConcreteAllocation).index
+                },
             (memoryAllocator.index until memoryAllocator.size).toList()
         )
     }

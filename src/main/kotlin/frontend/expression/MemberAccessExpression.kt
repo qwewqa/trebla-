@@ -8,7 +8,6 @@ import xyz.qwewqa.trebla.frontend.context.Visibility
 import xyz.qwewqa.trebla.frontend.declaration.AnyType
 import xyz.qwewqa.trebla.frontend.declaration.ReceiverType
 import xyz.qwewqa.trebla.frontend.declaration.Type
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
 import xyz.qwewqa.trebla.frontend.declaration.matchBest
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.MemberAccessNode
@@ -21,11 +20,7 @@ class MemberAccessExpression(override val node: UnaryFunctionNode, op: MemberAcc
         val lhs = node.value.parseAndApplyTo(context)
         return node.runWithErrorMessage("Error in member access expression.") {
             lhs.resolveMember(name, context)
-                ?: if (lhs is Dereferenceable) {
-                    compileError("No member with name $name found. Dereference may be missing.")
-                } else {
-                    compileError("No member with name $name found.")
-                }
+                ?: compileError("No member with name $name found for a value with type ${lhs.type.commonName}.")
         }
     }
 }

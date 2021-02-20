@@ -6,7 +6,6 @@ import xyz.qwewqa.trebla.frontend.*
 import xyz.qwewqa.trebla.frontend.context.Context
 import xyz.qwewqa.trebla.frontend.context.ExecutionContext
 import xyz.qwewqa.trebla.frontend.context.SimpleExecutionContext
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.Dereferenceable
 import xyz.qwewqa.trebla.grammar.trebla.InfixFunctionNode
 import xyz.qwewqa.trebla.grammar.trebla.PostfixUnaryFunctionNode
 import xyz.qwewqa.trebla.grammar.trebla.PrefixUnaryFunctionNode
@@ -21,9 +20,6 @@ class UnaryFunctionExpression(override val node: UnaryFunctionNode) : Expression
 
     override fun applyTo(context: Context): Value {
         val lhs = node.value.parseAndApplyTo(context)
-        if (lhs is Dereferenceable && functionName == "deref") {
-            return lhs.deref(context)
-        }
         val func = lhs.resolveMember(functionName, context)
         if (func !is Callable) compileError("Unary function is not implemented.", node)
         if (!func.isOperator) compileError("Unary function is not marked operator.", node)

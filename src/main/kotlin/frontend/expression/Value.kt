@@ -5,9 +5,6 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.declaration.BuiltinType
 import xyz.qwewqa.trebla.frontend.declaration.Type
 import xyz.qwewqa.trebla.frontend.declaration.includes
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.PointerValue
-import xyz.qwewqa.trebla.frontend.declaration.intrinsics.pointerTo
-import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
 
 /**
  * Represents a value that results from an frontend.expression.
@@ -91,10 +88,9 @@ interface Allocated : Value {
     fun flat(): List<RawValue>
 
     /**
-     * Creates a pointer to this value or null if not possible
-     * (contains literals, not contiguous, etc).
+     * Returns a pair with block first and index second.
      */
-    fun pointer(context: Context): PointerValue? {
+    fun allocationLocation(): Pair<RawValue, RawValue>? {
         val flat = flat()
         if (!flat.all { it is AllocatedRawValue }) return null
         val allocations = flat
@@ -111,7 +107,7 @@ interface Allocated : Value {
         val block = blocks.toSet().singleOrNull() ?: return null
         /** see [ConcreteAllocation] for information */
         val index = indexes.toSet().singleOrNull() ?: return null
-        return type.pointerTo(block, BuiltinCallRawValue(SonoFunction.Add, listOf(index, offsets.first())), context)
+        return block to BuiltinCallRawValue(SonoFunction.Add, listOf(index, offsets.first()))
     }
 }
 

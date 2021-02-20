@@ -8,6 +8,7 @@ import xyz.qwewqa.trebla.frontend.expression.Expression
 import xyz.qwewqa.trebla.frontend.expression.LambdaType
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.value.MapProxyType
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 
 class GlobalContext(val configuration: CompilerConfiguration) : GlobalAllocatorContext, Context {
@@ -110,7 +111,6 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to TypeType,
     listOf("std") to AnyType,
     listOf("std") to NothingType,
-    listOf("std") to ReceiverType,
     listOf("std") to UnitValue,
     listOf("std") to StructType,
     listOf("std") to ScriptType,
@@ -121,6 +121,7 @@ val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(
     listOf("std") to StringType,
     listOf("std") to EnumType,
     listOf("std") to NamespaceType,
+    listOf("std") to MapProxyType,
 )
 
 // constructors for intrinsics that require the context
@@ -130,15 +131,14 @@ val intrinsics: List<Pair<List<String>, (Context) -> Expression>> = listOf(
     listOf("std") to ::ListBaseType,
     listOf("std") to ::LocalContextCallable,
     listOf("std") to ::WithContextCallable,
-    listOf("std") to ::DerefCallable,
-    listOf("std") to ::PointerCallableType,
+    listOf("std") to ::DereferenceCallable,
     listOf("std") to ::ListOfCallable,
     listOf("std") to ::SizeOfCallable,
     listOf("std") to ::TypeOfCallable,
     listOf("std") to ::TypeAcceptsCallable,
     listOf("std") to ::RangeCallableType,
     listOf("std") to ::CompileErrorCallable,
-    listOf("std") to ::PointerToCallable,
+    listOf("std") to ::AllocationDataOf,
     listOf("std") to ::EnumFromOrdinalCallable,
     listOf("std") to ::NamespaceCallable
 )

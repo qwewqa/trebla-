@@ -1,0 +1,37 @@
+package std
+
+struct Pointer[type: Type](block: Number, index: Number)
+
+operator func Pointer.deref() = dereference(this.type, this.block, this.index)
+
+operator func Pointer.subscript(index: Number): Any {
+    const if (this.type < List) {
+        let containedType = this.type.containedType
+        Pointer[containedType](this.block, this.index + sizeOf(containedType) * index)
+    } else {
+        compileError("Not a pointer to a list.")
+    }
+}
+
+// Note that if a value is accessed through an entity pointer,
+// it would have already been transformed to be accessed through the data/shared memory array blocks.
+// As such, localPointer() behaves the same as pointer() in such situations.
+func Any.localPointer(): Pointer {
+    let allocationData = allocationDataOf(this)
+    Pointer[typeOf(this)](allocationData.block, allocationData.index)
+}
+func Any.pointer(): Pointer {
+    let pointer = this.localPointer()
+    typeOf(pointer)(
+        block = const when {
+            pointer.block == ENTITY_DATA -> ENTITY_DATA_ARRAY
+            pointer.block == ENTITY_SHARED_MEMORY -> ENTITY_SHARED_MEMORY_ARRAY
+            else -> pointer.block
+        },
+        index = pointer.index + const when {
+            pointer.block == ENTITY_DATA -> 32 * entityIndex
+            pointer.block == ENTITY_SHARED_MEMORY -> 32 * entityIndex
+            else -> 0
+        },
+    )
+}

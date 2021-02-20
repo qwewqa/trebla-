@@ -37,7 +37,7 @@ class ListOfCallable(context: Context) :
             if (arguments.any { it.name != null }) compileError("listOf requires only unnamed arguments.")
             val values = arguments.map { it.value }
             val type = values.map { it.type }.toSet().singleOrNull() ?: if (values.isEmpty()) NothingType else AnyType
-            ListValue(context, SizedListType(arguments.size, UnsizedListType(type, context), context), values)
+            ListInstance(context, SizedListType(arguments.size, UnsizedListType(type, context), context), values)
         },
     )
 
@@ -80,7 +80,7 @@ data class SizedListType(val size: Int, override val baseType: UnsizedListType, 
         if (containedType !is Allocatable) {
             compileError("List allocation is only possible for lists with allocatable types.")
         }
-        return ListValue(context, this, List(size) { containedType.allocateOn(allocator, context) })
+        return ListInstance(context, this, List(size) { containedType.allocateOn(allocator, context) })
     }
 
     override val allocationSize by lazy {
@@ -113,13 +113,13 @@ data class SizedListType(val size: Int, override val baseType: UnsizedListType, 
             compileError("Unexpected list construction from flat.")
         }
         val chunks = values.chunked(containedType.allocationSize)
-        return ListValue(context, this, List(size) { containedType.fromFlat(chunks[it]) })
+        return ListInstance(context, this, List(size) { containedType.fromFlat(chunks[it]) })
     }
 }
 
-class ListValue(val parentContext: Context, override val type: SizedListType, val values: List<Value>) : Allocated {
+class ListInstance(val parentContext: Context, override val type: SizedListType, val values: List<Value>) : Allocated {
     override fun toEntityArrayValue(offset: RawValue): Allocated =
-        ListValue(
+        ListInstance(
             parentContext,
             type,
             values.map {
@@ -129,7 +129,7 @@ class ListValue(val parentContext: Context, override val type: SizedListType, va
         )
 
     override fun copyTo(allocator: Allocator, context: ExecutionContext): Allocated =
-        ListValue(
+        ListInstance(
             context,
             type,
             values.map {
@@ -139,7 +139,7 @@ class ListValue(val parentContext: Context, override val type: SizedListType, va
         )
 
     override fun copyFrom(other: Value, context: ExecutionContext) {
-        if (other is ListValue && other.type == type) {
+        if (other is ListInstance && other.type == type) {
             values.zip(other.values).forEach { (v, o) ->
                 if (v !is Allocated || o !is Allocated) compileError("Assignment not possible for non-allocated values.")
                 v.copyFrom(o, context)
