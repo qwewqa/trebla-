@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.backend.compile
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.jr.ob.JSON
 import xyz.qwewqa.trebla.backend.ir.IRNode
 import xyz.qwewqa.trebla.frontend.context.*
 import java.io.Reader
@@ -83,14 +83,12 @@ class EngineData(
             "nodes" to nodes,
             "buckets" to buckets
         )
-        val gson = Gson()
-        return CompiledLevel(gson.toJson(levelFile), gson.toJson(options))
+        return CompiledLevel(JSON.std.asString(levelFile), JSON.std.asString(options))
     }
 
-    // will note that Gson won't necessarily give you back the exact same types you gave it originally
-    // when deserializing, so equality may not hold.
-    fun toJson(): String = Gson().toJson(toMap())
-    fun fromJson(reader: Reader) = fromMap(Gson().fromJson(reader, Map::class.java) as Map<String, Any>)
+    fun toJson(): String = JSON.std.asString(toMap())
+    fun fromJson(reader: Reader) = fromMap(JSON.std.mapFrom(reader))
+        //fromMap(Gson().fromJson(reader, Map::class.java) as Map<String, Any>)
 
     fun toMap(): Map<String, Any> = mapOf(
         "scripts" to scripts.map { sc ->

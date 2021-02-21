@@ -25,7 +25,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.3.9")
     implementation("com.github.ajalt:clikt:2.7.1")
     implementation("org.snakeyaml:snakeyaml-engine:2.1")
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.fasterxml.jackson.jr:jackson-jr-objects:2.12.0")
     antlr("org.antlr:antlr4:4.8")
 }
 

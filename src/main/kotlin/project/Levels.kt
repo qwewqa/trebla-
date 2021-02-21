@@ -1,6 +1,6 @@
 package xyz.qwewqa.trebla.project
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.jr.ob.JSON
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.toList
@@ -31,8 +31,10 @@ suspend fun generateLevels(path: File) {
     if (!engineFile.exists()) {
         error("Engine not built. Run build first to generate the engine file.")
     }
-    @Suppress("UNCHECKED_CAST") val engine =
-        EngineData.fromMap(Gson().fromJson(engineFile.bufferedReader(), Map::class.java) as Map<String, Any>)
+    @Suppress("UNCHECKED_CAST")
+    val engine = withContext(Dispatchers.IO) {
+        EngineData.fromMap(JSON.std.mapFrom(engineFile.bufferedReader()) as Map<String, Any>)
+    }
     val levelDir = path.resolve(projectConfig.levels)
     if (!levelDir.exists()) levelDir.mkdirs()
     if (!levelDir.isDirectory) error("Level directory is not a directory.")
