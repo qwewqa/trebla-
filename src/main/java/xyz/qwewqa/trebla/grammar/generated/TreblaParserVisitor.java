@@ -205,18 +205,6 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitType(TreblaParser.TypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TreblaParser#parenthesizedType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParenthesizedType(TreblaParser.ParenthesizedTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#simpleUserType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSimpleUserType(TreblaParser.SimpleUserTypeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TreblaParser#block}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -240,54 +228,6 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExpression(TreblaParser.ExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#disjunction}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDisjunction(TreblaParser.DisjunctionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#conjunction}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConjunction(TreblaParser.ConjunctionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#equalityComparison}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEqualityComparison(TreblaParser.EqualityComparisonContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#comparison}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComparison(TreblaParser.ComparisonContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#infixFunctionCall}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInfixFunctionCall(TreblaParser.InfixFunctionCallContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#additiveExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAdditiveExpression(TreblaParser.AdditiveExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#multiplicativeExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMultiplicativeExpression(TreblaParser.MultiplicativeExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#exponentiationExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExponentiationExpression(TreblaParser.ExponentiationExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TreblaParser#prefixUnaryExpression}.
 	 * @param ctx the parse tree
@@ -487,18 +427,6 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLineStringLiteral(TreblaParser.LineStringLiteralContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TreblaParser#additiveOperator}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAdditiveOperator(TreblaParser.AdditiveOperatorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#multiplicativeOperation}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMultiplicativeOperation(TreblaParser.MultiplicativeOperationContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TreblaParser#prefixUnaryOperation}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -522,18 +450,6 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAssignmentOperator(TreblaParser.AssignmentOperatorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#equalityOperation}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEqualityOperation(TreblaParser.EqualityOperationContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TreblaParser#comparisonOperator}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComparisonOperator(TreblaParser.ComparisonOperatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TreblaParser#semi}.
 	 * @param ctx the parse tree

@@ -330,26 +330,6 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitType(TreblaParser.TypeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TreblaParser#parenthesizedType}.
-	 * @param ctx the parse tree
-	 */
-	void enterParenthesizedType(TreblaParser.ParenthesizedTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#parenthesizedType}.
-	 * @param ctx the parse tree
-	 */
-	void exitParenthesizedType(TreblaParser.ParenthesizedTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#simpleUserType}.
-	 * @param ctx the parse tree
-	 */
-	void enterSimpleUserType(TreblaParser.SimpleUserTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#simpleUserType}.
-	 * @param ctx the parse tree
-	 */
-	void exitSimpleUserType(TreblaParser.SimpleUserTypeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TreblaParser#block}.
 	 * @param ctx the parse tree
 	 */
@@ -389,86 +369,6 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpression(TreblaParser.ExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#disjunction}.
-	 * @param ctx the parse tree
-	 */
-	void enterDisjunction(TreblaParser.DisjunctionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#disjunction}.
-	 * @param ctx the parse tree
-	 */
-	void exitDisjunction(TreblaParser.DisjunctionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#conjunction}.
-	 * @param ctx the parse tree
-	 */
-	void enterConjunction(TreblaParser.ConjunctionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#conjunction}.
-	 * @param ctx the parse tree
-	 */
-	void exitConjunction(TreblaParser.ConjunctionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#equalityComparison}.
-	 * @param ctx the parse tree
-	 */
-	void enterEqualityComparison(TreblaParser.EqualityComparisonContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#equalityComparison}.
-	 * @param ctx the parse tree
-	 */
-	void exitEqualityComparison(TreblaParser.EqualityComparisonContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#comparison}.
-	 * @param ctx the parse tree
-	 */
-	void enterComparison(TreblaParser.ComparisonContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#comparison}.
-	 * @param ctx the parse tree
-	 */
-	void exitComparison(TreblaParser.ComparisonContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#infixFunctionCall}.
-	 * @param ctx the parse tree
-	 */
-	void enterInfixFunctionCall(TreblaParser.InfixFunctionCallContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#infixFunctionCall}.
-	 * @param ctx the parse tree
-	 */
-	void exitInfixFunctionCall(TreblaParser.InfixFunctionCallContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#additiveExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAdditiveExpression(TreblaParser.AdditiveExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#additiveExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAdditiveExpression(TreblaParser.AdditiveExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#multiplicativeExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMultiplicativeExpression(TreblaParser.MultiplicativeExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#multiplicativeExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMultiplicativeExpression(TreblaParser.MultiplicativeExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#exponentiationExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterExponentiationExpression(TreblaParser.ExponentiationExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#exponentiationExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitExponentiationExpression(TreblaParser.ExponentiationExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TreblaParser#prefixUnaryExpression}.
 	 * @param ctx the parse tree
@@ -800,26 +700,6 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitLineStringLiteral(TreblaParser.LineStringLiteralContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TreblaParser#additiveOperator}.
-	 * @param ctx the parse tree
-	 */
-	void enterAdditiveOperator(TreblaParser.AdditiveOperatorContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#additiveOperator}.
-	 * @param ctx the parse tree
-	 */
-	void exitAdditiveOperator(TreblaParser.AdditiveOperatorContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#multiplicativeOperation}.
-	 * @param ctx the parse tree
-	 */
-	void enterMultiplicativeOperation(TreblaParser.MultiplicativeOperationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#multiplicativeOperation}.
-	 * @param ctx the parse tree
-	 */
-	void exitMultiplicativeOperation(TreblaParser.MultiplicativeOperationContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TreblaParser#prefixUnaryOperation}.
 	 * @param ctx the parse tree
 	 */
@@ -859,26 +739,6 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssignmentOperator(TreblaParser.AssignmentOperatorContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#equalityOperation}.
-	 * @param ctx the parse tree
-	 */
-	void enterEqualityOperation(TreblaParser.EqualityOperationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#equalityOperation}.
-	 * @param ctx the parse tree
-	 */
-	void exitEqualityOperation(TreblaParser.EqualityOperationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TreblaParser#comparisonOperator}.
-	 * @param ctx the parse tree
-	 */
-	void enterComparisonOperator(TreblaParser.ComparisonOperatorContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#comparisonOperator}.
-	 * @param ctx the parse tree
-	 */
-	void exitComparisonOperator(TreblaParser.ComparisonOperatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TreblaParser#semi}.
 	 * @param ctx the parse tree

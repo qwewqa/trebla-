@@ -177,14 +177,6 @@ type
     : prefixUnaryExpression
     ;
 
-parenthesizedType
-    : LPAREN type RPAREN
-    ;
-
-simpleUserType
-    : simpleIdentifier
-    ;
-
 block
     : LCURL anysemi* (statement (anysemi+ statement?)*)? RCURL
     ;
@@ -203,39 +195,16 @@ declaration
     ;
 
 expression
-    : disjunction (assignmentOperator disjunction)*
-    ;
-
-disjunction
-    : conjunction (NL* DISJ NL* conjunction)*
-    ;
-
-conjunction
-    : equalityComparison (NL* CONJ NL* equalityComparison)*
-    ;
-
-equalityComparison
-    : comparison (equalityOperation NL* comparison)*
-    ;
-
-comparison
-    : infixFunctionCall (comparisonOperator NL* infixFunctionCall)?
-    ;
-
-infixFunctionCall
-    : additiveExpression (simpleIdentifier NL* additiveExpression)*
-    ;
-
-additiveExpression
-    : multiplicativeExpression (additiveOperator NL* multiplicativeExpression)*
-    ;
-
-multiplicativeExpression
-    : exponentiationExpression (multiplicativeOperation NL* exponentiationExpression)*
-    ;
-
-exponentiationExpression
-    : prefixUnaryExpression (POW NL* prefixUnaryExpression)*
+    : expression POW NL* expression
+    | expression (MULT | DIV | MOD) NL* expression
+    | expression (ADD | SUB) NL* expression
+    | expression simpleIdentifier NL* expression
+    | expression (LANGLE | RANGLE | LE | GE) NL* expression
+    | expression (EXCL_EQ | EQEQ | EXCL_EQEQ | EQEQEQ) NL* expression
+    | expression NL* CONJ NL* expression
+    | expression NL* DISJ NL* expression
+    | expression assignment=assignmentOperator NL* expression
+    | prefixUnaryExpression
     ;
 
 prefixUnaryExpression
@@ -422,16 +391,6 @@ lineStringLiteral
     : QUOTE_OPEN (LineStrText | LineStrEscapedChar)* QUOTE_CLOSE
     ;
 
-additiveOperator
-    : ADD | SUB
-    ;
-
-multiplicativeOperation
-    : MULT
-    | DIV
-    | MOD
-    ;
-
 prefixUnaryOperation
     : INCR
     | DECR
@@ -459,20 +418,6 @@ assignmentOperator
     | MULT_ASSIGNMENT
     | DIV_ASSIGNMENT
     | MOD_ASSIGNMENT
-    ;
-
-equalityOperation
-    : EXCL_EQ
-    | EQEQ
-    | EXCL_EQEQ
-    | EQEQEQ
-    ;
-
-comparisonOperator
-    : LANGLE
-    | RANGLE
-    | LE
-    | GE
     ;
 
 // Takes up to one semicolon, but no more.

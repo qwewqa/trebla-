@@ -221,10 +221,6 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         return TypeNode(ctx, filename, ctx.prefixUnaryExpression().visit() as ExpressionNode)
     }
 
-    override fun visitSimpleUserType(ctx: TreblaParser.SimpleUserTypeContext): TreblaNode {
-        return SimpleUserTypeNode(ctx, filename, ctx.simpleIdentifier().visit() as SimpleIdentifierNode)
-    }
-
     override fun visitModifierList(ctx: TreblaParser.ModifierListContext): TreblaNode {
         return ModifierListNode(ctx, filename, ctx.modifier().visit().map { (it as ModifierNode).value })
     }
@@ -271,39 +267,11 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
     }
 
     override fun visitExpression(ctx: TreblaParser.ExpressionContext): TreblaNode {
-        return visitGenericInfixFunction(ctx, true)
-    }
-
-    override fun visitDisjunction(ctx: TreblaParser.DisjunctionContext): TreblaNode {
-        return visitGenericInfixFunction(ctx)
-    }
-
-    override fun visitConjunction(ctx: TreblaParser.ConjunctionContext): TreblaNode {
-        return visitGenericInfixFunction(ctx)
-    }
-
-    override fun visitEqualityComparison(ctx: TreblaParser.EqualityComparisonContext): TreblaNode {
-        return visitGenericInfixFunction(ctx)
-    }
-
-    override fun visitComparison(ctx: TreblaParser.ComparisonContext): TreblaNode {
-        return visitGenericInfixFunction(ctx)
-    }
-
-    override fun visitInfixFunctionCall(ctx: TreblaParser.InfixFunctionCallContext): TreblaNode {
-        return visitGenericInfixFunction(ctx)
-    }
-
-    override fun visitAdditiveExpression(ctx: TreblaParser.AdditiveExpressionContext): TreblaNode {
-        return visitGenericInfixFunction(ctx)
-    }
-
-    override fun visitMultiplicativeExpression(ctx: TreblaParser.MultiplicativeExpressionContext): TreblaNode {
-        return visitGenericInfixFunction(ctx)
-    }
-
-    override fun visitExponentiationExpression(ctx: TreblaParser.ExponentiationExpressionContext): TreblaNode {
-        return visitGenericInfixFunction(ctx)
+        return if (ctx.assignmentOperator().exist) {
+            visitGenericInfixFunction(ctx, true)
+        } else {
+            visitGenericInfixFunction(ctx)
+        }
     }
 
     override fun visitPrefixUnaryExpression(ctx: TreblaParser.PrefixUnaryExpressionContext): TreblaNode {
