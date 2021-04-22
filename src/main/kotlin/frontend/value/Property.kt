@@ -88,11 +88,11 @@ class PropertyDeclaration(
             else -> {
                 if (initializer != null)
                     compileError("Property with modifier ${
-                        variant.toString().toLowerCase()
+                        variant.toString().lowercase()
                     } does not take an initializer.")
                 if (typeConstraint == null)
                     compileError("Property with modifier ${
-                        variant.toString().toLowerCase()
+                        variant.toString().lowercase()
                     } must have an explicit type.")
                 if (typeConstraint !is Allocatable)
                     compileError("Property explicit type is invalid. Should typically be a struct.")

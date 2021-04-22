@@ -41,6 +41,7 @@ tasks {
             jvmTarget = "11"
             apiVersion = "1.5"
             languageVersion = "1.5"
+            freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
         }
         dependsOn += generateGrammarSource
         dependsOn += "stdZip"

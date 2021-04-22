@@ -222,7 +222,7 @@ class EnumStructVariant(
     }
 
     override val size by lazy {
-        fields.map { it.type }.sumBy {
+        fields.map { it.type }.sumOf {
             (it as Allocatable).allocationSize
         }
     }

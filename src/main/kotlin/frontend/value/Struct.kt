@@ -65,7 +65,7 @@ class StructDeclaration(
     }, context)
 
     override val allocationSize by lazy {
-        fields.sumBy {
+        fields.sumOf {
             (it.type as? Allocatable)?.allocationSize ?: compileError("Struct has unsized members.")
         }
     }

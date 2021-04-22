@@ -34,7 +34,7 @@ class OptionsAccessor(override val parentContext: Context) : Declaration {
             val convertedName = name.fold(StringBuilder(name.length)) { acc, c ->
                 if (c in 'A'..'Z') (if (acc.isNotEmpty()) acc.append('_') else acc).append(c + ('a' - 'A'))
                 else acc.append(c)
-            }.toString().toUpperCase()
+            }.toString().uppercase()
             options["#$convertedName"]
         } ?: return null
         return option.optionType.type.fromRaw(

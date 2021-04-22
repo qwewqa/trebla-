@@ -43,7 +43,7 @@ suspend fun generateLevels(path: File) {
     coroutineScope {
         levelDir
             .listFiles()!!
-            .filter { it.isFile && it.extension.toLowerCase() in levelExtensions }
+            .filter { it.isFile && it.extension.lowercase() in levelExtensions }
             .also { println("Generating ${it.size} level(s).") }
             .forEach {
                 launch {
