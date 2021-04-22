@@ -9,6 +9,6 @@ class TreblaCli : CliktCommand(name = "trebla") {
     }
 
     init {
-        subcommands(InitCommand(), BuildCommand(), LevelsCommand(), CompileAllCommand())
+        subcommands(InitCommand(), BuildCommand(), LevelsCommand(), CompileAllCommand(), ServeCommand())
     }
 }
