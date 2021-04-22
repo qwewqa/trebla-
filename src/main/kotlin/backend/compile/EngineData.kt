@@ -20,14 +20,6 @@ class EngineData(
     fun compileLevel(entityData: List<EntityData>): String {
         val archetypesByName = archetypes.associateBy { it.name }
         val archetypeIndexes = archetypes.mapIndexed { i, v -> v to i }.toMap()
-        val defaultsByArchetype = archetypes.associateWith { arc ->
-            val script = scripts[arc.script]
-            val data = MutableList(64) { 0.0 }
-            arc.defaults.forEach { (name, value) ->
-                data[script.arguments.getValue(name)] = value
-            }
-            data.toList()
-        }
         val entities = entityData.map { entity ->
             val archetype = archetypesByName[entity.archetype] ?: backendError("Unknown archetype ${entity.archetype}")
             val script = scripts[archetype.script]
@@ -52,36 +44,7 @@ class EngineData(
             }
         }
         val levelFile = mapOf(
-            "scripts" to scripts.map { sc ->
-                sc.callbacks.associate {
-                    it.name to mapOf(
-                        "index" to it.entryNode,
-                        "order" to it.order,
-                    )
-                }
-            },
-            "archetypes" to archetypes.map { arc ->
-                val defaults = defaultsByArchetype.getValue(arc)
-                if (defaults.all { it == 0.0 }) {
-                    mapOf(
-                        "script" to arc.script,
-                        "input" to arc.input,
-                    )
-                } else {
-                    mapOf(
-                        "script" to arc.script,
-                        "data" to mapOf(
-                            "index" to defaults.takeWhile { it == 0.0 }.size,
-                            "values" to defaults.dropWhile { it == 0.0 }
-                                .dropLastWhile { it == 0.0 },
-                        ),
-                        "input" to arc.input,
-                    )
-                }
-            },
             "entities" to entities,
-            "nodes" to nodes,
-            "buckets" to buckets
         )
         return JSON.std.asString(levelFile)
     }
@@ -89,9 +52,52 @@ class EngineData(
     fun toJson(): String = JSON.std.asString(toMap())
     fun fromJson(reader: Reader) = fromMap(JSON.std.mapFrom(reader))
 
-    fun toEngineDataJson() = JSON.std.asString(toMap().filterKeys { it != "options" })
+    fun toEngineDataJson(): String {
+        val defaultsByArchetype = archetypes.associateWith { arc ->
+            val script = scripts[arc.script]
+            val data = MutableList(64) { 0.0 }
+            arc.defaults.forEach { (name, value) ->
+                data[script.arguments.getValue(name)] = value
+            }
+            data.toList()
+        }
 
-    fun optionsJson() = JSON.std.asString(options)
+        return JSON.std.asString(
+            mapOf(
+                "scripts" to scripts.map { sc ->
+                    sc.callbacks.associate {
+                        it.name to mapOf(
+                            "index" to it.entryNode,
+                            "order" to it.order,
+                        )
+                    }
+                },
+                "archetypes" to archetypes.map { arc ->
+                    val defaults = defaultsByArchetype.getValue(arc)
+                    if (defaults.all { it == 0.0 }) {
+                        mapOf(
+                            "script" to arc.script,
+                            "input" to arc.input,
+                        )
+                    } else {
+                        mapOf(
+                            "script" to arc.script,
+                            "data" to mapOf(
+                                "index" to defaults.takeWhile { it == 0.0 }.size,
+                                "values" to defaults.dropWhile { it == 0.0 }
+                                    .dropLastWhile { it == 0.0 },
+                            ),
+                            "input" to arc.input,
+                        )
+                    }
+                },
+                "nodes" to nodes,
+                "buckets" to buckets
+            )
+        )
+    }
+
+    fun optionsJson() = JSON.std.asString(mapOf("options" to options))
 
     fun toMap(): Map<String, Any> = mapOf(
         "scripts" to scripts.map { sc ->
