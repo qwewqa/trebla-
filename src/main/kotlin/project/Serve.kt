@@ -13,6 +13,4 @@ fun serve(projectPath: File) {
     http.staticFiles.externalLocation(projectPath.resolve(config.server).canonicalPath)
 
     http.service.init()
-
-    print("Running on port ${http.port()}...")
 }

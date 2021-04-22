@@ -15,8 +15,8 @@ application {
 
 repositories {
     mavenCentral()
-    maven ("https://dl.bintray.com/kotlin/kotlin-eap")
-    maven ("https://kotlin.bintray.com/kotlinx")
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
+    maven("https://kotlin.bintray.com/kotlinx")
 }
 
 dependencies {
@@ -26,6 +26,7 @@ dependencies {
     implementation("org.snakeyaml:snakeyaml-engine:2.1")
     implementation("com.fasterxml.jackson.jr:jackson-jr-objects:2.12.0")
     implementation("com.sparkjava:spark-kotlin:1.0.0-alpha")
+    implementation("org.slf4j:slf4j-simple:1.7.25")
     antlr("org.antlr:antlr4:4.8")
 }
 
