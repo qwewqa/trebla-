@@ -17,7 +17,7 @@ class EngineData(
         if (archetypes.toSet().size != archetypes.size) backendError("Archetypes have duplicate names.")
     }
 
-    fun compileLevel(entityData: List<EntityData>): CompiledLevel {
+    fun compileLevel(entityData: List<EntityData>): String {
         val archetypesByName = archetypes.associateBy { it.name }
         val archetypeIndexes = archetypes.mapIndexed { i, v -> v to i }.toMap()
         val defaultsByArchetype = archetypes.associateWith { arc ->
@@ -83,12 +83,15 @@ class EngineData(
             "nodes" to nodes,
             "buckets" to buckets
         )
-        return CompiledLevel(JSON.std.asString(levelFile), JSON.std.asString(options))
+        return JSON.std.asString(levelFile)
     }
 
     fun toJson(): String = JSON.std.asString(toMap())
     fun fromJson(reader: Reader) = fromMap(JSON.std.mapFrom(reader))
-        //fromMap(Gson().fromJson(reader, Map::class.java) as Map<String, Any>)
+
+    fun toEngineDataJson() = JSON.std.asString(toMap().filterKeys { it != "options" })
+
+    fun optionsJson() = JSON.std.asString(options)
 
     fun toMap(): Map<String, Any> = mapOf(
         "scripts" to scripts.map { sc ->
@@ -145,8 +148,6 @@ class EngineData(
         private fun Any?.castInt() = if (this is Double) this.toInt() else this as Int
     }
 }
-
-data class CompiledLevel(val level: String, val options: String)
 
 data class EntityData(val archetype: String, val arguments: Map<String, Double>)
 

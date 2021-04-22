@@ -44,10 +44,10 @@ fun SSANode.countUses(): Map<TempLocation, Int> = when (this) {
     is SSAFunctionCall -> (arguments.map { it.countUses() } +
             inPhi.flatMap { it.arguments }.filterNotNull().associateWith { 1 } +
             outPhi.flatMap { it.arguments }.filterNotNull().associateWith { 1 })
-        .fold(hashMapOf()) { a, v -> v.forEach { (id, c) -> a.merge(id, c, Int::plus) }; a }
+        .fold(hashMapOf()) { a, v -> v.forEach { (id, c) -> a.merge(id, c) { x, y -> x + y } }; a }
     is SSATempRead -> mapOf(location to 1)
     is SSATempAssign -> rhs.countUses()
     is SSASeqTempRead -> offset.countUses().toMutableMap().also { it[location] = (it[location] ?: 0) + 1 }
     is SSASeqTempAssign -> listOf(offset.countUses(), rhs.countUses())
-        .fold(hashMapOf()) { a, v -> v.forEach { (id, c) -> a.merge(id, c, Int::plus) }; a }
+        .fold(hashMapOf()) { a, v -> v.forEach { (id, c) -> a.merge(id, c) { x, y -> x + y } }; a }
 }

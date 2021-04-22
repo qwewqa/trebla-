@@ -7,6 +7,9 @@ out: "./out"
 # Level directory
 levels: "./levels"
 
+# Server resources directory
+server: "./server"
+
 # Level Options
 options:
   - name: "Slider"

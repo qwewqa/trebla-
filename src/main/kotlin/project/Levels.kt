@@ -21,6 +21,7 @@ import xyz.qwewqa.trebla.level.LevelEntity
 import xyz.qwewqa.trebla.level.LevelVisitor
 import xyz.qwewqa.trebla.level.NumericalArgument
 import java.io.File
+import java.util.zip.GZIPOutputStream
 
 val levelExtensions = setOf("tlv", "trlv")
 
@@ -60,17 +61,19 @@ suspend fun generateLevels(path: File) {
                         return@launch
                     }
                     val entities = visitor.visitLevelFile(levelFile)
-                    val (level, options) = try {
+                    val level = try {
                         engine.compileLevel(compileLevelEntities(entities))
                     } catch (e: IllegalStateException) {
                         errorChannel.send(OtherError(it.canonicalPath, e))
                         return@launch
                     }
-                    val levelOutDir = outDir.resolve(it.nameWithoutExtension)
+                    val levelOutDir = outDir.resolve("levels")
                     if (!levelOutDir.exists()) levelOutDir.mkdir()
+                    val levelOutFile = levelOutDir.resolve(it.nameWithoutExtension)
                     withContext(Dispatchers.IO) {
-                        levelOutDir.resolve("level.json").writeText(level)
-                        levelOutDir.resolve("options.json").writeText(options)
+                        GZIPOutputStream(levelOutFile.outputStream()).use {
+                            it.write(level.toByteArray())
+                        }
                     }
                 }
             }

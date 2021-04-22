@@ -17,6 +17,7 @@ fun loadConfig(file: File): ProjectConfiguration {
         src = config["src"] as String,
         out = config["out"] as String,
         levels = config["levels"] as String,
+        server = config["server"] as String,
     )
 }
 
@@ -26,5 +27,6 @@ data class ProjectConfiguration(
     val src: String,
     val out: String,
     val levels: String,
+    val server: String,
 )
 
