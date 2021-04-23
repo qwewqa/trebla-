@@ -354,18 +354,6 @@ public class TreblaParserBaseListener implements TreblaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInitBlock(TreblaParser.InitBlockContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitInitBlock(TreblaParser.InitBlockContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterParameter(TreblaParser.ParameterContext ctx) { }
 	/**
 	 * {@inheritDoc}

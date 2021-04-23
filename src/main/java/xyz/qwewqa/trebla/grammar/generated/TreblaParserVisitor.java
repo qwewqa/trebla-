@@ -181,12 +181,6 @@ public interface TreblaParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLetDeclaration(TreblaParser.LetDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TreblaParser#initBlock}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInitBlock(TreblaParser.InitBlockContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TreblaParser#parameter}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

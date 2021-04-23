@@ -1,6 +1,5 @@
 package xyz.qwewqa.trebla.frontend.value
 
-import xyz.qwewqa.trebla.backend.compile.CallbackName
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.ir.IRValue
 import xyz.qwewqa.trebla.backend.ir.SonoFunction
@@ -28,62 +27,16 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
 
     var index by Delegates.notNull<Int>()
 
-    /*
-    There are 3 contexts here:
-    - initializationContext: scope is script, executes in initialize callback
-    - initializeCallback: scope is initialize callback, executes in initialize callback
-    - this (script): scope is script, no execution
-
-    Properties can use initializationContext because the update the scope of the script,
-    but won't leak temporary variables since they copy.
-    Other declarations (that is, let declarations), however, must not leak temporary variables,
-    and thus cannot have an execution context.
-     */
-
-    private val initializeCallback = ExecutionCallback(this, 0, CallbackName.Initialize, this)
-    private val initializationContext = ScriptInitializationContext(this, initializeCallback)
-
     val propertyDeclarations by lazy {
         node.body.value
-            .filterIsInstance<PropertyDeclarationNode>()
-            .map { it.parse(initializationContext) }
-            .groupBy { it.variant }
+        .filterIsInstance<PropertyDeclarationNode>()
+        .map { it.parse(this) }
+        .groupBy { it.variant }
+        .mapValues { (_, group) -> group.associate { it.identifier to it.applyTo(this) } }
     }
 
-    val spawnProperties by lazy {
-        (propertyDeclarations[PropertyVariant.SPAWN] ?: emptyList())
-            .let { exprs ->
-                exprs.forEach { it.applyTo(initializationContext) }
-                exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
-            }
-    }
-
-    val dataProperties by lazy {
-        (propertyDeclarations[PropertyVariant.DATA] ?: emptyList())
-            .let { exprs ->
-                exprs.forEach { it.applyTo(initializationContext) }
-                exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
-            }
-    }
-
-    val sharedProperties by lazy {
-        (propertyDeclarations[PropertyVariant.SHARED] ?: emptyList())
-            .let { exprs ->
-                exprs.forEach { it.applyTo(initializationContext) }
-                exprs.associate { it.identifier to initializationContext.scope.get(it.identifier) }
-            }
-    }
-
-    val sharedLetDeclarations by lazy {
-        node.body.value
-            .filterIsInstance<LetDeclarationNode>()
-            .map { it.parse(initializationContext) }
-            .filter { it.isShared }
-            .let { exprs ->
-                exprs.forEach { it.applyTo(this) }
-                exprs.associate { it.identifier to this.scope.get(it.identifier) }
-            }
-    }
+    val spawnProperties by lazy { propertyDeclarations[PropertyVariant.SPAWN] ?: emptyMap() }
+    val dataProperties by lazy { propertyDeclarations[PropertyVariant.DATA] ?: emptyMap() }
 
     fun process(): ScriptData {
         node.body.value.filterIsInstance<DeclarationNode>().forEach {
@@ -91,27 +44,14 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
             if (parsed.loadFirstPass) parsed.applyTo(this)
         }
 
-        // make sure lazy properties have fired
-        spawnProperties
-        dataProperties
-        sharedProperties
-        sharedLetDeclarations
+        // Ensure this lazy property fires
+        propertyDeclarations
 
         val callbackDeclarationNodes = mutableListOf<CallbackDeclarationNode>()
-        val propertyDeclarationsByNode =
-            (propertyDeclarations[PropertyVariant.NORMAL] ?: emptyList()).associateBy { it.node }
+
         node.body.value.forEach { memberNode ->
             when (memberNode) {
-                is PropertyDeclarationNode -> propertyDeclarationsByNode[memberNode]?.applyTo(initializationContext)
-                is LetDeclarationNode -> {
-                    memberNode.parse(initializationContext).let {
-                        // shared let declarations (accessible from other scripts via an entity pointer)
-                        // cannot access normal (local) properties
-                        // but unshared ones can, so they are initialized in order in this case
-                        if (!it.isShared) it.applyTo(initializationContext)
-                    }
-                }
-                is InitBlockNode -> memberNode.body.value.forEach { it.parseAndApplyTo(initializeCallback) }
+                is PropertyDeclarationNode -> {}
                 is CallbackDeclarationNode -> callbackDeclarationNodes += memberNode
                 is StatementNode -> {
                     val parsed = memberNode.parse(this)
@@ -121,7 +61,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
             }
         }
 
-        val processedCallbacks = listOf(initializeCallback) + callbackDeclarationNodes.map { cbNode ->
+        val processedCallbacks = callbackDeclarationNodes.map { cbNode ->
             CallbackDeclaration(cbNode, this).run {
                 applyTo(this@ScriptDeclaration)
                 getCallback()
@@ -192,15 +132,3 @@ data class ScriptData(
     val arguments: Map<String, Int>,
     val freeIndexes: List<Int>,
 )
-
-/**
- * Statements directly in a script should update the scope of the script. However,
- * they should add statements to the initialize callback, so this combines the two.
- */
-class ScriptInitializationContext(script: ScriptDeclaration, initializeCallback: ExecutionCallback) :
-    ExecutionContext, ScriptContext by script {
-    override val scope = script.scope // Necessary for some reason. Delegate alone won't work.
-    override val statements = initializeCallback.statements
-    override val localAllocator = initializeCallback.localAllocator
-    override val contextMetadata = ContextMetadata(script.contextMetadata, CallbackName.Initialize)
-}

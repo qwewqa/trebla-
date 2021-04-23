@@ -122,8 +122,7 @@ scriptMemberDeclaration
     | propertyDeclaration
     | letDeclaration
     | structDeclaration
-    | callbackDeclaration
-    | initBlock) anysemi*
+    | callbackDeclaration) anysemi*
     ;
 
 archetypeDeclaration
@@ -159,10 +158,6 @@ letDeclaration
     : modifierList LET
     simpleIdentifier (COLON type)?
     NL* (ASSIGNMENT) NL* expression
-    ;
-
-initBlock
-    : INIT NL* block
     ;
 
 parameter

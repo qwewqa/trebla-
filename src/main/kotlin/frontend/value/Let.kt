@@ -17,17 +17,11 @@ class LetDeclaration(
     override val visibility: Visibility
     override val type = UnitValue
 
-    val isShared: Boolean
-
     val typeConstraint = node.type?.applyIn(parentContext) ?: AnyType
 
     init {
         node.modifiers.parse {
             visibility = selectFromMap(visibilityModifiers) ?: Visibility.PUBLIC
-            isShared = selectSingle("shared")
-        }
-        if (isShared && parentContext !is ScriptContext) {
-            compileError("let declaration shared modifier only allowed directly in scripts.")
         }
     }
 

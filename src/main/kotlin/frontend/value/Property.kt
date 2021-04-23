@@ -5,6 +5,7 @@ import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.expression.Allocatable
 import xyz.qwewqa.trebla.frontend.expression.Allocated
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
+import xyz.qwewqa.trebla.frontend.expression.Value
 import xyz.qwewqa.trebla.frontend.runWithErrorMessage
 import xyz.qwewqa.trebla.grammar.trebla.PropertyDeclarationNode
 
@@ -30,7 +31,7 @@ class PropertyDeclaration(
         }
     }
 
-    override fun applyTo(context: Context): UnitValue = node.runWithErrorMessage("Error in property declaration.") {
+    override fun applyTo(context: Context): Value = node.runWithErrorMessage("Error in property declaration.") {
         if (identifier.all { it == '_' }) {
             compileError("All underscore identifiers are reserved.")
         }
@@ -62,11 +63,10 @@ class PropertyDeclaration(
                 context.tempAllocator
             }
             PropertyVariant.NORMAL -> {
-                if (context !is ExecutionContext)
-                    compileError("Property not allowed at this location. The level modifier may be missing.")
                 when (context) {
                     is ScriptContext -> context.memoryAllocator
-                    else -> context.localAllocator
+                    is ExecutionContext -> context.localAllocator
+                    else -> compileError("Normal property not allowed at this location. The level modifier may be missing.")
                 }
             }
         }
@@ -76,13 +76,14 @@ class PropertyDeclaration(
                     if (allocator !is StandardAllocator) compileError("Temporary property must have an initializer.")
                     if (typeConstraint == null) compileError("Script variable must have either an explicit type or initializer.")
                     if (typeConstraint !is Allocatable)
-                        compileError("Property explicit type is invalid. Should typically be a struct.")
+                        compileError("Type is not allocatable.")
                     typeConstraint.allocateOn(allocator, context)
                 } else {
+                    if (context !is ExecutionContext) compileError("Initializer not allowed in non-execution context.")
                     val rhsValue = initializer.applyTo(context)
                     if (rhsValue !is Allocated)
                         compileError("Invalid initializer. Should be a struct.")
-                    rhsValue.copyTo(allocator, context as ExecutionContext)
+                    rhsValue.copyTo(allocator, context)
                 }
             }
             else -> {
@@ -102,19 +103,19 @@ class PropertyDeclaration(
         if (typeConstraint != null && !typeConstraint.accepts(newValue))
             compileError("Value of type ${newValue.type.commonName} does not match specified type ${typeConstraint.commonName}.")
         context.scope.add(newValue, identifier, signature, visibility)
-        UnitValue
+        return newValue
     }
 
 }
 
-enum class PropertyVariant(val initialized: Boolean = false) {
+enum class PropertyVariant {
     /**
      * Located in entity memory either as a member property of the script,
      * or as a temporary variable.
      * Takes an initializer.
      * Declared directly in a script, within a callback, or in a function as a temporary variable.
      */
-    NORMAL(true),
+    NORMAL,
 
     /**
      * Located in entity memory. Does not take an initializer.
@@ -162,7 +163,7 @@ enum class PropertyVariant(val initialized: Boolean = false) {
     TEMP
 }
 
-val propertyVariants = mapOf(
+private val propertyVariants = mapOf(
     "spawn" to PropertyVariant.SPAWN,
     "data" to PropertyVariant.DATA,
     "shared" to PropertyVariant.SHARED,

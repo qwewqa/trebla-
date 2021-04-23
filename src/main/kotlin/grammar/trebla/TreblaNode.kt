@@ -198,12 +198,6 @@ data class CallbackDeclarationNode(
     val body: BlockNode,
 ) : TreblaNode, ScriptMemberNode
 
-data class InitBlockNode(
-    override val context: ParseTree,
-    override val filename: String,
-    val body: BlockNode,
-) : TreblaNode, ScriptMemberNode
-
 data class ParameterNode(
     override val context: ParseTree,
     override val filename: String,

@@ -202,10 +202,6 @@ class TreblaFileVisitor(private val filename: String) : TreblaParserBaseVisitor<
         )
     }
 
-    override fun visitInitBlock(ctx: TreblaParser.InitBlockContext): TreblaNode {
-        return InitBlockNode(ctx, filename, ctx.block().visit() as BlockNode)
-    }
-
     override fun visitBlock(ctx: TreblaParser.BlockContext): TreblaNode {
         return BlockNode(ctx, filename, ctx.statement().visit() as List<StatementNode>)
     }

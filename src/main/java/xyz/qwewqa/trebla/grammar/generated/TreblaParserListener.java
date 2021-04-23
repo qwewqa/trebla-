@@ -290,16 +290,6 @@ public interface TreblaParserListener extends ParseTreeListener {
 	 */
 	void exitLetDeclaration(TreblaParser.LetDeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TreblaParser#initBlock}.
-	 * @param ctx the parse tree
-	 */
-	void enterInitBlock(TreblaParser.InitBlockContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TreblaParser#initBlock}.
-	 * @param ctx the parse tree
-	 */
-	void exitInitBlock(TreblaParser.InitBlockContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TreblaParser#parameter}.
 	 * @param ctx the parse tree
 	 */

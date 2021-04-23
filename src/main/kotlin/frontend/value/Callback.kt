@@ -22,11 +22,7 @@ class CallbackDeclaration(
     override val type = AnyType
 
     val name = callbacksByName[identifier]
-        ?: if (identifier == "initialize") compileError(
-            "Initialize callback is not supported use init blocks instead.",
-            node.identifier
-        )
-        else compileError("Unknown callback $identifier.", node.identifier)
+        ?:  compileError("Unknown callback $identifier.", node.identifier)
 
     fun getCallback(): Callback {
         val callback = if (name == CallbackName.ShouldSpawn) {
@@ -93,6 +89,7 @@ class NonExecutionCallback(
 }
 
 val callbacksByName = mapOf(
+    "initialize" to CallbackName.Initialize,
     "shouldSpawn" to CallbackName.ShouldSpawn,
     "updateSequential" to CallbackName.UpdateSequential,
     "touch" to CallbackName.Touch,
