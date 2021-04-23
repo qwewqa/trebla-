@@ -2,42 +2,39 @@ package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
 import xyz.qwewqa.trebla.frontend.compileError
+import xyz.qwewqa.trebla.frontend.expression.BlockStatement
+import xyz.qwewqa.trebla.frontend.expression.UnitValue
+import xyz.qwewqa.trebla.frontend.expression.Value
+import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.frontend.value.BuiltinType
 import xyz.qwewqa.trebla.frontend.value.Type
-import xyz.qwewqa.trebla.frontend.expression.UnitValue
-import xyz.qwewqa.trebla.frontend.expression.parseAndApplyTo
 import xyz.qwewqa.trebla.grammar.trebla.BlockNode
 import xyz.qwewqa.trebla.grammar.trebla.StatementNode
-import xyz.qwewqa.trebla.frontend.expression.BlockStatement
-import xyz.qwewqa.trebla.frontend.expression.Value
 
 /**
  * A context contains declarations, which are stored in its scope.
  */
-interface Context : Value {
-    val parentContext: Context?
+abstract class Context(
+    val parentContext: Context?,
+) : Value {
+    open val scope: Scope = Scope(parentContext?.scope)
+    open val callback: CallbackName? = parentContext?.callback
+    open val globalContext: GlobalContext by lazy { parentContext?.globalContext ?: error("Expected global context.") }
 
-    val globalContext: GlobalContext
+    open val levelAllocator: StandardAllocator? = parentContext?.levelAllocator
+    open val leveldataAllocator: StandardAllocator? = parentContext?.leveldataAllocator
+    open val tempAllocator: StandardAllocator? = parentContext?.tempAllocator
+    open val memoryAllocator: Allocator? = parentContext?.memoryAllocator
+    open val dataAllocator: Allocator? = parentContext?.dataAllocator
+    open val sharedAllocator: Allocator? = parentContext?.sharedAllocator
 
-    val scope: Scope
-
-    val contextMetadata: ContextMetadata
+    private val depth: Int = parentContext?.depth?.plus(1) ?: 0
 
     override val type: Type get() = ContextType
 
     override fun getMember(name: String, accessingContext: Context?) = scope.find(name)
 
     val bindingContext: Context? get() = parentContext
-}
-
-const val CONTEXT_DEPTH_LIMIT = 100
-
-class ContextMetadata(
-    parent: ContextMetadata?,
-    callback: CallbackName? = null,
-) {
-    val depth: Int = parent?.depth?.plus(1) ?: 0
-    val callback: CallbackName? = callback ?: parent?.callback
 
     init {
         if (depth >= CONTEXT_DEPTH_LIMIT) {
@@ -45,6 +42,8 @@ class ContextMetadata(
         }
     }
 }
+
+const val CONTEXT_DEPTH_LIMIT = 100
 
 fun Context.getFullyQualified(name: List<String>) =
     globalContext.getPackage(name.dropLast(1))?.getMember(name.last(), null)
@@ -57,23 +56,17 @@ object ContextType : BuiltinType("Context")
 /**
  * A context under which a block of expressions may be evaluated.
  */
-interface ExecutionContext : Context {
-    val localAllocator: TemporaryAllocator
-    val statements: BlockStatement
+abstract class ExecutionContext(parentContext: Context) : Context(parentContext) {
+    abstract val localAllocator: TemporaryAllocator
+    abstract val statements: BlockStatement
 }
 
-open class SimpleContext(final override val parentContext: Context) : Context {
-    override val globalContext: GlobalContext = parentContext.globalContext
-    override val scope = Scope(parentContext.scope)
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
-}
+open class SimpleContext(parentContext: Context) : Context(parentContext)
 
-open class SimpleExecutionContext(final override val parentContext: ExecutionContext) : ExecutionContext {
+open class SimpleExecutionContext(parentContext: ExecutionContext) : ExecutionContext(parentContext) {
     override val scope = EagerScope(parentContext.scope)
-    override val globalContext: GlobalContext = parentContext.globalContext
     override val localAllocator = parentContext.localAllocator
     override val statements = BlockStatement()
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
 class AlternateScopeContext(parentContext: Context, scopeContext: Context) : SimpleContext(parentContext) {
@@ -101,18 +94,13 @@ fun Context.createChild() = when (this) {
     else -> SimpleContext(this)
 }
 
-class InnerExecutionContext(override val parentContext: ExecutionContext) : ExecutionContext {
+class InnerExecutionContext(parentContext: ExecutionContext) : SimpleExecutionContext(parentContext) {
     override val scope = EagerScope(parentContext.scope)
-    override val globalContext: GlobalContext = parentContext.globalContext
-    override val localAllocator = parentContext.localAllocator
     override val statements = parentContext.statements
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
-class ReadOnlyContext(override val parentContext: Context) : Context {
+class ReadOnlyContext(parentContext: Context) : Context(parentContext) {
     override val scope = ReadOnlyScope(parentContext.scope)
-    override val globalContext: GlobalContext = parentContext.globalContext
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 }
 
 fun List<StatementNode>.evaluateIn(context: Context): Value =

@@ -12,27 +12,21 @@ import xyz.qwewqa.trebla.grammar.trebla.*
 import kotlin.properties.Delegates
 
 class ScriptDeclaration(override val node: ScriptDeclarationNode, override val parentContext: Context) :
-    Declaration, ScriptContext, Callable {
-    override val globalContext: GlobalContext = parentContext.globalContext
+    Declaration, Callable {
+    val context = ScriptContext(parentContext)
     override val identifier = node.identifier.value
     override val signature = DefaultSignature
     override val visibility = Visibility.PUBLIC
     override val type = ScriptType
-    override val bindingContext = parentContext
-    override val scope = Scope(parentContext.scope)
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
-    override val memoryAllocator = StandardAllocator(21, 64)
-    override val dataAllocator = StandardAllocator(22, 32)
-    override val sharedAllocator = StandardAllocator(24, 32)
 
     var index by Delegates.notNull<Int>()
 
     val propertyDeclarations by lazy {
         node.body.value
         .filterIsInstance<PropertyDeclarationNode>()
-        .map { it.parse(this) }
+        .map { it.parse(context) }
         .groupBy { it.variant }
-        .mapValues { (_, group) -> group.associate { it.identifier to it.applyTo(this) } }
+        .mapValues { (_, group) -> group.associate { it.identifier to it.applyTo(context) } }
     }
 
     val spawnProperties by lazy { propertyDeclarations[PropertyVariant.SPAWN] ?: emptyMap() }
@@ -40,8 +34,8 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
 
     fun process(): ScriptData {
         node.body.value.filterIsInstance<DeclarationNode>().forEach {
-            val parsed = it.parse(this)
-            if (parsed.loadFirstPass) parsed.applyTo(this)
+            val parsed = it.parse(context)
+            if (parsed.loadFirstPass) parsed.applyTo(context)
         }
 
         // Ensure this lazy property fires
@@ -54,16 +48,16 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
                 is PropertyDeclarationNode -> {}
                 is CallbackDeclarationNode -> callbackDeclarationNodes += memberNode
                 is StatementNode -> {
-                    val parsed = memberNode.parse(this)
-                    if (parsed !is Declaration || !parsed.loadFirstPass) parsed.applyTo(this)
+                    val parsed = memberNode.parse(context)
+                    if (parsed !is Declaration || !parsed.loadFirstPass) parsed.applyTo(context)
                 }
                 else -> error("Unsupported script member.") // should not happen
             }
         }
 
         val processedCallbacks = callbackDeclarationNodes.map { cbNode ->
-            CallbackDeclaration(cbNode, this).run {
-                applyTo(this@ScriptDeclaration)
+            CallbackDeclaration(cbNode, context).run {
+                applyTo(context)
                 getCallback()
             }
         }
@@ -77,7 +71,7 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
                 .mapValues { (_, v) ->
                     ((((v as PrimitiveInstance).value as AllocatedRawValue).allocation) as ConcreteAllocation).index
                 },
-            (memoryAllocator.index until memoryAllocator.size).toList()
+            (context.memoryAllocator.index until context.memoryAllocator.size).toList()
         )
     }
 
@@ -119,10 +113,10 @@ class ScriptDeclaration(override val node: ScriptDeclarationNode, override val p
 
 object ScriptType : BuiltinType("Script")
 
-interface ScriptContext : Context {
-    val memoryAllocator: Allocator
-    val dataAllocator: Allocator
-    val sharedAllocator: Allocator
+class ScriptContext(parentContext: Context) : Context(parentContext) {
+    override val memoryAllocator = StandardAllocator(21, 64)
+    override val dataAllocator = StandardAllocator(22, 32)
+    override val sharedAllocator = StandardAllocator(24, 32)
 }
 
 data class ScriptData(

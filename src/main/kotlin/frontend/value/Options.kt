@@ -11,7 +11,7 @@ class OptionsAccessor(override val parentContext: Context) : Declaration {
     override val signature = DefaultSignature
     override val visibility = Visibility.PUBLIC
 
-    private val options = parentContext.globalContext.configuration.projectConfig.options.mapIndexed { i, option ->
+    private val options = parentContext.globalContext!!.configuration.projectConfig.options.mapIndexed { i, option ->
         val name = option["name"]
         val type = option["type"]
         if (name == null) compileError("Option exists without a name.")

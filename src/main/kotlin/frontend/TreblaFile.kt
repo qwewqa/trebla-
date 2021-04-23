@@ -3,25 +3,15 @@ package xyz.qwewqa.trebla.frontend
 import xyz.qwewqa.trebla.frontend.context.*
 import xyz.qwewqa.trebla.frontend.value.ArchetypeDeclaration
 import xyz.qwewqa.trebla.frontend.value.Declaration
+import xyz.qwewqa.trebla.frontend.value.Package
 import xyz.qwewqa.trebla.frontend.value.ScriptDeclaration
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 
 val defaultPackage = listOf("engine")
 
-class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalContext) : Context,
-    GlobalAllocatorContext {
-    override val globalContext: GlobalContext = parentContext.globalContext
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
-    private val pkg = parentContext.getOrCreatePackage(node.packageHeader?.identifier?.value ?: defaultPackage)
-    override val levelAllocator = parentContext.levelAllocator
-    override val leveldataAllocator = parentContext.leveldataAllocator
-    override val tempAllocator = parentContext.tempAllocator
-
-    /*
-    A file has its own set of imports and private declarations that are local to the file.
-    Non-private declarations are added to the package scope in addition to the local file scope.
-     */
-    override val scope = Scope(pkg.scope)
+class TreblaFile(val node: TreblaFileNode, val globalContext: GlobalContext) {
+    private val pkg = globalContext.getOrCreatePackage(node.packageHeader?.identifier?.value ?: defaultPackage)
+    val context: Context = FileContext(globalContext, pkg)
 
     val scripts = mutableListOf<ScriptDeclaration>()
     val archetypes = mutableListOf<ArchetypeDeclaration>()
@@ -39,7 +29,7 @@ class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalCon
         node.topLevelObjects
             .asSequence()
             .map {
-                it.parse(this).also { declaration ->
+                it.parse(context).also { declaration ->
                     when (declaration) {
                         is ScriptDeclaration -> scripts += declaration
                         is ArchetypeDeclaration -> archetypes += declaration
@@ -48,7 +38,7 @@ class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalCon
             }
             .forEach { expression ->
                 if (!expression.loadFirstPass) deferredDeclarations += expression
-                else expression.applyTo(this)
+                else expression.applyTo(this.context)
             }
         updatePackage()
     }
@@ -62,7 +52,7 @@ class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalCon
     fun loadNormal() {
         importStd()
         loadImports()
-        deferredDeclarations.forEach { it.applyTo(this) }
+        deferredDeclarations.forEach { it.applyTo(this.context) }
         updatePackage()
     }
 
@@ -78,25 +68,25 @@ class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalCon
 
     private fun updatePackage() {
         try {
-            pkg.scope.mergeIn(this.scope)
+            pkg.context.scope.mergeIn(context.scope)
         } catch (e: CompileError) {
             throw CompileError("Package contains duplicate declarations with the same identifier", cause = e)
         }
     }
 
     private fun importWildcard(identifier: List<String>) {
-        val pkg = parentContext.getPackage(identifier)
+        val pkg = globalContext.getPackage(identifier)
             ?: compileError("No package with name ${identifier.joinToString(".")} exists")
-        scope.import(
-            pkg.scope,
+        context.scope.import(
+            pkg.context.scope,
             if (this.pkg.includedBy(pkg)) Visibility.INTERNAL else Visibility.PUBLIC
         )
     }
 
     private fun importPackage(identifier: List<String>) {
-        val pkg = parentContext.getPackage(identifier)
+        val pkg = globalContext.getPackage(identifier)
             ?: compileError("No package with name ${identifier.joinToString(".")} exists")
-        scope.add(pkg, identifier.last())
+        context.scope.add(pkg, identifier.last())
     }
 
     private fun importStd() {
@@ -114,4 +104,8 @@ class TreblaFile(val node: TreblaFileNode, override val parentContext: GlobalCon
             }
         }
     }
+}
+
+private class FileContext(parentContext: GlobalContext, pkg: Package) : Context(parentContext) {
+    override val scope = Scope(pkg.context.scope)
 }

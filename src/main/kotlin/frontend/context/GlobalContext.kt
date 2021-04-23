@@ -2,19 +2,16 @@ package xyz.qwewqa.trebla.frontend.context
 
 import xyz.qwewqa.trebla.backend.compile.Archetype
 import xyz.qwewqa.trebla.frontend.*
-import xyz.qwewqa.trebla.frontend.value.*
-import xyz.qwewqa.trebla.frontend.value.intrinsics.*
 import xyz.qwewqa.trebla.frontend.expression.Expression
 import xyz.qwewqa.trebla.frontend.expression.LambdaType
 import xyz.qwewqa.trebla.frontend.expression.UnitValue
 import xyz.qwewqa.trebla.frontend.expression.Value
-import xyz.qwewqa.trebla.frontend.value.MapProxyType
+import xyz.qwewqa.trebla.frontend.value.*
+import xyz.qwewqa.trebla.frontend.value.intrinsics.*
 import xyz.qwewqa.trebla.grammar.trebla.TreblaFileNode
 
-class GlobalContext(val configuration: CompilerConfiguration) : GlobalAllocatorContext, Context {
-    override val parentContext: Context? = null
+class GlobalContext(val configuration: CompilerConfiguration) : Context(null) {
     override val scope = Scope(null)
-    override val contextMetadata = ContextMetadata(null)
     override val levelAllocator = StandardAllocator(LEVEL_MEMORY_BLOCK, 256)
     override val leveldataAllocator = StandardAllocator(LEVEL_DATA_BLOCK, 256, 6)
     override val tempAllocator = StandardAllocator(TEMPORARY_MEMORY_BLOCK, 16)
@@ -82,24 +79,15 @@ class GlobalContext(val configuration: CompilerConfiguration) : GlobalAllocatorC
     }
 
     init {
-        intrinsicObjects.forEach { (pkg, declaration) -> declaration.applyTo(getOrCreatePackage(pkg)) }
+        intrinsicObjects.forEach { (pkg, declaration) -> declaration.applyTo(getOrCreatePackage(pkg).context) }
         intrinsics.forEach { (pkg, declaration) ->
             val target = getOrCreatePackage(pkg)
-            declaration(target).applyTo(target)
+            declaration(target.context).applyTo(target.context)
         }
     }
 }
 
 data class CompileData(val scripts: List<ScriptData>, val archetypes: List<Archetype>)
-
-interface GlobalAllocatorContext : Context {
-    val levelAllocator: StandardAllocator
-    val leveldataAllocator: StandardAllocator
-
-    // not to be confused with the local allocator for temporary variables
-    // this is for the literal temporary memory block
-    val tempAllocator: StandardAllocator
-}
 
 // completely stateless intrinsics
 val intrinsicObjects: List<Pair<List<String>, Declaration>> = listOf(

@@ -43,24 +43,19 @@ class PropertyDeclaration(
                 context.memoryAllocator
             }
             PropertyVariant.DATA -> {
-                if (context !is ScriptContext) compileError("The data modifier is only allowed directly within a script.")
-                context.dataAllocator
+                context.dataAllocator ?: compileError("Invalid location for allocation type.")
             }
             PropertyVariant.SHARED -> {
-                if (context !is ScriptContext) compileError("The shared modifier is only allowed directly within a script.")
-                context.sharedAllocator
+                context.sharedAllocator ?: compileError("Invalid location for allocation type.")
             }
             PropertyVariant.LEVEL -> {
-                if (context !is GlobalAllocatorContext) compileError("The level modifier is only allowed at the top level.")
-                context.levelAllocator
+                context.levelAllocator ?: compileError("Invalid location for allocation type.")
             }
             PropertyVariant.LEVELDATA -> {
-                if (context !is GlobalAllocatorContext) compileError("The leveldata modifier is only allowed at the top level.")
-                context.leveldataAllocator
+                context.leveldataAllocator ?: compileError("Invalid location for allocation type.")
             }
             PropertyVariant.TEMP -> {
-                if (context !is GlobalAllocatorContext) compileError("The temp modifier is only allowed at the top level.")
-                context.tempAllocator
+                context.tempAllocator ?: compileError("Invalid location for allocation type.")
             }
             PropertyVariant.NORMAL -> {
                 when (context) {

@@ -2,11 +2,8 @@ package xyz.qwewqa.trebla.frontend.expression
 
 import xyz.qwewqa.trebla.backend.constexpr.tryConstexprEvaluate
 import xyz.qwewqa.trebla.backend.ir.*
-import xyz.qwewqa.trebla.frontend.BooleanType
-import xyz.qwewqa.trebla.frontend.NumberType
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
-import xyz.qwewqa.trebla.frontend.fromRaw
 
 /**
  * Either a location in memory, or a literal. Should generally appear within a raw struct except
@@ -27,7 +24,7 @@ class AllocatedRawValue(val allocation: Allocation) : RawValue() {
     override fun toIR(context: Context?) = when (allocation) {
         is ConcreteAllocation -> SonoFunction.Get.calledWith(
             allocation.block.toIR().also {
-                if (context?.contextMetadata?.callback?.allowedReadBlocks?.contains(it.value.toInt()) != true) {
+                if (context?.callback?.allowedReadBlocks?.contains(it.value.toInt()) != true) {
                     compileError("Illegal read from value in block ${it.value.toInt()} (${blockNames[it.value.toInt()] ?: "unknown"}) in this context.")
                 }
             },
@@ -37,7 +34,7 @@ class AllocatedRawValue(val allocation: Allocation) : RawValue() {
         is DynamicAllocation -> SonoFunction.GetShifted.calledWith(
             allocation.block.toIR(context).also {
                 val block = it.tryConstexprEvaluate()?.toInt() ?: return@also
-                if (context != null && context.contextMetadata.callback?.allowedReadBlocks?.contains(block) != true) {
+                if (context != null && context.callback?.allowedReadBlocks?.contains(block) != true) {
                     compileError("Illegal read from value in block $block (${blockNames[block] ?: "unknown"}) in this context.")
                 }
             },
@@ -85,7 +82,7 @@ fun allocatedValueAssignment(lhs: AllocatedRawValue, rhs: RawValue, context: Con
     when (val alloc = lhs.allocation) {
         is ConcreteAllocation -> SonoFunction.Set.calledWith(
             alloc.block.toIR().also {
-                if (context.contextMetadata.callback?.allowedWriteBlocks?.contains(it.value.toInt()) != true) {
+                if (context.callback?.allowedWriteBlocks?.contains(it.value.toInt()) != true) {
                     compileError("Illegal assignment to value in block ${it.value.toInt()} (${blockNames[it.value.toInt()] ?: "unknown"}) in this context.")
                 }
             },
@@ -96,7 +93,7 @@ fun allocatedValueAssignment(lhs: AllocatedRawValue, rhs: RawValue, context: Con
         is DynamicAllocation -> SonoFunction.SetShifted.calledWith(
             alloc.block.toIR(context).also {
                 val block = it.tryConstexprEvaluate()?.toInt() ?: return@also
-                if (context.contextMetadata.callback?.allowedWriteBlocks?.contains(block) != true) {
+                if (context.callback?.allowedWriteBlocks?.contains(block) != true) {
                     compileError("Illegal assignment to value in block $block (${blockNames[block] ?: "unknown"}) in this context.")
                 }
             },

@@ -1,10 +1,10 @@
 package xyz.qwewqa.trebla.frontend.value
 
 import xyz.qwewqa.trebla.backend.compile.CallbackName
-import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.backend.ir.IRFunctionCall
 import xyz.qwewqa.trebla.backend.ir.IRNode
 import xyz.qwewqa.trebla.backend.ir.IRValue
+import xyz.qwewqa.trebla.backend.ir.SonoFunction
 import xyz.qwewqa.trebla.frontend.PrimitiveInstance
 import xyz.qwewqa.trebla.frontend.compileError
 import xyz.qwewqa.trebla.frontend.context.*
@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
 
 class CallbackDeclaration(
     override val node: CallbackDeclarationNode,
-    override val parentContext: ScriptDeclaration,
+    override val parentContext: ScriptContext,
 ) : Declaration {
     override val identifier = node.identifier.value
     override val signature = DefaultSignature
@@ -22,27 +22,28 @@ class CallbackDeclaration(
     override val type = AnyType
 
     val name = callbacksByName[identifier]
-        ?:  compileError("Unknown callback $identifier.", node.identifier)
+        ?: compileError("Unknown callback $identifier.", node.identifier)
 
     fun getCallback(): Callback {
         val callback = if (name == CallbackName.ShouldSpawn) {
             NonExecutionCallback(parentContext, node.order?.let {
                 it.tryConstexprEval(parentContext) ?: compileError("Invalid callback order expression.")
-            }?.roundToInt() ?: 0, name, parentContext)
+            }?.roundToInt() ?: 0, name)
         } else {
             ExecutionCallback(parentContext, node.order?.let {
                 it.tryConstexprEval(parentContext) ?: compileError("Invalid callback order expression.")
-            }?.roundToInt() ?: 0, name, parentContext)
+            }?.roundToInt() ?: 0, name)
         }
         node.body.value.let { body ->
-            body.dropLast(1).forEach { it.parseAndApplyTo(callback) }
-            body.lastOrNull()?.let { callback.returnValue = it.parseAndApplyTo(callback) }
+            body.dropLast(1).forEach { it.parseAndApplyTo(callback.context) }
+            body.lastOrNull()?.let { callback.returnValue = it.parseAndApplyTo(callback.context) }
         }
         return callback
     }
 }
 
-interface Callback : Context {
+interface Callback {
+    val context: Context
     val order: Int
     val name: CallbackName
 
@@ -52,40 +53,40 @@ interface Callback : Context {
 }
 
 class ExecutionCallback(
-    override val parentContext: ScriptContext,
+    val parentContext: ScriptContext,
     override val order: Int,
     override val name: CallbackName,
-    script: ScriptDeclaration,
-) : Callback, ExecutionContext {
-    override val scope = EagerScope(script.scope)
-    override val globalContext: GlobalContext = parentContext.globalContext
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata, name)
-    override val localAllocator = TemporaryAllocator()
-    override val statements = BlockStatement()
+) : Callback {
+    override val context: ExecutionContext = CallbackExecutionContext(parentContext, name)
 
     override var returnValue: Value? = null
 
     override fun toIR(): IRFunctionCall {
-        val returnIRValue = (returnValue as? PrimitiveInstance)?.value?.toIR(this) ?: IRValue(0.0)
-        return SonoFunction.Execute.calledWith(listOf(statements.asIR()) + listOf(returnIRValue))
+        val returnIRValue = (returnValue as? PrimitiveInstance)?.value?.toIR(context) ?: IRValue(0.0)
+        return SonoFunction.Execute.calledWith(listOf(context.statements.asIR()) + listOf(returnIRValue))
     }
 }
 
 class NonExecutionCallback(
-    override val parentContext: ScriptContext,
+    val parentContext: ScriptContext,
     override val order: Int,
     override val name: CallbackName,
-    script: ScriptDeclaration,
 ) : Callback {
-    override val scope = EagerScope(script.scope)
-    override val globalContext: GlobalContext = parentContext.globalContext
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata, name)
+    override val context: Context = CallbackContext(parentContext, name)
 
     override var returnValue: Value? = null
 
     override fun toIR(): IRNode {
-        return (returnValue as? PrimitiveInstance)?.value?.toIR(this) ?: IRValue(0.0)
+        return (returnValue as? PrimitiveInstance)?.value?.toIR(context) ?: IRValue(0.0)
     }
+}
+
+private open class CallbackContext(parentContext: Context, override val callback: CallbackName) : Context(parentContext)
+
+private class CallbackExecutionContext(parentContext: Context, override val callback: CallbackName) :
+    ExecutionContext(parentContext) {
+    override val localAllocator = TemporaryAllocator()
+    override val statements = BlockStatement()
 }
 
 val callbacksByName = mapOf(

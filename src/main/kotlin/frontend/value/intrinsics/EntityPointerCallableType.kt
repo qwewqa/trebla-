@@ -78,7 +78,7 @@ class EntityPointerValue(
 
     override fun getMember(name: String, accessingContext: Context?): Value? {
         if (accessingContext == null) compileError("Requires a context.")
-        return script.scope.get(name)?.let {
+        return script.context.scope.get(name)?.let {
             // This could indeed leak some values in an entity like functions (via a let declaration or within a struct)
             // Trying to use such a value would lead to undefined behavior
             if (it is Allocated) it.toEntityArrayValue(offset.value)

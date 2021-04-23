@@ -9,20 +9,14 @@ import xyz.qwewqa.trebla.grammar.trebla.TreblaNode
  */
 class Package(
     val identifier: List<String>,
-    override val parentContext: GlobalContext,
+    globalContext: GlobalContext,
     val node: TreblaNode? = null,
-) : GlobalAllocatorContext {
-    override val globalContext: GlobalContext = parentContext.globalContext
+) : Value {
+    val context = globalContext.createChild()
     override val type = PackageType
-    override val bindingContext: Context = parentContext
-    override val scope = Scope(parentContext.scope)
-    override val levelAllocator = parentContext.levelAllocator
-    override val leveldataAllocator = parentContext.leveldataAllocator
-    override val tempAllocator = parentContext.tempAllocator
-    override val contextMetadata = ContextMetadata(parentContext.contextMetadata)
 
     override fun getMember(name: String, accessingContext: Context?): Value? =
-        scope.get(name)
+        context.scope.get(name)
 
     /**
      * True if the same package or a subpackage
